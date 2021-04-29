@@ -1,4 +1,4 @@
-emaimport time
+import time
 import subprocess
 import digitalio
 import board
