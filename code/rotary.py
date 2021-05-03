@@ -27,7 +27,7 @@ POT_ENC_C = 11
 BRIGHTNESS = 0.5                # Effectively the maximum fraction of the period that the LED will be on
 PERIOD = int(255 / BRIGHTNESS)  # Add a period large enough to get 0-255 steps at the desired brightness
 
-ioe = io.IOE(i2c_addr=I2C_ADDR, interrupt_pin=4)
+ioe = io.IOE(i2c_addr=I2C_ADDR, interrupt_pin=8)
 
 # Swap the interrupt pin for the Rotary Encoder breakout
 if I2C_ADDR == 0x0F:
@@ -47,7 +47,7 @@ print("Running LED with {} brightness steps.".format(int(PERIOD * BRIGHTNESS)))
 count = 0
 r, g, b, = 0, 0, 0
 
-while True:
+def activate_reading():
     if ioe.get_interrupt():
         count = ioe.read_rotary_encoder(1)
         ioe.clear_interrupt()
@@ -62,3 +62,12 @@ while True:
 
     time.sleep(1.0 / 30)
 
+import Jetson.GPIO as gpio
+gpio.setwarnings(False)
+#gpio.setmode(gpio.BOARD)
+gpio.setup(24, gpio.IN)
+gpio.add_event_detect(24, gpio.BOTH, callback=activate_reading)
+
+
+while True:
+    time.sleep(1.0/30)
