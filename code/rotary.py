@@ -30,7 +30,17 @@ class Rotary():
         self.count = 0
         self.r, self.g, self.b, = 0, 0, 0
 
+    def init_animation(self):
+        for i in range(360):
+            h = i / 360.0
+            r, g, b = [int(i * self.PERIOD * self.BRIGHTNESS) for i in colorsys.hsv_to_rgb(h, 1.0, 1.0)]
+            self.ioe.output(self.PIN_RED, r)
+            self.ioe.output(self.PIN_GREEN, g)
+            self.ioe.output(self.PIN_BLUE, b)           
+            time.sleep(0.5 / 360.0)
+        
     def callback(self, args):
+        self.init_animation()
         while True:
             #if self.ioe.get_interrupt():
             count = self.ioe.read_rotary_encoder(1)
