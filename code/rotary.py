@@ -2,8 +2,9 @@
 import time
 import colorsys
 import ioexpander as io
+from base import ProcessInput
 
-class Rotary():
+class Rotary(ProcessInput):
     I2C_ADDR = 0x0F  # 0x0F for the encoder breakout
     # LED output pins
     PIN_RED, PIN_GREEN, PIN_BLUE = 1, 7, 2
@@ -15,6 +16,7 @@ class Rotary():
     PERIOD = int(255 / BRIGHTNESS)
 
     def __init__(self):
+        super().__init__('rotary')
         self.ioe = io.IOE(i2c_addr=self.I2C_ADDR, interrupt_pin=8)
         # Swap the interrupt pin for the Rotary Encoder breakout
         if self.I2C_ADDR == 0x0F:
@@ -39,7 +41,7 @@ class Rotary():
             self.ioe.output(self.PIN_BLUE, b)           
             time.sleep(0.5 / 360.0)
         
-    def callback(self, args):
+    def callback(self, state, queue):
         self.init_animation()
         while True:
             #if self.ioe.get_interrupt():
@@ -48,6 +50,7 @@ class Rotary():
                 time.sleep(1.0 / 30)
                 continue
             self.count = count
+            state['rotary'] = count
             #ioe.clear_interrupt()
             h = (self.count % 360) / 360.0
             # Compute new RGB values

@@ -24,6 +24,7 @@ class Screen(ProcessInput):
     Initialize screen function
     """
     def __init__(self, background=True):
+        super().__init__('screen')
         # Setup SPI bus using hardware SPI:
         self.spi = board.SPI()
         print(self.height)
@@ -106,6 +107,7 @@ class Screen(ProcessInput):
         self.x_text = 0
         # Load a TTF font (needs to be in same directory as script)
         self.font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 16)
+        self.font_big = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 32)
 
     def startup_animation(self):
         header = 'Neurorack'
@@ -124,8 +126,11 @@ class Screen(ProcessInput):
             self.disp.image(self.image)
             time.sleep(.025)
         time.sleep(0.5)
+
+    def draw_cvs(self, state):
+        cv_vals = state['cv']
         
-    def callback(self, args):
+    def callback(self, state, queue):
         # Begin screen startup animation
         self.startup_animation()
         # Perform display loop
@@ -137,9 +142,11 @@ class Screen(ProcessInput):
             for s in cur_stats:
                 self.draw.text((self.x_text, y), s, font = self.font, fill="#FFFFFF")
                 y += self.font.getsize(s)[1]
+            self.draw.text((self.x_text, y), str(state['rotary']), font = self.font_big, fill="#FF0000")
+            self.draw_cvs(state)
             # Display image.
             self.disp.image(self.image)
-            time.sleep(.1)
+            time.sleep(.02)
 
 if __name__ == '__main__':
     screen = Screen()

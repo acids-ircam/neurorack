@@ -7,7 +7,7 @@ class Input:
         print('Initializing input ' + name)
         self.name = name
 
-    def callback(self, args):
+    def callback(self, state, queue):
         print(self.name)
         
 class ThreadInput(Input):
@@ -20,8 +20,8 @@ class ProcessInput(Input):
     def __init__(self, name):
         super().__init__(name)
 
-    def callback(self, args):
-        super().callback(args)
+    def callback(self, state, queue):
+        super().callback(state, queue)
         print(mp.current_process())
 
 class InterruptInput(Input):
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     processes = []
     for in_v in input_types:
         cur_o = ProcessInput(in_v)
-        cur_p = Process(target=cur_o.callback, args=(queue,))
+        cur_p = Process(target=cur_o.callback, args=(None, queue))
         processes.append(cur_p)
     for p in processes:
         p.start()
