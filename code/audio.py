@@ -1,3 +1,15 @@
+import numpy as np
+import sounddevice as sd
+
+sr = 22050
+sd.default.samplerate = sr
+sd.default.device = 1
+len = 4
+audio = np.random.randn(len * sr)
+sd.play(audio, sr)
+sd.wait()
+
+
 import torch
 import time
 from pyo import *
@@ -24,7 +36,7 @@ lp = ButLP(n).out()
 hp = ButHP(n).out(1)
 time.sleep(2)
 # Testing DDSP
-model = torch.jit.load("/home/martin/Desktop/ddsp_pytorch/models/ddsp_demo_pretrained.ts")
-pitch = torch.randn(1, 200, 1)
-loudness = torch.randn(1, 200, 1)
+model = torch.jit.load("/home/martin/Desktop/ddsp_pytorch/models/ddsp_demo_pretrained.ts").cuda()
+pitch = torch.randn(1, 200, 1).cuda()
+loudness = torch.randn(1, 200, 1).cuda()
 audio = model(pitch, loudness)

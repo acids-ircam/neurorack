@@ -10,11 +10,11 @@ class CVChannels:
     def __init__(self):
         self.cv_0 = ADS1015(self.i2c_addresses[0])
         self.cv_1 = ADS1015(self.i2c_addresses[1])
-        self.cvs = [self.cv_0, self.cv_1]
+        self.cvs = [self.cv_0]
         for c in self.cvs:
             c.set_mode('single')
             c.set_programmable_gain(2.048)
-            c.set_sample_rate(1600)
+            c.set_sample_rate(16000)
         self.ref = self.cv_0.get_reference_voltage()
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self.ref))
 
@@ -23,22 +23,26 @@ class CVChannels:
         cur_v = 0
         for cv in self.cvs:
             for chan in self.channels:
-                values[cur_v] = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self.ref) * 50) / 50.0
+                values[cur_v] = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self.ref))
                 cur_v += 1
         return values
 
-    def read_loop(self, delay=0.1):
+    def read_loop(self, delay=0.0001):
         prev_vals = self.read()
+        prev_time = time.time()
         try:
             while True:
                 vals = self.read()
-                sum = 0
-                for (v1, v2) in zip(vals, prev_vals):
-                    sum += abs(v1 - v2)
-                if (sum == 0):
-                    continue
+                #sum = 0
+                #for (v1, v2) in zip(vals, prev_vals):
+                #    sum += abs(v1 - v2)
+                #if (sum == 0):
+                #    continue
                 prev_vals = vals
-                print(vals)
+                cur_time = time.time()
+                #print(vals)
+                print(cur_time - prev_time)
+                prev_time = cur_time
                 time.sleep(delay)
         except KeyboardInterrupt:
             pass
