@@ -36,7 +36,16 @@ lp = ButLP(n).out()
 hp = ButHP(n).out(1)
 time.sleep(2)
 # Testing DDSP
+print('Putting model on CUDA')
 model = torch.jit.load("/home/martin/Desktop/ddsp_pytorch/models/ddsp_demo_pretrained.ts").cuda()
+print('Flatten')
+#model = model.flatten_parameters()
+print('Pitch and loudness to CUDA')
 pitch = torch.randn(1, 200, 1).cuda()
 loudness = torch.randn(1, 200, 1).cuda()
-audio = model(pitch, loudness)
+for i in range(50):
+    print('Forwaaaaaaaaaard')
+    cur = time.time()
+    with torch.no_grad():
+        audio = model(pitch, loudness)
+    print(time.time() - cur)
