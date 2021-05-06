@@ -2,7 +2,7 @@
 import time
 import colorsys
 import ioexpander as io
-from base import ProcessInput
+from parallel import ProcessInput
 
 class Rotary(ProcessInput):
     I2C_ADDR = 0x0F  # 0x0F for the encoder breakout
@@ -67,4 +67,4 @@ if __name__ == '__main__':
     #gpio.setup(24, gpio.IN)
     #gpio.add_event_detect(24, gpio.BOTH, callback=activate_reading)
     rotary = Rotary()
-    rotary.callback(None)
+    rotary.callback({'rotary':0}, None)

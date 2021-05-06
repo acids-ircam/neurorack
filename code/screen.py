@@ -4,7 +4,7 @@ import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.st7789 as st7789
-from base import ProcessInput
+from parallel import ProcessInput
 from stats import Stats
 
 class Screen(ProcessInput):
@@ -127,7 +127,7 @@ class Screen(ProcessInput):
             time.sleep(.025)
         time.sleep(0.5)
 
-    def draw_cvs(self, state):
+    def draw_cvs(self, state, y):
         cv_vals = state['cv']
         
     def callback(self, state, queue):
@@ -143,11 +143,11 @@ class Screen(ProcessInput):
                 self.draw.text((self.x_text, y), s, font = self.font, fill="#FFFFFF")
                 y += self.font.getsize(s)[1]
             self.draw.text((self.x_text, y), str(state['rotary']), font = self.font_big, fill="#FF0000")
-            self.draw_cvs(state)
+            self.draw_cvs(state, y)
             # Display image.
             self.disp.image(self.image)
             time.sleep(.02)
 
 if __name__ == '__main__':
     screen = Screen()
-    screen.callback(None)
+    screen.callback({'rotary':0}, None)

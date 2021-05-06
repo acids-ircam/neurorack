@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import time
 from ads1015 import ADS1015
-from base import ProcessInput
+from parallel import ProcessInput
 
 class CVChannels(ProcessInput):
     i2c_addresses = [0x48, 0x49]
@@ -31,7 +31,7 @@ class CVChannels(ProcessInput):
         return values
 
     def callback(self, state, queue, delay=0.0001):
-        prev_vals = self.read()
+        prev_vals = self.read(state)
         prev_time = time.time()
         try:
             while True:
