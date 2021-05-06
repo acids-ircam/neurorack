@@ -2,12 +2,13 @@
 
 ## Hardware libraries
 
-* Screen: [https://github.com/pimoroni/st7789-python](https://github.com/pimoroni/st7789-python)
-* Encoder: [https://github.com/pimoroni/ioe-python](https://github.com/pimoroni/ioe-python)
-* Control voltage: [https://github.com/pimoroni/ads1015-python](https://github.com/pimoroni/ads1015-python)
+* Screen: [https://github.com/pimoroni/st7789-python](ST7789)
+* Encoder: [https://github.com/pimoroni/ioe-python](IOE)
+* Control voltage: [https://github.com/pimoroni/ads1015-python](ADS1015)
 
 ## Software troubleshooting
 
+* Install Pytorch from source or NVIDIA wheels [from forum](https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-8-0-now-available/72048)
 Need to rebuild libtorch (C++) from source - Instructions:
 https://github.com/pytorch/pytorch/blob/master/docs/libtorch.rst
 Need to rebuild PureData (apt-get install is faulty)
