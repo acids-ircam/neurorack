@@ -56,13 +56,13 @@ class Audio(ProcessInput):
         sd.default.dither_off = False
         sd.default.never_drop_input = False
 
-    def play_noise(self, wait: bool = True, length: int = 4):
+    def play_noise(self, wait: bool = True, length: float = 4.0):
         '''
             Play some random noise of a given length for checkup.
             Parameters:
                 wait:       [bool], optional
                             Wait on the end of the playback
-                length:     [int], optional
+                length:     [float], optional
                             Length of signal to generate (in seconds)
         '''
         audio = np.random.randn(length * self.sr)
@@ -82,7 +82,7 @@ class Audio(ProcessInput):
         if (wait):
             self.wait_playback()
             
-    def input_through(self, length: int = 4):
+    def input_through(self, length: float = 4.0):
         '''
             Play some random noise of a given length for checkup.
             Parameters:
@@ -97,6 +97,53 @@ class Audio(ProcessInput):
             outdata[:] = indata
         with sd.Stream(channels=2, callback=callback):
             sd.sleep(int(length * 1000))
+            
+    def play_sine_block(self, amplitude=1.0, frequency=440.0):
+        '''
+            Play a sinus signal 
+            Parameters:
+                amplitude:  [float], optional
+                            Amplitude of the sinusooid
+                length:     [int], optional
+                            Length of signal to generate (in seconds)
+        '''
+        def callback(outdata, frames, time, status):
+            if status:
+                print(status)
+            global start_idx
+            t = (start_idx + np.arange(frames)) / self.sr
+            t = t.reshape(-1, 1)
+            outdata[:] = amplitude * np.sin(2 * np.pi * frequency * t)
+            start_idx += frames
+    
+        with sd.OutputStream(device=sd.default.device, channels=1, callback=callback,
+                             samplerate=self.sr):
+            input()
+            
+    def plot_text_spectrogram(self, columns=6, block_duration=50, f_range=[100, 2000]):
+        high, low = f_range
+        delta_f = (high - low) / (columns - 1)
+        fftsize = np.ceil(self.sr / delta_f)
+        low_bin = np.floor(low / delta_f)
+        def callback(indata, frames, time, status):
+            if status:
+                text = ' ' + str(status) + ' '
+                print('\x1b[34;40m', text.center(columns, '#'),
+                      '\x1b[0m', sep='')
+            if any(indata):
+                magnitude = np.abs(np.fft.rfft(indata[:, 0], n=fftsize))
+                magnitude *= 1.0 / fftsize
+                line = (';'
+                        for x in magnitude[low_bin:low_bin + columns])
+                print(*line, sep='', end='\x1b[0m\n')
+            else:
+                print('no input')
+
+        with sd.InputStream(device=sd.default.device, channels=1, callback=callback,
+                            blocksize=int(self.sr * block_duration / 1000),
+                            samplerate=self.sr):
+            while True:
+                response = input()
         
     def stop_playback(self):
         ''' Stop any ongoing playback '''
