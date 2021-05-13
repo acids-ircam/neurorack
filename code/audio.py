@@ -1,5 +1,6 @@
 """
 
+ ~ Neurorack project ~
  Audio : Class for the audio handling
  
  This class contains all audio-processing stuff in the Neurorack.
@@ -103,7 +104,7 @@ class Audio(ProcessInput):
             Play a sinus signal 
             Parameters:
                 amplitude:  [float], optional
-                            Amplitude of the sinusooid
+                            Amplitude of the sinusoid
                 length:     [int], optional
                             Length of signal to generate (in seconds)
         '''

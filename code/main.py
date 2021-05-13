@@ -1,5 +1,6 @@
 """
 
+ ~ Neurorack project ~
  Neurorack : Main class for the module
  
  This file contains the code for the main class in the Neurorack
