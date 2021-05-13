@@ -1,4 +1,15 @@
-import Jetson.GPIO as gpio
+"""
+
+ Neurorack : Main class for the module
+ 
+ This file contains the code for the main class in the Neurorack
+ 
+ Author               : Philippe Esling, Ninon Devis, Martin Vert
+                        <{esling, devis}@ircam.fr>
+
+"""
+
+import Jetson.GPIO as GPIO
 from rotary import Rotary
 from cv import CVChannels
 from audio import Audio
@@ -7,9 +18,16 @@ import multiprocessing as mp
 from multiprocessing import Process, Manager, Queue
 
 class Neurorack():
+    '''
+        The Neurorack main class
+    '''
+    
     N_CVs = 6
 
     def __init__(self):
+        '''
+            Constructor - Creates a new instance of the Navigation class.
+        '''
         # Init states of information
         self.init_state()
         # Create audio engine
@@ -18,7 +36,7 @@ class Neurorack():
         self.rotary = Rotary()
         # Create CV channels
         self.cvs = CVChannels()
-        gpio.cleanup()
+        GPIO.cleanup()
         # Need to import Screen after cleanup
         from screen import Screen
         self.screen = Screen()
@@ -35,7 +53,10 @@ class Neurorack():
             self.processes.append(Process(target=o.callback, args=(self.state, self.queue)))
 
     def init_state(self):
-        # Use a MP Manager
+        '''
+            Initialize the shared memory state for the full rack
+        '''
+        # Use a multi-processing Manager
         self.manager = Manager()
         self.state = self.manager.dict()
         self.state['cv'] = self.manager.list([0.0] * self.N_CVs)
@@ -45,12 +66,24 @@ class Neurorack():
         self.state['audio'] = 0
             
     def start(self):
+        '''
+            Start all parallel processses
+        '''
         for p in self.processes:
             p.start()
 
     def run(self):
+        '''
+            Wait (join) on all parallel processses
+        '''
         for p in self.processes:
             p.join()
+
+    def __del__(self):
+        '''
+            Destructor - cleans up GPIO resources when the object is destroyed. 
+        '''
+        GPIO.cleanup()      
 
 if __name__ == '__main__':
     neuro = Neurorack()
