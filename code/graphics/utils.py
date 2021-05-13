@@ -48,6 +48,13 @@ def draw_rectangle(image, x, y, width, height, outline=_WHITE, fill=_WHITE):
     draw = ImageDraw.Draw(image)
     # Draw a purple rectangle with yellow outline.
     draw.rectangle((x, y, width, height), outline=outline, fill=fill)
+    
+# Draw some shapes
+def draw_rounded_rectangle(image, x, y, width, height, radius=2, outline=_WHITE, fill=_WHITE):
+    # Get draw object in image
+    draw = ImageDraw.Draw(image)
+    # Draw a purple rectangle with yellow outline.
+    draw.rounded_rectangle((x, y, width, height), radius=radius, outline=outline, fill=fill)
 
 def draw_ellipse(image, x, y, width, height, outline=_WHITE, fill=_WHITE):
     # Get draw object in image
@@ -66,3 +73,54 @@ def draw_triangle(image, a, b, c, outline=_WHITE, fill=_WHITE):
     draw = ImageDraw.Draw(image)
     # Draw a cyan triangle with a black outline.
     draw.polygon([a, b, c], outline=outline, fill=fill)
+    
+"""
+
+# Set of reminders from the PIL documentation
+
+# Create thumbnail
+with Image.open(infile) as im:
+    im.thumbnail(size)
+    im.save(outfile, "JPEG")
+    
+# Copying a subrectangle from an image
+box = (100, 100, 400, 400)
+region = im.crop(box)
+
+# Processing a subrectangle, and pasting it back
+region = region.transpose(Image.ROTATE_180)
+im.paste(region, box)
+
+PIL.Image.blend(im1, im2, alpha)[source]
+Creates a new image by interpolating between two input images, using a constant alpha.:
+out = image1 * (1.0 - alpha) + image2 * alpha
+
+PIL.Image.effect_mandelbrot(size, extent, quality)[source]
+Generate a Mandelbrot set covering the given extent.
+
+PIL.Image.composite(image1, image2, mask)[source]
+Create composite image by blending images using a transparency mask.
+Parameters
+image1 – The first image.
+image2 – The second image. Must have the same mode and size as the first image.
+mask – A mask image. This image can have mode “1”, “L”, or “RGBA”, and must have the same size as the other two images.
+
+Image.resize(size, resample=3, box=None, reducing_gap=None)[source]
+Returns a resized copy of this image.
+
+Example: Draw Partial Opacity Text
+# draw text, half opacity
+d.text((10,10), "Hello", font=fnt, fill=(255,255,255,128))
+# draw text, full opacity
+d.text((10,60), "World", font=fnt, fill=(255,255,255,255))
+
+Example: Draw Multiline Text
+# draw multiline text
+d.multiline_text((10,10), "Hello\nWorld", font=fnt, fill=(0, 0, 0))
+
+PIL.ImageOps.pad(image, size, method=3, color=None, centering=(0.5, 0.5))[source]
+Returns a sized and padded version of the image, expanded to fill the requested aspect ratio and size.
+
+PIL.ImageOps.fit(image, size, method=3, bleed=0.0, centering=(0.5, 0.5))[source]
+Returns a sized and cropped version of the image, cropped to the requested aspect ratio and size.
+"""
