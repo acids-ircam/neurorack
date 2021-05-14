@@ -19,6 +19,10 @@ from parallel import ProcessInput
 from models.ddsp import DDSP
 
 class Audio(ProcessInput):
+    '''
+        The Audio class handles every aspect related to audio generation.
+        It is based on the ProcessInput system for multiprocessing
+    '''
 
     def __init__(self, 
                  model: str = 'ddsp', 
