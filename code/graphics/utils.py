@@ -101,6 +101,23 @@ def draw_triangle(image, a, b, c, outline=_WHITE, fill=_WHITE):
     draw = ImageDraw.Draw(image)
     # Draw a cyan triangle with a black outline.
     draw.polygon([a, b, c], outline=outline, fill=fill)
+
+def __drawScrollArrows(self):
+    """
+        Handles drawing of the Scroll Arrows for the menu as needed
+    """
+    if self.__scrollDown: 
+        self.__draw.polygon([
+            (self.__width-5, self.__height-10),
+            (self.__width-15, self.__height-10),
+            (self.__width-10, self.__height-5)
+        ], fill=self.__navigationColor, outline=self.__navigationColor)
+    if self.__scrollUp:
+        self.__draw.polygon([
+            (self.__width-5, 10),
+            (self.__width-15, 10),
+            (self.__width-10, 5)
+        ], fill=self.__navigationColor, outline=self.__navigationColor)
     
 """
 

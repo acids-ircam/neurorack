@@ -19,6 +19,10 @@ from parallel import ProcessInput
 from graphics.utils import get_resized_image
 from stats import Stats
 
+SCREEN_MODE_INIT = 0
+SCREEN_MODE_MAIN = 1
+SCREEN_MODE_MENU = 2
+
 class Screen(ProcessInput):
     '''
         The screen class allows to handle an LCD SPI Display
@@ -79,6 +83,7 @@ class Screen(ProcessInput):
         # Perform initial settings
         self.reset_screen()
         self.init_text_properties()
+        self._mode = SCREEN_MODE_INIT
 
     def reset_screen(self):
         '''
@@ -140,6 +145,7 @@ class Screen(ProcessInput):
     def callback(self, state, queue):
         # Begin screen startup animation
         self.startup_animation()
+        self._mode = SCREEN_MODE_MAIN
         # Perform display loop
         while True:
             self.clean_screen()

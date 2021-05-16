@@ -18,8 +18,18 @@ class Graphic():
 
     def render(self, ctx=None):
         raise NotImplementedError
+
+class GraphicScene(Graphic):
+    
+    def __init__(self):
+        super().__init__()
+        self.elements = []
+
+    def render(self, ctx=None):
+        for e in self.elements:
+            e.render(ctx)
         
-class TextGraphics(Graphics):
+class TextGraphic(Graphic):
     
     def __init__(self):
         super().__init__()
@@ -27,7 +37,7 @@ class TextGraphics(Graphics):
     def render(self, ctx=None):
         raise NotImplementedError
         
-class ImageGraphics(Graphics):
+class ImageGraphic(Graphic):
     
     def __init__(self):
         super().__init__()

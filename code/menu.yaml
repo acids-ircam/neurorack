@@ -17,6 +17,11 @@ root:
   About: about
 
 items:
+  model_select:
+    type: list
+    command: sudo shutdown -h now
+    confirm: true
+    
   shutdown:
     type: shell
     command: sudo shutdown -h now
