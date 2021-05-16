@@ -30,45 +30,48 @@ class Menu():
         self._config_file = config
         self._config = None
         self._root_menu = None
-        self.__commands = {}
-        self.__currentMenu = None
-        self.__breadcrumb = [""]
+        self._items = {}
+        self._current_items = []
+        self._breadcrumb = [""]
         self.load()
 
     def load(self):
-        """
+        '''
             Loads the controller menu configuration and boots the menu. 
-        """
-        # load the menu
+        '''
+        # Load the menu
         with open(self._config_file) as file:
             # The FullLoader handles conversion from scalar values to Python dict
             self._config = yaml.load(file, Loader=yaml.FullLoader)
+        print(self._config)
         self._root_menu = self._config["root"]
-        self.__currentMenu = self._root_menu
-        items = []
-        for item in self.__currentMenu: items.append(item)
+        self._current_menu = self._root_menu
+        self._current_items = []
+        for item in self._current_menu: 
+            self._current_items.append(item)
+        print(self._current_items)
 
         # initialize Display
         self.__disp: Display = Display()
         self.__disp.Items = items
         self.__disp.ResetMenu()
-        self.__disp.SelectCallback = self.__processSelectEvent
-        self.__disp.UpCallback = self.__processBreadcrumbEvent
-        self.__disp.ConfirmCallback = self.__processConfirmEvent
+        self.__disp.SelectCallback = self.process_select
+        self.__disp.UpCallback = self.process_history
+        self.__disp.ConfirmCallback = self.process_confirm
 
         # load configured commands
         for item in self._config["commands"]:
-            self.__commands[item] = Command.FromJSON(self._config["commands"][item])
-            self.__commands[item].SpinHandler = self.__disp.Spinner
-            if self.__commands[item].Type == COMMAND_SHELL: 
-                    self.__commands[item].OutputHandler = self.__disp.DrawOutput
-            if self.__commands[item].Confirm == True:
-                    self.__commands[item].ConfirmationHandler = self.__disp.DrawConfirmation
+            self._items[item] = Command.FromJSON(self._config["commands"][item])
+            self._items[item].SpinHandler = self.__disp.Spinner
+            if self._items[item].Type == COMMAND_SHELL: 
+                    self._items[item].OutputHandler = self.__disp.DrawOutput
+            if self._items[item].Confirm == True:
+                    self._items[item].ConfirmationHandler = self.__disp.DrawConfirmation
 
         # initialize Navigation buttons
         self.__nav: Navigation = Navigation(self.__disp.ProcessNavigationEvent)
 
-    def __processSelectEvent(self, selectIndex: int, selectItem: str):
+    def process_select(self, selectIndex: int, selectItem: str):
         """
             Delegate to respond to a select event on the controller tactile select button. Invokes either
             navigation to a submenu or command execution. 
@@ -79,32 +82,32 @@ class Menu():
                                 The selected menu item
         """
         items = [".."]
-        if type(self.__currentMenu[selectItem]) is str:
-            logging.info(f"Execute {self.__currentMenu[selectItem]}")
-            self.__commands[self.__currentMenu[selectItem]].Run(display=self.__disp)
+        if type(self._current_menu[selectItem]) is str:
+            logging.info(f"Execute {self._current_menu[selectItem]}")
+            self._items[self._current_menu[selectItem]].Run(display=self.__disp)
         else:
-            logging.info(f"Load {self.__currentMenu[selectItem]}")
-            self.__currentMenu = self.__currentMenu[selectItem]
-            self.__breadcrumb.append(selectItem)
-            for item in self.__currentMenu: items.append(item)
+            logging.info(f"Load {self._current_menu[selectItem]}")
+            self._current_menu = self._current_menu[selectItem]
+            self._breadcrumb.append(selectItem)
+            for item in self._current_menu: items.append(item)
             self.__disp.Items = items
 
-    def __processBreadcrumbEvent(self):
+    def process_history(self):
         """
             Delegate to respond to the navigate uo event on the controller tactile Up button. Loads the 
             previous menu. 
         """
         items = []
-        self.__breadcrumb.pop()
-        for level in self.__breadcrumb:
-            if level == "": self.__currentMenu = self._root_menu
+        self._breadcrumb.pop()
+        for level in self._breadcrumb:
+            if level == "": self._current_menu = self._root_menu
             else: 
-                self.__currentMenu = self.__currentMenu[level]
+                self._current_menu = self._current_menu[level]
                 items.append("..")
-        for item in self.__currentMenu: items.append(item)
+        for item in self._current_menu: items.append(item)
         self.__disp.Items = items
 
-    def __processConfirmEvent(self, command:Command, confirmState: int):
+    def process_confirm(self, command:any, confirmState: int):
         """
             Delegate to respond to the confirmation event from the confirmation screen. Depending on event state, 
             either reloads the previous menu (confirmState==CONFIRM_CAMCEL) or run the commmand (CONFIRM_OK)
@@ -126,3 +129,6 @@ class MenuBar():
     def __init__(self):
         pass
 
+if __name__ == '__main__':
+    menu = Menu('../menu.yaml')
+    

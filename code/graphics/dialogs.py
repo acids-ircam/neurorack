@@ -1,17 +1,18 @@
+# -*- coding: utf-8 -*-
 """
 
  ~ Neurorack project ~
- Graphics : Set of classes for graphical objects
+ Dialogs : Set of classes for dialogs graphical objects
  
- This file defines the main operations for the graphical objects.
- The functions here will be used for the LCD display.
+ This dialogs are items that take the full screen for interaction.
+ Examples are "confirm" (ok/cancel) or "spinner" (loading) dialogs
  
  Author               : Philippe Esling, Ninon Devis, Martin Vert
                         <{esling, devis}@ircam.fr>
 
 """
 
-class Graphic():
+class Dialog():
     
     def __init__(self):
         pass
@@ -19,7 +20,7 @@ class Graphic():
     def render(self, ctx=None):
         raise NotImplementedError
         
-class TextGraphics(Graphics):
+class ConfirmDialog(Dialog):
     
     def __init__(self):
         super().__init__()
@@ -27,13 +28,10 @@ class TextGraphics(Graphics):
     def render(self, ctx=None):
         raise NotImplementedError
         
-class ImageGraphics(Graphics):
+class SpinnerDialog(Dialog):
     
     def __init__(self):
         super().__init__()
 
     def render(self, ctx=None):
         raise NotImplementedError
-        
-        
-        
