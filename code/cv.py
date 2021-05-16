@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 
  ~ Neurorack project ~
@@ -10,7 +11,6 @@
 
 """
 
-#!/usr/bin/env python
 import time
 from ads1015 import ADS1015
 from parallel import ProcessInput
@@ -27,7 +27,7 @@ class CVChannels(ProcessInput):
             i2c_addr: list = [0x48, 0x49],
             channels: list = ['in0/ref', 'in1/ref', 'in2/ref']):
         '''
-            Constructor - Creates a new instance of the Navigation class.
+            Constructor - Creates a new instance of the CV class.
             Parameters:
                 callbak:    [callable]
                             Outside function to call on button push
