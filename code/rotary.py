@@ -57,6 +57,7 @@ class Rotary(ProcessInput):
             self.ioe.enable_interrupt_out(pin_swap=True)
         self.ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
         self.ioe.set_pwm_period(self._period)
+        # self.ioe.on_interrupt(callback)
         # PWM as fast as we can to avoid LED flicker
         self.ioe.set_pwm_control(divider=2) 
         # Set RGB modes
@@ -68,7 +69,7 @@ class Rotary(ProcessInput):
         # Current RGB values
         self._r, self._g, self._b, = 0, 0, 0
 
-    def init_animation(self):
+    def startup_animation(self):
         '''
             Function for performing the init animation of the rotary knob
         '''
@@ -92,7 +93,7 @@ class Rotary(ProcessInput):
                 delay:      [int], optional
                             Specifies the wait delay between read operations [default: 0.001s]
         '''
-        self.init_animation()
+        self.startup_animation()
         while True:
             #if self.ioe.get_interrupt():
             new_pos = self.ioe.read_rotary_encoder(1)
