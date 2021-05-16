@@ -20,7 +20,7 @@ class Menu():
         Handles loading and running the menu and commands. 
     '''
     
-    def __init__(self, config = "./menus.yaml"):
+    def __init__(self, config = "./menu.yaml"):
         '''
             Constructor. Creates a new instance of the ContollerMenu class. 
             Paramters: 

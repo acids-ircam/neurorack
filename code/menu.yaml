@@ -1,0 +1,95 @@
+root:
+  Demo Routines:
+    Robot Arm Test: rpiArmTest
+    Pump Test: rpiPumpTest
+  System Information: sysInfo
+  Robot Arm Environment:
+    Service Status: rpiArmStatus
+    Restart Service: rpiArmRestart
+    Start Service: rpiArmStart
+    Stop Service: rpiArmStop
+  Admin (robot-pi):
+    Shutdown: shutdown
+    Reboot: reboot
+    Network Interfaces: netInfo
+  Admin (pump-pi):
+      Shutdown: pumpShutdown
+      Reboot: pumpReboot
+
+commands:
+  shutdown:
+    type: shell
+    command: sudo shutdown -h now
+    processor: None
+    confirm: true
+
+  reboot:
+    type: shell
+    command: sudo shutdown -r now
+    processor: None
+    confirm: true
+
+  pumpShutdown:
+    type: shell
+    command: ssh -i /home/pi/.ssh/id_rsa-robot-pi pi@pump-pi.local sudo shutdown -h now
+    processor: None
+    confirm: true
+  
+  pumpReboot:
+      type: shell
+      command: ssh -i /home/pi/.ssh/id_rsa-robot-pi pi@pump-pi.local sudo shutdown -r now
+      processor: None
+      confirm: true
+
+  reboot:
+    type: shell
+    command: sudo shutdown -r now
+    processor: None
+    confirm: true
+
+  netInfo:
+    type: builtin
+    command: netInfo
+    confirm: false
+  
+  rpiArmTest:
+    type: shell
+    command: /usr/bin/python3 -u /home/pi/projects/meArmPi/util/armtest.py
+    cwd: /home/pi/projects/meArmPi
+    processor: None
+    confirm: false
+
+  rpiArmStart:
+    type: shell
+    command: sudo systemctl start meArm.service
+    processor: None
+    confirm: true
+
+  rpiArmStop:
+    type: shell
+    command: sudo systemctl stop meArm.service
+    processor: None
+    confirm: true
+
+  rpiArmRestart:
+      type: shell
+      command: sudo systemctl restart meArm.service
+      processor: None
+      confirm: true
+
+  rpiArmStatus:
+    type: shell
+    command: sudo systemctl list-units meArm.service
+    processor: None
+    confirm: false
+
+  rpiPumpTest:
+    type: shell
+    command: ssh -i /home/pi/.ssh/id_rsa-robot-pi pi@pump-pi.local python3 /home/pi/projects/Adafruit-Motor-HAT-Python-Library/examples/DCTest.py
+    processor: None
+    confirm: true
+
+  sysInfo:
+    type: builtin
+    command: sysInfo
+    confirm: false
