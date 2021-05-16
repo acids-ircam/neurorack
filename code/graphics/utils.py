@@ -11,6 +11,48 @@ _GREEN = (0, 255, 0)
 _BLUE = (0, 0, 255)
 _RED = (255, 0, 0)
 
+"""
+Create an image that fits into screen properties
+"""
+def get_resized_image(self, filename, width, height, ratio=0):
+    image = Image.open(filename)
+    # Scale the image to the smaller screen dimension
+    image_ratio = image.width / image.height
+    screen_ratio = width / height
+    if screen_ratio < image_ratio:
+        scaled_width = image.width * height // image.height
+        scaled_height = height
+    else:
+        scaled_width = width
+        scaled_height = image.height * width // image.width
+    if (ratio > 0):
+        scaled_width = (scaled_width * ratio)
+        scaled_height = (scaled_height * ratio)
+        image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
+        image = image.crop((0, 0, scaled_width, scaled_height))
+        return image
+    image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
+    # Crop and center the image
+    x = scaled_width // 2 - width // 2
+    y = scaled_height // 2 - height // 2
+    image = image.crop((x, y, x + width, y + height))
+    # Return image.
+    return image
+    
+def draw_animated_gif(disp, image_file, width, height):
+    # Load an image.
+    print('Loading gif: {}...'.format(image_file))
+    image = Image.open(image_file)
+    frame = 0
+    while True:
+        try:
+            image.seek(frame)
+            disp.display(image.resize((width, height)))
+            frame += 1
+            time.sleep(0.05)
+        except EOFError:
+            frame = 0
+
 def draw_rotated_text(image, text, position, angle, font=None, fill=_WHITE):
     if (font is None):
         # Load default font.
@@ -27,20 +69,6 @@ def draw_rotated_text(image, text, position, angle, font=None, fill=_WHITE):
     rotated = textimage.rotate(angle, expand=1)
     # Paste the text into the image, using it as a mask for transparency.
     image.paste(rotated, position, rotated)
-    
-def draw_animated_gif(disp, image_file, width, height):
-    # Load an image.
-    print('Loading gif: {}...'.format(image_file))
-    image = Image.open(image_file)
-    frame = 0
-    while True:
-        try:
-            image.seek(frame)
-            disp.display(image.resize((width, height)))
-            frame += 1
-            time.sleep(0.05)
-        except EOFError:
-            frame = 0
     
 # Draw some shapes
 def draw_rectangle(image, x, y, width, height, outline=_WHITE, fill=_WHITE):
