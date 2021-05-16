@@ -13,11 +13,12 @@
 
 """
 import yaml
+from .graphics import GraphicScene
 
-MODE_MENU = 0
-MODE_CONFIRM = 1
-MODE_OUTPUT = 2
-MODE_EXTERNAL = 3
+MENU_MODE_BASIC = 0
+MENU_MODE_CONFIRM = 1
+MENU_MODE_OUTPUT = 2
+MENU_MODE_EXTERNAL = 3
 CONFIRM_CANCEL = 0
 CONFIRM_OK = 1
 MSG_OK = "OK"
@@ -28,7 +29,7 @@ MSG_RESULTS = "'%s'"
 MSG_CODE = "Return Code: %x"
 MSG_OUTPUT = "Output:"
 
-class Menu():
+class Menu(GraphicScene):
     '''
         Main class for the LCD Menu. 
         Handles loading and running the menu and commands. 
@@ -46,7 +47,15 @@ class Menu():
         self._root_menu = None
         self._items = {}
         self._current_items = []
-        self._breadcrumb = [""]
+        self._history = [""]
+        self._mode = MENU_MODE_BASIC
+        # Scrolling properties
+        self._scroll_start = 0
+        self._scroll_down = False
+        self._scroll_up = False
+        # Index properties
+        self._selected_index = -1
+        self._max_index = -1
         self.load()
 
     def load(self):
@@ -66,27 +75,57 @@ class Menu():
         print(self._current_items)
         # Generate items menu
         for item in self._config["items"]:
-            self._items[item] = Command.FromJSON(self._config["items"][item])
+            self._items[item] = MenuItem.create_item(self._config["items"][item])
+    
+    def render(self, draw, ctx):
+        """
+            Draws a menu based on the items contained in Display.Items. Setting Display.Items will implicitely 
+            call this method, so it should only be necessary to call this explicitely if the display has been 
+            changed by the user since it was last drawn. 
+            Parameters:
+                items:      list(str)
+                            Optional. A list of items to be used for the menu. If not specified, the list currently 
+                            contained in Display.Items will be used. If specified, the supplied list will be stored in 
+                            Display.Items. 
+        """
+        self._mode = MENU_MODE_BASIC
+        self._scroll_down = False
+        self._scroll_up = self._scroll_start > 0
+        idx = self._scroll_start
+        while idx < len(self._current_items):
+            item = self._current_items[idx]
+            item_size = item.getsize()[1]
+            if ctx.y + item_size > self.max_height: 
+                self._scroll_down = True
+                break
+            item.render(draw, ctx)
+            idx += 1
+            ctx.y += item_size
+        self._max_index = idx
+        self.__draw_scrollbars(draw)
 
-    def process_select(self, selectIndex: int, selectItem: str):
+    def process_select(self, 
+                       select_index: int, 
+                       select_item: str):
         """
             Delegate to respond to a select event on the controller tactile select button. Invokes either
             navigation to a submenu or command execution. 
             Paramters: 
-                selectedIndex:  int
+                select_index:   [int]
                                 Index of the menu item selected.
-                selectedItem:   str
+                select_item:    [str]
                                 The selected menu item
         """
         items = [".."]
-        if type(self._current_menu[selectItem]) is str:
-            logging.info(f"Execute {self._current_menu[selectItem]}")
-            self._items[self._current_menu[selectItem]].Run(display=self.__disp)
+        if type(self._current_menu[select_item]) is str:
+            print(f"Execute {self._current_menu[select_item]}")
+            self._items[self._current_menu[select_item]].run(display=self.__disp)
         else:
-            logging.info(f"Load {self._current_menu[selectItem]}")
-            self._current_menu = self._current_menu[selectItem]
-            self._breadcrumb.append(selectItem)
-            for item in self._current_menu: items.append(item)
+            print(f"Load {self._current_menu[select_item]}")
+            self._current_menu = self._current_menu[select_item]
+            self._history.append(select_item)
+            for item in self._current_menu: 
+                items.append(item)
             self.__disp.Items = items
 
     def process_history(self):
@@ -95,9 +134,10 @@ class Menu():
             previous menu. 
         """
         items = []
-        self._breadcrumb.pop()
-        for level in self._breadcrumb:
-            if level == "": self._current_menu = self._root_menu
+        self._history.pop()
+        for level in self._history:
+            if level == "": 
+                self._current_menu = self._root_menu
             else: 
                 self._current_menu = self._current_menu[level]
                 items.append("..")
@@ -116,73 +156,7 @@ class Menu():
         """
         if confirmState == CONFIRM_CANCEL: self.__disp.DrawMenu()
         else:
-            command.Run(display=self.__disp, confirmed=CONFIRM_OK)
-    
-    def DrawMenu(self, items:list=None):
-        """
-            Draws a menu based on the items contained in Display.Items. Setting Display.Items will implicitely 
-            call this method, so it should only be necessary to call this explicitely if the display has been 
-            changed by the user since it was last drawn. 
-            Parameters:
-                items:      list(str)
-                            Optional. A list of items to be used for the menu. If not specified, the list currently 
-                            contained in Display.Items will be used. If specified, the supplied list will be stored in 
-                            Display.Items. 
-        """
-        self.__mode = MODE_MENU
-        self.__draw.rectangle((0, 0, self.__width, self.__height), outline=0, fill=0)
-
-        x = self.__padding
-        y = self.__padding
-        if items != None: self.__items = items
-        self.__scrollDown = False
-        self.__scrollUp = self.__scrollStartIndex > 0
-        idx = self.__scrollStartIndex
-        while idx < len(self.__items):
-            item = self.__items[idx]
-            __y = self.__font.getsize(item)[1]
-            if y + __y > self.__height: 
-                self.__scrollDown = True
-                break
-
-            self.__draw.text((x, y), item, font=self.__font, 
-                fill= self.__selectedColor if idx == self.__selectedIndex else self.__textColor)
-            idx += 1
-            y += __y + self.__padding
-        self.__maxIndex = idx
-        self.__drawScrollArrows()
-        self.__disp.LCD_ShowImage(self.__image)
-    
-
-    def DrawOutput(self, command:str, code:int, message:str=""):
-        """
-            Draws the output of a command (or any string, really).
-            Parameters:
-                command:    str
-                            Contains the name (command line) of the command whose output is shown
-                code:       int
-                            The command exit code.
-                message:    str
-                            Optional. Output to display.  
-        """
-        self.__mode = MODE_OUTPUT
-        self.__draw.rectangle((0, 0, self.__width, self.__height), outline=0, fill=0)
-        x = self.__padding
-        y = self.__padding
-        self.__draw.text((x, y), MSG_RESULTS %command, font=self.__font, fill=self.__textColor)
-        y += self.__font.getsize(MSG_RESULTS)[1] + self.__padding
-        self.__draw.text((x, y), MSG_CODE %code, font=self.__font, fill=self.__textColor)                
-        y += self.__font.getsize(MSG_CODE)[1] + self.__padding 
-        if message != "":
-            self.__draw.text((x, y), MSG_OUTPUT, font=self.__font, fill=self.__textColor)
-            y += self.__font.getsize(MSG_OUTPUT)[1] + self.__padding
-            self.__draw.multiline_text((x + self.__padding,y), message, fill=self.__textColor)
-
-        c1 = [(self.__width/2 + 10, self.__height-40), (self.__width - 10, self.__height-15)]
-        c2 = (3*self.__width/4 - self.__draw.textsize(MSG_OK, font=self.__font)[0]/2, self.__height-35)
-        self.__draw.rectangle(c1, fill=self.__textColor)
-        self.__draw.text(c2, MSG_OK, font=self.__font, fill="#000000")        
-        self.__disp.LCD_ShowImage(self.__image)
+            command.Run(display=self.__disp, confirmed=CONFIRM_OK)    
         
     def Spinner(self, run=True):
         """
@@ -201,7 +175,7 @@ class Menu():
             self.__stopSpinner = True
             self.__spinnerThread.join()
 
-    def ProcessNavigationEvent(self, eventType):
+    def navigation_callback(self, event):
         """
             Delegate called by the Navigation model when a navigation event occurs on the GPIO. Handles 
             corresponding invokation of the various display draw and/or command execution delegates. 
@@ -266,9 +240,9 @@ class Menu():
         self.DrawMenu()
 
 class MenuItem():    
-    """
-    Represents a command to be executed
-    """
+    '''
+    Represents a menu item
+    '''
 
     builtInCommands: dict = {
         "sysInfo": SysInfo,
