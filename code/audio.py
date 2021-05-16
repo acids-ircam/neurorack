@@ -13,6 +13,7 @@
                         <{esling, devis}@ircam.fr>
 
 """
+
 import numpy as np
 import sounddevice as sd
 from parallel import ProcessInput
@@ -149,6 +150,7 @@ class Audio(ProcessInput):
                             samplerate=self.sr):
             while True:
                 response = input()
+                print(response)
         
     def stop_playback(self):
         ''' Stop any ongoing playback '''

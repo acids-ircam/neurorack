@@ -87,6 +87,12 @@ class Neurorack():
         GPIO.cleanup()      
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description='Neurorack')
+    # Device Information
+    parser.add_argument('--device',         type=str, default='cuda:2',     help='device cuda or cpu')
+    # Parse the arguments
+    args = parser.parse_args()
     neuro = Neurorack()
     neuro.start()
     neuro.run()
