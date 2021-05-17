@@ -31,23 +31,25 @@ class Neurorack():
         '''
             Constructor - Creates a new instance of the Neurorack class.
         '''
+        # Main properties
+        self.N_CVs = 6
         # Init states of information
         self.init_state()
         # Create audio engine
         self.audio = Audio()
         # Create rotary
-        self.rotary = Rotary()
+        self.rotary = Rotary(None)
         # Create CV channels
-        self.cvs = CVChannels()
+        # self.cvs = CVChannels(None)
         # Create push button
-        self.button = Button()
+        # self.button = Button(None)
         # Perform GPIO cleanup
         GPIO.cleanup()
         # Need to import Screen after cleanup
         from screen import Screen
         self.screen = Screen()
         # List of objects to create processes
-        self.objects = [self.audio, self.screen, self.rotary, self.cvs, self.button]
+        self.objects = [self.audio, self.screen, self.rotary]#, self.cvs, self.button]
         # Find number of CPUs
         self.nb_cpus = mp.cpu_count()
         # Create a pool of jobs
