@@ -89,16 +89,15 @@ class Screen(ProcessInput):
         '''
             Reset screen with either a background image or just empty black 
         '''
-        self._image = None
-        if (self._background):
-            self._bg_image = get_resized_image('data/acids.png', self._width, self._height)
-            self._image = self._bg_image.copy()
-        else:
-            self._image = Image.new('RGB', (self._width, self._width))
+        # Create a new PIL image 
+        self._image = Image.new('RGB', (self._width, self._width))
         # Get drawing object to draw on image.
         self._draw = ImageDraw.Draw(self._image)
-        # Draw a black filled box to clear the image.
-        if (not self._background):
+        if (self._background):
+            self._bg_image = get_resized_image('data/acids.png', self._width, self._height)
+            self._image.paste(self._bg_image)
+        else:
+            # Draw a black filled box to clear the image.
             self._draw.rectangle((0, 0, self._width, self._height), outline=0, fill=(0, 0, 0))
         self._disp.image(self._image)
 
@@ -107,11 +106,9 @@ class Screen(ProcessInput):
             Clean screen with image or just empty black 
         '''
         if (self._background):
-            self._image = self._bg_image.copy()
+            self._image.paste(self._bg_image)
         else:
-            self._image = Image.new('RGB', (self._width, self._width))
-        # Get drawing object to draw on image.
-        self._draw = ImageDraw.Draw(self._image)
+            self._draw.rectangle((0, 0, self._width, self._height), outline=0, fill=(0, 0, 0))
 
     def init_text_properties(self):
         '''
