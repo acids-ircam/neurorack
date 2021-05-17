@@ -14,7 +14,7 @@ _RED = (255, 0, 0)
 """
 Create an image that fits into screen properties
 """
-def get_resized_image(self, filename, width, height, ratio=0):
+def get_resized_image(filename, width, height, ratio=0):
     image = Image.open(filename)
     # Scale the image to the smaller screen dimension
     image_ratio = image.width / image.height

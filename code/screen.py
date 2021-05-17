@@ -91,7 +91,7 @@ class Screen(ProcessInput):
         '''
         self._image = None
         if (self._background):
-            self._bg_image = get_resized_image('data/acids.png')
+            self._bg_image = get_resized_image('data/acids.png', self._width, self._height)
             self._image = self._bg_image.copy()
         else:
             self._image = Image.new('RGB', (self._width, self._width))
@@ -156,11 +156,11 @@ class Screen(ProcessInput):
                 self._draw.text((self.x_text, y), s, font = self.font, fill="#FFFFFF")
                 y += self.font.getsize(s)[1]
             self._draw.text((self.x_text, y), str(state['rotary']), font = self.font_big, fill="#FF0000")
-            self._draw_cvs(state, y)
+            self.draw_cvs(state, y)
             # Display image.
             self._disp.image(self._image)
             time.sleep(.02)
 
 if __name__ == '__main__':
     screen = Screen()
-    screen.callback({'rotary':0}, None)
+    screen.callback({'rotary':0, 'cv':0}, None)
