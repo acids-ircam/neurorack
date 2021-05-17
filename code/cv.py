@@ -151,5 +151,5 @@ class CVChannels(ProcessInput):
         print("    Conversion Rate = {:8.2f} sps   (estimated)".format(rate_actual))
 
 if __name__ == "__main__":
-    cv = CVChannels()
+    cv = CVChannels(None)
     cv.read_loop()

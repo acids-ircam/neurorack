@@ -45,25 +45,25 @@ class Rotary(ProcessInput):
                             Maximum fraction of LED will be on
         '''
         super().__init__('rotary')
-        self._i2r_address = i2c_addr
+        self._i2c_address = i2c_addr
         self._rgb_pins = rgb_pins
         self._enc_pins = enc_pins
         self._brightness = brightness
         # Period to get 0-255 range in brightness
         self._period = int(255.0 / brightness)
-        self._ioe = io.IOE(i2c_addr=self.i2c_addr, interrupt_pin=8)
+        self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=8)
         # Swap the interrupt pin for the Rotary Encoder breakout
-        if self._i2r_address == 0x0F:
-            self.ioe.enable_interrupt_out(pin_swap=True)
-        self.ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
-        self.ioe.set_pwm_period(self._period)
+        if self._i2c_address == 0x0F:
+            self._ioe.enable_interrupt_out(pin_swap=True)
+        self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
+        self._ioe.set_pwm_period(self._period)
         # self.ioe.on_interrupt(callback)
         # PWM as fast as we can to avoid LED flicker
-        self.ioe.set_pwm_control(divider=2) 
+        self._ioe.set_pwm_control(divider=2) 
         # Set RGB modes
-        self.ioe.set_mode(self._rgb_pins[0], io.PWM, invert=True)
-        self.ioe.set_mode(self._rgb_pins[1], io.PWM, invert=True)
-        self.ioe.set_mode(self._rgb_pins[2], io.PWM, invert=True)
+        self._ioe.set_mode(self._rgb_pins[0], io.PWM, invert=True)
+        self._ioe.set_mode(self._rgb_pins[1], io.PWM, invert=True)
+        self._ioe.set_mode(self._rgb_pins[2], io.PWM, invert=True)
         # Current position value
         self._position = 0
         # Current RGB values
@@ -76,9 +76,9 @@ class Rotary(ProcessInput):
         for i in range(360):
             h = i / 360.0
             self._r, self._g, self._b = [int(i * self._period * self._brightness) for i in colorsys.hsv_to_rgb(h, 1.0, 1.0)]
-            self.ioe.output(self._rgb_pins[0], self._r)
-            self.ioe.output(self._rgb_pins[1], self._g)
-            self.ioe.output(self._rgb_pins[2], self._b)           
+            self._ioe.output(self._rgb_pins[0], self._r)
+            self._ioe.output(self._rgb_pins[1], self._g)
+            self._ioe.output(self._rgb_pins[2], self._b)           
             time.sleep(0.5 / 360.0)
         
     def callback(self, state, queue):
@@ -96,7 +96,7 @@ class Rotary(ProcessInput):
         self.startup_animation()
         while True:
             #if self.ioe.get_interrupt():
-            new_pos = self.ioe.read_rotary_encoder(1)
+            new_pos = self._ioe.read_rotary_encoder(1)
             if (new_pos == self._position):
                 time.sleep(1.0 / 30)
                 continue
@@ -106,9 +106,9 @@ class Rotary(ProcessInput):
             h = (self._position % 360) / 360.0
             # Compute new RGB values
             self._r, self._g, self._b = [int(c * self._period * self._brightness) for c in colorsys.hsv_to_rgb(h, 1.0, 1.0)]
-            self.ioe.output(self._rgb_pins[0], self._r)
-            self.ioe.output(self._rgb_pins[1], self._g)
-            self.ioe.output(self._rgb_pins[2], self._b)
+            self._ioe.output(self._rgb_pins[0], self._r)
+            self._ioe.output(self._rgb_pins[1], self._g)
+            self._ioe.output(self._rgb_pins[2], self._b)
             print('Rotary moved - %i - %i,%i,%i'%(self._position, self._r, self._g, self._b))
             
 if __name__ == '__main__':
@@ -117,5 +117,5 @@ if __name__ == '__main__':
     #gpio.setmode(gpio.BOARD)
     #gpio.setup(24, gpio.IN)
     #gpio.add_event_detect(24, gpio.BOTH, callback=activate_reading)
-    rotary = Rotary()
+    rotary = Rotary(None)
     rotary.callback({'rotary':0}, None)
