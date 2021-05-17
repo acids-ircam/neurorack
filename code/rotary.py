@@ -79,7 +79,7 @@ class Rotary(ProcessInput):
             self._ioe.output(self._rgb_pins[0], self._r)
             self._ioe.output(self._rgb_pins[1], self._g)
             self._ioe.output(self._rgb_pins[2], self._b)           
-            time.sleep(0.5 / 360.0)
+            time.sleep(0.1 / 360.0)
         
     def callback(self, state, queue):
         '''
