@@ -43,10 +43,10 @@ class Button(InterruptInput):
         self._signal = signal
         GPIO.setwarnings(False)                                     
         GPIO.setmode(GPIO.BOARD)                                      
-        for pin in self.pins:
+        for pin in self._pins:
             GPIO.setup(pin, GPIO.IN)    
             GPIO.add_event_detect(pin, GPIO.RISING, callback=self.callback, bouncetime=self._debounce)
-            GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.callback_fall, bouncetime=self._debounce)
+            #GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.callback_fall, bouncetime=self._debounce)
     
     def callback(self, channel: int):
         print("Button event - pushed")
@@ -65,7 +65,9 @@ class Button(InterruptInput):
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    button = Button()
-    button.callback()
+    button = Button(None)
+    while True:
+        print('Loop')
+        time.sleep(1)
 
     
