@@ -5,9 +5,11 @@
  
  This file contains the code for the main class in the Neurorack
  
- Author               : Philippe Esling, Ninon Devis, Martin Vert
-                        <{esling, devis}@ircam.fr>
-
+ Author               :  Ninon Devis, Philippe Esling, Martin Vert
+                        <{devis, esling}@ircam.fr>
+ 
+ All authors contributed equally to the project and are listed aphabetically.
+ 
 """
 
 import Jetson.GPIO as GPIO

@@ -7,8 +7,10 @@
  This dialogs are items that take the full screen for interaction.
  Examples are "confirm" (ok/cancel) or "spinner" (loading) dialogs
  
- Author               : Philippe Esling, Ninon Devis, Martin Vert
-                        <{esling, devis}@ircam.fr>
+ Author               :  Ninon Devis, Philippe Esling, Martin Vert
+                        <{devis, esling}@ircam.fr>
+ 
+ All authors contributed equally to the project and are listed aphabetically.
 
 """
 

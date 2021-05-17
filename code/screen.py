@@ -5,8 +5,10 @@
  
  This file contains the main process for using the LCD display.
  
- Author               : Philippe Esling, Ninon Devis, Martin Vert
-                        <{esling, devis}@ircam.fr>
+ Author               :  Ninon Devis, Philippe Esling, Martin Vert
+                        <{devis, esling}@ircam.fr>
+ 
+ All authors contributed equally to the project and are listed aphabetically.
 
 """
 
@@ -83,6 +85,7 @@ class Screen(ProcessInput):
         # Perform initial settings
         self.reset_screen()
         self.init_text_properties()
+        # 
         self._mode = SCREEN_MODE_INIT
 
     def reset_screen(self):
