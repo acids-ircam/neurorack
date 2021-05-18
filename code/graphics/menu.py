@@ -160,6 +160,8 @@ class Menu(ScrollableGraphicScene):
                 if self._selected_index == self._max_index - 1: 
                     self._scroll_start +=1
                 self._selected_index += 1
+                prrnt('yasss')
+                print(self._selected_index)
                 self._elements[self._selected_index]._selected = True
                 return
             if (event_type == 'rotary' and direction < 0):
