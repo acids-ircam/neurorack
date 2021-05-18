@@ -152,7 +152,8 @@ class Screen(ProcessInput):
         self._mode = SCREEN_MODE_MAIN
         # Perform display loop
         while True:
-            self._signal.wait(1)
+            self._signal.wait(1.0)
+            print('Screen - ' + str(self._signal.is_set()))
             self._signal.clear()
             self.clean_screen()
             cur_stats = self._stats.retrieve_stats()
