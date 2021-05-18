@@ -41,9 +41,12 @@ class CVChannels(ProcessInput):
                             List of channel references to read
         '''
         super().__init__('cv')
+        # Set signaling
         self._callback = callback
         self._signal = signal
+        # Configure I2C addresses and channels
         self._i2c_addresses = i2c_addr
+        self._channels = channels
         self._cvs = []
         for address in i2c_addr:
             c = ADS1015(address)
@@ -154,4 +157,4 @@ class CVChannels(ProcessInput):
 
 if __name__ == "__main__":
     cv = CVChannels(None)
-    cv.read_loop()
+    cv.callback()

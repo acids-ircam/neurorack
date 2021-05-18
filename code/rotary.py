@@ -103,7 +103,7 @@ class Rotary(ProcessInput):
         while True:
             new_pos = self._ioe.read_rotary_encoder(1)
             if (new_pos == self._position):
-                time.sleep(0.001)
+                time.sleep(0.02)
                 continue
             # Update position
             self._position = new_pos
@@ -111,7 +111,7 @@ class Rotary(ProcessInput):
             state['rotary'] = self._position
             # Signal other components
             if (self._callback is not None):
-                self._callback(channel, value)
+                self._callback(0, new_pos)
             if (self._signal is not None):
                 self._signal.set()
             h = (self._position % 360) / 360.0
