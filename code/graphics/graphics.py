@@ -81,7 +81,7 @@ class GraphicScene(Graphic):
             width += e.get_width()
         return width
     
-class ScrollableGraphicScene(Graphic):
+class ScrollableGraphicScene(GraphicScene):
     
     def __init__(self,
                  x:int = config.screen.main_x, 
