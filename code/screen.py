@@ -166,5 +166,5 @@ class Screen(ProcessInput):
             time.sleep(.02)
 
 if __name__ == '__main__':
-    screen = Screen()
+    screen = Screen(None)
     screen.callback({'rotary':0, 'cv':0}, None)
