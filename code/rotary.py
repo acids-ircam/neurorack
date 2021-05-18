@@ -97,7 +97,7 @@ class Rotary(ProcessInput):
                 delay:      [int], optional
                             Specifies the wait delay between read operations [default: 0.001s]
         '''
-        self.startup_animation()
+        #self.startup_animation()
         while True:
             if self._ioe.get_interrupt():
                 print('Yaaaaay')
