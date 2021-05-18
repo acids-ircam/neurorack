@@ -19,6 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.st7789 as st7789
 from parallel import ProcessInput
 from graphics.utils import get_resized_image
+from graphics.graphics import GraphicScene, TextGraphic
 from stats import Stats
 from multiprocessing import Event
 from config import config
@@ -83,8 +84,9 @@ class Screen(ProcessInput):
         self._background = background
         # Object for system statistics
         self._stats = Stats()
-        # Perform initial settings
+        # Reset the screen rendering
         self.reset_screen()
+        # Initialize text properties
         self.init_text_properties()
         # Set initial screen mode
         self._mode = config.screen.mode_init
@@ -118,12 +120,22 @@ class Screen(ProcessInput):
         '''
             Init the global text properties (shared across )
         '''
-        # Define some constants to allow easy positioning of text.
-        self.padding = -2
-        self.x_text = 0
         # Load a TTF font (needs to be in same directory as script)
-        self.font = ImageFont.truetype(config.text.font_main, 16)
-        self.font_big = ImageFont.truetype(config.text.font_main, 32)
+        self._font = ImageFont.truetype(config.text.font_main, config.text.size_main)
+        self._font_big = ImageFont.truetype(config.text.font_main, config.text.size_big)
+        
+    def init_graphic_scenes(self, state):
+        self._main_scene = GraphicScene(
+            x = config.screen.main_x,
+            y = config.screen.padding,
+            absolute = True,
+            elements = [TextGraphic(state['ip']),
+                        TextGraphic(state['cpu']),
+                        TextGraphic(state['memory']),
+                        TextGraphic(state['disk']),
+                        TextGraphic(state['temperature']),
+                        TextGraphic(state['rotary'], font=self._font_big, color=config.text.color_alt)]
+            )
 
     def startup_animation(self):
         header = 'Neurorack'
@@ -143,7 +155,25 @@ class Screen(ProcessInput):
     def draw_cvs(self, state, y):
         cv_vals = state['cv']
         
+    def perform_update(self, state):
+        self._cur_stats = self._stats.retrieve_stats()
+        state['ip'] = self._cur_stats[0]
+        state['cpu'] = self._cur_stats[1]
+        state['memory'] = self._cur_stats[2]
+        state['disk'] = self._cur_stats[3]
+        state['temperature'] = self._cur_stats[4]
+        
+    def button_callback(self):
+        if (self._mode == config.screen.mode_main):
+            self._mode = config.screen.mode_menu
+        if (self._mode == config.screen.mode_menu):
+            self._menu_scene.button_callback()
+        
     def callback(self, state, queue):
+        # Perform a first heavy update
+        self.perform_update(state)
+        # Initialize all graphic scenes
+        self.init_graphic_scenes(state)
         # Begin screen startup animation
         # self.startup_animation()
         self._mode = config.screen.mode_main
@@ -155,15 +185,14 @@ class Screen(ProcessInput):
                 self._signal.clear()
             else:
                 # Otherwise we can do heavy processing
-                cur_stats = self._stats.retrieve_stats()
+                if (self._mode == config.screen.mode_main):
+                    self.perform_update(state)
             self.clean_screen()
             # Write four lines of text.
-            y = self.padding
-            for s in cur_stats:
-                self._draw.text((self.x_text, y), s, font = self.font, fill="#FFFFFF")
-                y += self.font.getsize(s)[1]
-            self._draw.text((self.x_text, y), str(state['rotary']), font = self.font_big, fill="#FF0000")
-            #self.draw_cvs(state, y)
+            if (self._mode == config.screen.mode_main):
+                self._main_scene.render()
+            elif (self._mode == config.screen.mode_menu):
+                self._menu_scene.render()
             # Display image.
             self._disp.image(self._image)
 

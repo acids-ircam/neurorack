@@ -107,6 +107,7 @@ class Neurorack():
             Callback for handling events from the button
         '''
         print('Button callback')
+        self._screen.button_callback()
         self._signal_screen.set()
     
     def callback_cv(self, channel, value):
