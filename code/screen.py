@@ -20,7 +20,7 @@ import adafruit_rgb_display.st7789 as st7789
 from parallel import ProcessInput
 from graphics.utils import get_resized_image
 from stats import Stats
-from threading import Event
+from multiprocessing import Event
 
 SCREEN_MODE_INIT = 0
 SCREEN_MODE_MAIN = 1

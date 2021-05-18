@@ -17,7 +17,7 @@ import colorsys
 import ioexpander as io
 import Jetson.GPIO as GPIO
 from parallel import ProcessInput
-from threading import Event
+from multiprocessing import Event
 
 class Rotary(ProcessInput):
     '''

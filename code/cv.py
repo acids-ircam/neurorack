@@ -16,7 +16,7 @@
 import time
 from ads1015 import ADS1015
 from parallel import ProcessInput
-from threading import Event
+from multiprocessing import Event
 
 class CVChannels(ProcessInput):
     '''

@@ -20,7 +20,7 @@ import numpy as np
 import sounddevice as sd
 from parallel import ProcessInput
 from models.ddsp import DDSP
-from threading import Event
+from multiprocessing import Event
 
 class Audio(ProcessInput):
     '''

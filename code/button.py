@@ -14,7 +14,7 @@
 import time
 import Jetson.GPIO as GPIO
 from parallel import InterruptInput
-from threading import Event
+from multiprocessing import Event
 
 class Button(InterruptInput):    
     '''
