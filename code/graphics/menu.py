@@ -16,6 +16,7 @@
 """
 import yaml
 from .graphics import GraphicScene
+from .config import config
 
 class Menu(GraphicScene):
     '''
@@ -23,20 +24,20 @@ class Menu(GraphicScene):
         Handles loading and running the menu and commands. 
     '''
     
-    def __init__(self, config = "./menu.yaml"):
+    def __init__(self, config_file = "./menu.yaml"):
         '''
             Constructor. Creates a new instance of the ContollerMenu class. 
             Paramters: 
                 config:     str
                             Name of the config file for the controller menu. Defaults to ./controllerMenu.yaml. 
         '''
-        self._config_file = config
+        self._config_file = config_file
         self._config = None
         self._root_menu = None
         self._items = {}
         self._current_items = []
         self._history = [""]
-        self._mode = MENU_MODE_BASIC
+        self._mode = config.menu.mode_basic
         # Scrolling properties
         self._scroll_start = 0
         self._scroll_down = False
@@ -76,7 +77,7 @@ class Menu(GraphicScene):
                             contained in Display.Items will be used. If specified, the supplied list will be stored in 
                             Display.Items. 
         """
-        self._mode = MENU_MODE_BASIC
+        self._mode = config.menu.mode_basic
         self._scroll_down = False
         self._scroll_up = self._scroll_start > 0
         idx = self._scroll_start
@@ -142,9 +143,9 @@ class Menu(GraphicScene):
                 confirmState:   int
                                 The confirm state. Either CONFIRM_OK or CONFIRM_CANCEL
         """
-        if confirmState == CONFIRM_CANCEL: self.__disp.DrawMenu()
+        if confirmState == config.menu.confirm_cancel: self.__disp.DrawMenu()
         else:
-            command.Run(display=self.__disp, confirmed=CONFIRM_OK)    
+            command.Run(display=self.__disp, confirmed=config.menu.confirm_ok)    
         
     def Spinner(self, run=True):
         """
@@ -231,11 +232,6 @@ class MenuItem():
     '''
     Represents a menu item
     '''
-
-    builtInCommands: dict = {
-        "sysInfo": SysInfo,
-        "netInfo": NetInfo
-    }
 
     #region constructor
     def __init__(self, 
