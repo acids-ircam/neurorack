@@ -138,7 +138,7 @@ class Screen(ProcessInput):
                         TextGraphic(state['memory']),
                         TextGraphic(state['disk']),
                         TextGraphic(state['temperature']),
-                        TextGraphic(state['rotary'], font=self._font_big, color=config.text.color_alt)]
+                        TextGraphic(str(state['rotary']), font=self._font_big, color=config.text.color_alt)]
             )
 
     def startup_animation(self):
