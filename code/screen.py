@@ -175,20 +175,18 @@ class Screen(ProcessInput):
         state['stats']['memory'].value =  self._cur_stats[2]
         state['stats']['disk'].value = self._cur_stats[3]
         state['stats']['temperature'].value = self._cur_stats[4]
-        
-    def button_callback(self, state):
+    
+    def handle_signal_event(self, state):
         mode = state["screen"]["mode"].value
-        if (mode == config.screen.mode_main):
-            state["screen"]["mode"].value = config.screen.mode_menu
-        if (mode == config.screen.mode_menu):
-            self._menu_scene.navigation_callback(state, 'button')
-            
-    def rotary_callback(self, state):
-        print('Inside screen')
-        mode = state["screen"]["mode"].value
-        if (mode == config.screen.mode_menu):
+        if (state["screen"]["event"].value == config.events.button):
+            if (mode == config.screen.mode_main):
+                state["screen"]["mode"].value = config.screen.mode_menu
+            if (mode == config.screen.mode_menu):
+                self._menu_scene.navigation_callback(state, 'button')
+        if (state["screen"]["event"].value == config.events.rotary and mode == config.screen.mode_menu):
             self._menu_scene.navigation_callback(state, 'rotary')
-        
+        state["screen"]["event"]
+    
     def callback(self, state, queue):
         # Perform a first heavy update
         self.perform_update(state)
@@ -203,6 +201,7 @@ class Screen(ProcessInput):
             if (self._signal.is_set()):
                 # The refresh comes from an external signal
                 self._signal.clear()
+                self.handle_signal_event(state)
             else:
                 # Otherwise we can do heavy processing
                 if (state["screen"]["mode"].value == config.screen.mode_main):

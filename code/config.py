@@ -21,6 +21,11 @@ class config:
         padding     = -2
         main_x      = 0
         bg_image    = './data/acids.png'
+    
+    class events:
+        none        = -1
+        button      = 0
+        rotary      = 1
 
     # Add the graphics classes
     colors = graph_cfg.colors

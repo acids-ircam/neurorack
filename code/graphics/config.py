@@ -34,3 +34,8 @@ class config:
         msg_code        = "Return Code: %x"
         msg_output      = "Output:"
         accepted_types  = ["builtin", "list", "parameter", "shell"]
+    
+    class events:
+        none        = -1
+        button      = 0
+        rotary      = 1

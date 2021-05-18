@@ -13,6 +13,7 @@
 """
 
 import Jetson.GPIO as GPIO
+from config import config
 from rotary import Rotary
 from cv import CVChannels
 from audio import Audio
@@ -81,6 +82,7 @@ class Neurorack():
         # Screen-related parameters (dict)
         self._state['screen'] = self._manager.dict()
         self._state['screen']['mode'] = self._manager.Value(int, 0)
+        self._state['screen']['event'] = self._manager.Value(int, 0)
         # Audio-related parameters (dict)
         self._state['audio'] = self._manager.dict()
         # Stats (cpu, memory) computing
@@ -119,7 +121,7 @@ class Neurorack():
             Callback for handling events from the button
         '''
         print('Button callback')
-        self._screen.button_callback(self._state)
+        self._state["screen"]["event"] = config.events.button
         self._signal_screen.set()
     
     def callback_cv(self, channel, value):
@@ -133,7 +135,7 @@ class Neurorack():
             Callback for handling events from the rotary
         '''
         print('Rotary callback')
-        self._screen.rotary_callback(self._state)
+        self._state["screen"]["event"] = config.events.rotary
         self._signal_screen.set()
         
     def callback_screen(self, channel, value):
