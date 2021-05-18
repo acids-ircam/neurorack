@@ -98,7 +98,7 @@ class Screen(ProcessInput):
         # Get drawing object to draw on image.
         self._draw = ImageDraw.Draw(self._image)
         if (self._background):
-            self._bg_image = get_resized_image('data/acids.png', self._width, self._height)
+            self._bg_image = get_resized_image(config.screen.bg_image, self._width, self._height)
             self._image.paste(self._bg_image)
         else:
             # Draw a black filled box to clear the image.
@@ -122,8 +122,8 @@ class Screen(ProcessInput):
         self.padding = -2
         self.x_text = 0
         # Load a TTF font (needs to be in same directory as script)
-        self.font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 16)
-        self.font_big = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 32)
+        self.font = ImageFont.truetype(config.text.font_main, 16)
+        self.font_big = ImageFont.truetype(config.text.font_main, 32)
 
     def startup_animation(self):
         header = 'Neurorack'
