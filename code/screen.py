@@ -195,6 +195,8 @@ class Screen(ProcessInput):
         # Begin screen startup animation
         # self.startup_animation()
         self._mode = config.screen.mode_main
+        print('End init screen')
+        print(self._mode)
         # Perform display loop
         while True:
             self._signal.wait(1.0)
@@ -205,6 +207,8 @@ class Screen(ProcessInput):
                 # Otherwise we can do heavy processing
                 if (self._mode == config.screen.mode_main):
                     self.perform_update(state)
+            print('In loop')
+            print(self._mode)
             self.clean_screen()
             # Write four lines of text.
             if (self._mode == config.screen.mode_main):
