@@ -80,11 +80,11 @@ class Neurorack():
         self._state['menu'] = 0
         self._state['audio'] = 0
         self._state['stats'] = self._manager.dict()
-        self._state['stats']['ip'] = Value(c_char_p, "ip".encode('utf-8'))
-        self._state['stats']['cpu'] =  Value(c_char_p, "cpu".encode('utf-8'))
-        self._state['stats']['memory'] =  Value(c_char_p, "memory".encode('utf-8'))
-        self._state['stats']['disk'] =  Value(c_char_p, "disk".encode('utf-8'))
-        self._state['stats']['temperature'] =  Value(c_char_p, "temperature".encode('utf-8'))
+        self._state['stats']['ip'] = self._manager.Value(c_char_p, "ip".encode('utf-8'))
+        self._state['stats']['cpu'] =  self._manager.Value(c_char_p, "cpu".encode('utf-8'))
+        self._state['stats']['memory'] =  self._manager.Value(c_char_p, "memory".encode('utf-8'))
+        self._state['stats']['disk'] =  self._manager.Value(c_char_p, "disk".encode('utf-8'))
+        self._state['stats']['temperature'] =  self._manager.Value(c_char_p, "temperature".encode('utf-8'))
         
     def set_signals(self):
         '''
