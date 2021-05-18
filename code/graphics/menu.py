@@ -153,7 +153,7 @@ class Menu(ScrollableGraphicScene):
             direction = state['rotary_delta'].value
         if (self._mode == config.menu.mode_basic):
             if (event_type == 'rotary' and direction > 0):
-                if self._selected_index == self.__max_index - 1 and self._scroll_down is False: 
+                if self._selected_index == self._max_index - 1 and self._scroll_down is False: 
                     return
                 self._elements[self.selected_index]._selected = False
                 if self.__selected_index == self._max_index - 1: 
