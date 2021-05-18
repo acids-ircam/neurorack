@@ -14,6 +14,7 @@
 import time
 import Jetson.GPIO as GPIO
 from parallel import InterruptInput
+from threading import Event
 
 class Button(InterruptInput):    
     '''
@@ -24,7 +25,6 @@ class Button(InterruptInput):
     
     def __init__(self, 
             callback: callable,
-            signal: any=None,
             pins: list=[11], 
             debounce: int=250):
         '''
@@ -32,8 +32,6 @@ class Button(InterruptInput):
             Parameters:
                 callbak:    [callable]
                             Outside function to call on button push
-                signal:     [any], optional 
-                            Eventual signal to wake up a thread waiting on button
                 pins:       [int], optional
                             Specify GPIO pins that connect buttons [default: 11]
                 debounce:   [int], optional
@@ -41,21 +39,25 @@ class Button(InterruptInput):
         '''
         self._pins = pins
         self._debounce = debounce
+        # Setup button callback 
         self._callback = callback
-        self._signal = signal
+        # Create our own event signal
+        self._signal = Event()
         GPIO.setwarnings(False)                                     
         GPIO.setmode(GPIO.BOARD)                                      
         for pin in self._pins:
             GPIO.setup(pin, GPIO.IN)    
-            GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.callback, bouncetime=self._debounce)
+            GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.callback_event, bouncetime=self._debounce)
     
-    def callback(self, channel: int):
+    def callback_event(self, channel: int):
         print("Button event - pushed")
         value = GPIO.input(channel)
         if (self._callback is not None):
             self._callback(channel, value)
-        if (self._signal is not None):
-            self._signal.set()
+            
+    def callback(self, state, queue, delay=0.001):
+        while not self._signal.is_set():
+            self._signal.wait()
 
     def __del__(self):
         '''
