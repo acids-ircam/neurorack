@@ -13,6 +13,7 @@
 
 """
 
+import multiprocessing
 from config import config
 from .utils import get_resized_image
 from PIL import ImageFont
@@ -123,6 +124,24 @@ class TextGraphic(Graphic):
     
     def get_width(self):
         return self._font.getsize(self._text)[0]
+    
+class DynamicTextGraphic(TextGraphic):
+    
+    def __init__(self, 
+                 text:multiprocessing.Value,
+                 x:int = config.screen.main_x, 
+                 y:int = config.screen.padding,
+                 absolute: bool = False,
+                 font: ImageFont = None,
+                 color: str = config.text.color_main,
+                 selected: bool = False):
+        super().__init__('', x, y, absolute, font, color, selected)
+        self._dynamic_text = text
+        self._text = text.value
+    
+    def render(self, ctx=None):
+        self._text = self._dynamic_text.value
+        return super().render(ctx)
         
 class ImageGraphic(Graphic):
     

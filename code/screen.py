@@ -19,7 +19,7 @@ from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.st7789 as st7789
 from parallel import ProcessInput
 from graphics.utils import get_resized_image
-from graphics.graphics import GraphicScene, TextGraphic
+from graphics.graphics import GraphicScene, TextGraphic, DynamicTextGraphic
 from stats import Stats
 from multiprocessing import Event
 from config import config
@@ -133,11 +133,11 @@ class Screen(ProcessInput):
             x = config.screen.main_x,
             y = config.screen.padding,
             absolute = True,
-            elements = [TextGraphic(state['ip']),
-                        TextGraphic(state['cpu']),
-                        TextGraphic(state['memory']),
-                        TextGraphic(state['disk']),
-                        TextGraphic(state['temperature']),
+            elements = [DynamicTextGraphic(state['ip']),
+                        DynamicTextGraphic(state['cpu']),
+                        DynamicTextGraphic(state['memory']),
+                        DynamicTextGraphic(state['disk']),
+                        DynamicTextGraphic(state['temperature']),
                         TextGraphic(str(state['rotary']), font=self._font_big, color=config.text.color_alt)]
             )
 
@@ -161,11 +161,11 @@ class Screen(ProcessInput):
         
     def perform_update(self, state):
         self._cur_stats = self._stats.retrieve_stats()
-        state['ip'] = self._cur_stats[0]
-        state['cpu'] = self._cur_stats[1]
-        state['memory'] = self._cur_stats[2]
-        state['disk'] = self._cur_stats[3]
-        state['temperature'] = self._cur_stats[4]
+        state['ip'] = multiprocessing.Value(self._cur_stats[0])
+        state['cpu'] =  multiprocessing.Value(self._cur_stats[1])
+        state['memory'] =  multiprocessing.Value(self._cur_stats[2])
+        state['disk'] =  multiprocessing.Value(self._cur_stats[3])
+        state['temperature'] =  multiprocessing.Value(self._cur_stats[4])
         
     def button_callback(self):
         if (self._mode == config.screen.mode_main):
