@@ -21,7 +21,7 @@ from parallel import ProcessInput
 from graphics.utils import get_resized_image
 from stats import Stats
 from multiprocessing import Event
-import config as config
+import .config as config
 
 class Screen(ProcessInput):
     '''
