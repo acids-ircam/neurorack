@@ -145,10 +145,11 @@ class Screen(ProcessInput):
                         DynamicTextGraphic(state['rotary'], font=self._font_large, color=config.text.color_main)]
             )
         self._menu_scene = Menu(
+            config_file = "./menu.yaml",
             x = config.screen.main_x,
             y = config.screen.padding,
             height = self._height,
-            width = self.width,
+            width = self._width,
             absolute = True)
 
     def startup_animation(self):

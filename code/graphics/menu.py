@@ -24,7 +24,13 @@ class Menu(GraphicScene):
         Handles loading and running the menu and commands. 
     '''
     
-    def __init__(self, config_file = "./menu.yaml"):
+    def __init__(self, 
+                 config_file = "./menu.yaml",
+                 x:int = 0,
+                 y:int = 0,
+                 height = 240,
+                 width = 180,
+                 absolute = True):
         '''
             Constructor. Creates a new instance of the ContollerMenu class. 
             Paramters: 
