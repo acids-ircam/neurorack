@@ -163,6 +163,7 @@ class Screen(ProcessInput):
         
     def perform_update(self, state):
         self._cur_stats = self._stats.retrieve_stats()
+        print(state)
         state['stats']['ip'].value = self._cur_stats[0]
         state['stats']['cpu'].value = self._cur_stats[1]
         state['stats']['memory'].value =  self._cur_stats[2]
