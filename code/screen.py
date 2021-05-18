@@ -39,7 +39,7 @@ class Screen(ProcessInput):
                  rotation: int = 180,
                  x_offset: int = 0,
                  y_offset: int = 80,
-                 background:bool = True):
+                 background:bool = False):
         '''
             Constructor - Initialize the screen object
             Parameters:
