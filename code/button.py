@@ -67,6 +67,6 @@ class Button(InterruptInput):
 
 if __name__ == '__main__':
     button = Button(None)
-    button.callback()
+    button.callback(None, None)
 
     
