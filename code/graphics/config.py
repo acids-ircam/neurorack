@@ -25,6 +25,7 @@ class config:
         mode_hidden     = 3
         confirm_cancel  = 0
         confirm_ok      = 1
+        back_element    = "< Back"
         msg_ok          = "OK"
         msg_cancel      = "CANCEL"
         msg_run         = "You are about to run"

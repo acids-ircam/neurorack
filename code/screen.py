@@ -177,12 +177,17 @@ class Screen(ProcessInput):
         state['stats']['temperature'].value = self._cur_stats[4]
         
     def button_callback(self, state):
-        print('Inside screen')
         mode = state["screen"]["mode"].value
         if (mode == config.screen.mode_main):
             state["screen"]["mode"].value = config.screen.mode_menu
         if (mode == config.screen.mode_menu):
-            self._menu_scene.button_callback(state)
+            self._menu_scene.navigation_callback(state, 'button')
+            
+    def rotary_callback(self, state):
+        print('Inside screen')
+        mode = state["screen"]["mode"].value
+        if (mode == config.screen.mode_menu):
+            self._menu_scene.navigation_callback(state, 'rotary')
         
     def callback(self, state, queue):
         # Perform a first heavy update
