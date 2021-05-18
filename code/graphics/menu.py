@@ -238,7 +238,7 @@ class MenuItem():
         self._running: bool = False
     
     @staticmethod
-    def create_item(data):
+    def create_item(title, data):
         """
             Deserialized a command from YAML. 
             Parameters:
@@ -254,6 +254,7 @@ class MenuItem():
             message = "Could not find attribute command"
             raise Exception(message)
         command = MenuItem(
+            title,
             type = data["type"],
             command = data["command"],
             confirm = data["confirm"] if "confirm" in data.keys() else False
