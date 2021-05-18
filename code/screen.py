@@ -179,10 +179,13 @@ class Screen(ProcessInput):
         state['stats']['temperature'].value = self._cur_stats[4]
         
     def button_callback(self):
+        print('Inside screen')
+        print(self._mode)
         if (self._mode == config.screen.mode_main):
             self._mode = config.screen.mode_menu
         if (self._mode == config.screen.mode_menu):
             self._menu_scene.button_callback()
+        print(self._mode)
         
     def callback(self, state, queue):
         # Perform a first heavy update
