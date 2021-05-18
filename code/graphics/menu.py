@@ -37,6 +37,7 @@ class Menu(ScrollableGraphicScene):
                 config:     str
                             Name of the config file for the controller menu. Defaults to ./controllerMenu.yaml. 
         '''
+        super().__init__(x, y, absolute, True, height, width)
         self._config_file = config_file
         self._config = None
         self._root_menu = None
