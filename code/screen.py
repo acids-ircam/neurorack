@@ -115,6 +115,10 @@ class Screen(ProcessInput):
             self._image.paste(self._bg_image)
         else:
             self._draw.rectangle((0, 0, self._width, self._height), outline=0, fill=(0, 0, 0))
+        self._ctx = {}
+        self._ctx['draw'] = self._draw
+        self._ctx['x'] = config.screen.main_x
+        self._ctx['y'] = config.screen.padding
 
     def init_text_properties(self):
         '''
@@ -190,9 +194,9 @@ class Screen(ProcessInput):
             self.clean_screen()
             # Write four lines of text.
             if (self._mode == config.screen.mode_main):
-                self._main_scene.render()
+                self._main_scene.render(self._ctx)
             elif (self._mode == config.screen.mode_menu):
-                self._menu_scene.render()
+                self._menu_scene.render(self._ctx)
             # Display image.
             self._disp.image(self._image)
 

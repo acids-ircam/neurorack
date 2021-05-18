@@ -14,7 +14,7 @@
 """
 
 from config import config
-from utils import get_resized_image
+from .utils import get_resized_image
 from PIL import ImageFont
 
 class Graphic():
@@ -63,7 +63,7 @@ class GraphicScene(Graphic):
 
     def render(self, ctx=None):
         if (self._absolute):
-            ctx.x, ctx.y = self._x, self._y
+            ctx["x"], ctx["y"] = self._x, self._y
         for e in self.elements:
             ctx = e.render(ctx)
         return ctx
@@ -104,15 +104,15 @@ class TextGraphic(Graphic):
     
     def render(self, ctx=None):
         color = self._color
-        x, y = ctx.x, ctx.y
+        x, y = ctx["x"], ctx["y"]
         if (self._absolute):
             x, y = self._x, self._y
         if (self._selected):
             color = config.text.color_select
-            ctx.draw.rectangle((x, y, self.get_width(), self.get_height()), outline=color, fill=config.colors.main)
-        ctx.draw.text((x, y), self._text, font = self._font, fill=color)
+            ctx["draw"].rectangle((x, y, self.get_width(), self.get_height()), outline=color, fill=config.colors.main)
+        ctx["draw"].text((x, y), self._text, font = self._font, fill=color)
         if (not self._absolute):
-            ctx.y += self.get_height()
+            ctx["y"] += self.get_height()
         return ctx
     
     def get_height(self):
@@ -141,12 +141,12 @@ class ImageGraphic(Graphic):
         color = self._color
         if (self._selected):
             color = config.text.color_select
-            ctx.draw.rectangle()
+            ctx["draw"].rectangle()
         if (self._absolute):
-            ctx.draw.text((ctx.x, ctx.y), self._text, font = self._font, fill=color)
+            ctx["draw"].text((ctx["x"], ctx["y"]), self._text, font = self._font, fill=color)
         else:
-            ctx.draw.text((ctx.x, ctx.y), self._text, font = self._font, fill=color)
-        ctx.y += self.get_height()
+            ctx["draw"].text((ctx["x"], ctx["y"]), self._text, font = self._font, fill=color)
+        ctx["y"] += self.get_height()
         return ctx
     
     def get_height(self):
