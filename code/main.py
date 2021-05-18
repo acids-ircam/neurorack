@@ -12,6 +12,7 @@
  
 """
 
+from screen import Screen
 import Jetson.GPIO as GPIO
 from rotary import Rotary
 from cv import CVChannels
@@ -37,20 +38,21 @@ class Neurorack():
         self.N_CVs = 6
         # Init states of information
         self.init_state()
+        # Need to import Screen after cleanup
+        #from screen import Screen
+        self.screen = Screen()
+        # Perform GPIO cleanup
+        GPIO.cleanup()
         # Create audio engine
         self.audio = Audio()
         # Create rotary
         self.rotary = Rotary(self.callback_rotary)
         # Create CV channels
         self.cvs = CVChannels(self.callback_cv)
-        # Create push button
-        GPIO.cleanup()
-        self.button = Button(self.callback_button)
-        # Perform GPIO cleanup
         # GPIO.cleanup()
-        # Need to import Screen after cleanup
-        #from screen import Screen
-        #self.screen = Screen()
+        GPIO.cleanup()
+        # Create push button
+        self.button = Button(self.callback_button)
         # List of objects to create processes
         self.objects = [self.audio, self.rotary, self.cvs, self.button]
         # Find number of CPUs
