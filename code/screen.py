@@ -156,14 +156,14 @@ class Screen(ProcessInput):
             print('Screen - ' + str(self._signal.is_set()))
             self._signal.clear()
             self.clean_screen()
-            cur_stats = self._stats.retrieve_stats()
+            #cur_stats = self._stats.retrieve_stats()
             # Write four lines of text.
             y = self.padding
-            for s in cur_stats:
-                self._draw.text((self.x_text, y), s, font = self.font, fill="#FFFFFF")
-                y += self.font.getsize(s)[1]
+            #for s in cur_stats:
+            #    self._draw.text((self.x_text, y), s, font = self.font, fill="#FFFFFF")
+            #    y += self.font.getsize(s)[1]
             self._draw.text((self.x_text, y), str(state['rotary']), font = self.font_big, fill="#FF0000")
-            self.draw_cvs(state, y)
+            #self.draw_cvs(state, y)
             # Display image.
             self._disp.image(self._image)
 
