@@ -15,6 +15,7 @@
 import time
 import colorsys
 import ioexpander as io
+import Jetson.GPIO as GPIO
 from parallel import ProcessInput
 
 class Rotary(ProcessInput):
@@ -53,13 +54,18 @@ class Rotary(ProcessInput):
         self._brightness = brightness
         # Period to get 0-255 range in brightness
         self._period = int(255.0 / brightness)
-        self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=8)
+        self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=None)
         # Swap the interrupt pin for the Rotary Encoder breakout
         if self._i2c_address == 0x0F:
-            self._ioe.enable_interrupt_out(pin_swap=True)
+            self._ioe.enable_interrupt_out(pin_swap=False)
         self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
         self._ioe.set_pwm_period(self._period)
+        GPIO.cleanup()
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(16, GPIO.IN)
+        GPIO.add_event_detect(16, GPIO.BOTH, callback=test, bouncetime=1)        
         # self.ioe.on_interrupt(callback)
+        self._ioe.clear_interrupt()
         # PWM as fast as we can to avoid LED flicker
         self._ioe.set_pwm_control(divider=2) 
         # Set RGB modes
@@ -96,8 +102,11 @@ class Rotary(ProcessInput):
                             Specifies the wait delay between read operations [default: 0.001s]
         '''
         self.startup_animation()
+        #self._ioe.on_interrupt(self.test)
         while True:
-            #if self.ioe.get_interrupt():
+            #if self._ioe.get_interrupt():
+            #    print('Yaaaaaaay cacacacacaca')
+            
             new_pos = self._ioe.read_rotary_encoder(1)
             if (new_pos == self._position):
                 time.sleep(1.0 / 30)
@@ -112,7 +121,10 @@ class Rotary(ProcessInput):
             self._ioe.output(self._rgb_pins[1], self._g)
             self._ioe.output(self._rgb_pins[2], self._b)
             print('Rotary moved - %i - %i,%i,%i'%(self._position, self._r, self._g, self._b))
-            
+
+def test(self):
+    print('yyyyyaaaaaay caca')
+        
 if __name__ == '__main__':
     #import Jetson.GPIO as gpio
     #gpio.setwarnings(False)
