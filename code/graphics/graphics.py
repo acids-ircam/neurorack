@@ -140,7 +140,6 @@ class DynamicTextGraphic(TextGraphic):
         self._text = text.value
     
     def render(self, ctx=None):
-        print(self.)
         self._text = str(self._dynamic_text.value)
         return super().render(ctx)
         
