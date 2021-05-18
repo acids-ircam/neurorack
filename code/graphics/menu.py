@@ -268,7 +268,7 @@ class MenuItem():
     #endregion
 
     #region public instance methods
-    def Run(self, display: Display, confirmed=CONFIRM_CANCEL):
+    def Run(self, display: Display, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:
@@ -306,7 +306,7 @@ class MenuItem():
 
     #region public class (static) methods
     @staticmethod
-    def create_item(data) -> MenuItem:
+    def create_item(data):
         """
             Deserialized a command from YAML. 
             Parameters:
