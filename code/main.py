@@ -79,7 +79,7 @@ class Neurorack():
         self._state['button'] = 0
         self._state['menu'] = 0
         self._state['audio'] = 0
-        self._state['stats'] = self._manager.list(5)
+        self._state['stats'] = self._manager.dict()
         self._state['stats']['ip'] = Value(c_char_p, "-".encode('utf-8'))
         self._state['stats']['cpu'] =  Value(c_char_p, "-".encode('utf-8'))
         self._state['stats']['memory'] =  Value(c_char_p, "-".encode('utf-8'))

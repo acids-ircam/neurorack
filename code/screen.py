@@ -135,11 +135,11 @@ class Screen(ProcessInput):
             x = config.screen.main_x,
             y = config.screen.padding,
             absolute = True,
-            elements = [DynamicTextGraphic(state['ip']),
-                        DynamicTextGraphic(state['cpu']),
-                        DynamicTextGraphic(state['memory']),
-                        DynamicTextGraphic(state['disk']),
-                        DynamicTextGraphic(state['temperature']),
+            elements = [DynamicTextGraphic(state['stats']['ip']),
+                        DynamicTextGraphic(state['stats']['cpu']),
+                        DynamicTextGraphic(state['stats']['memory']),
+                        DynamicTextGraphic(state['stats']['disk']),
+                        DynamicTextGraphic(state['stats']['temperature']),
                         TextGraphic(str(state['rotary']), font=self._font_big, color=config.text.color_alt)]
             )
 
