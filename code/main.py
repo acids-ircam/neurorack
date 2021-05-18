@@ -51,11 +51,11 @@ class Neurorack():
         # Create push button
         self._button = Button(self.callback_button)
         # List of objects to create processes
-        self._objects = [self.audio, self.screen, self.rotary, self.cvs, self.button]
+        self._objects = [self._audio, self._screen, self._rotary, self._cvs, self._button]
         # Find number of CPUs
         self._nb_cpus = mp.cpu_count()
         # Create a pool of jobs
-        self._pool = mp.Pool(self.nb_cpus)
+        self._pool = mp.Pool(self._nb_cpus)
         # Handle signal informations
         self.set_signals()
         # Create a queue for sharing information
