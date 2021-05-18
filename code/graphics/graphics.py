@@ -153,7 +153,7 @@ class TextGraphic(Graphic):
     
     def load(self, ctx=None):
         if (self._font is None):
-            self._font = ImageFont.truetype(config.text.font_main, config.text.size_main)
+            self._font = ImageFont.truetype(config.text.font_main, config.text.size_large)
         elif (type(self._font) == str):
             self._font = ImageFont.truetype(self._font, config.text.size_main)
         return ctx
