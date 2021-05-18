@@ -47,7 +47,7 @@ class Neurorack():
         GPIO.cleanup()
         self.button = Button(self.callback_button)
         # Perform GPIO cleanup
-        GPIO.cleanup()
+        # GPIO.cleanup()
         # Need to import Screen after cleanup
         from screen import Screen
         self.screen = Screen()
