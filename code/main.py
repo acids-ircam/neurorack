@@ -52,7 +52,7 @@ class Neurorack():
         from screen import Screen
         self.screen = Screen()
         # List of objects to create processes
-        self.objects = [self.audio, self.screen, self.rotary, self.cvs, self.button]
+        self.objects = [self.audio, self.rotary, self.cvs, self.button]
         # Find number of CPUs
         self.nb_cpus = mp.cpu_count()
         # Create a pool of jobs
