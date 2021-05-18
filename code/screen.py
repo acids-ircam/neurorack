@@ -148,10 +148,12 @@ class Screen(ProcessInput):
         
     def callback(self, state, queue):
         # Begin screen startup animation
-        self.startup_animation()
+        # self.startup_animation()
         self._mode = SCREEN_MODE_MAIN
         # Perform display loop
         while True:
+            self._signal.wait(1)
+            self._signal.clear()
             self.clean_screen()
             cur_stats = self._stats.retrieve_stats()
             # Write four lines of text.
@@ -163,7 +165,6 @@ class Screen(ProcessInput):
             self.draw_cvs(state, y)
             # Display image.
             self._disp.image(self._image)
-            time.sleep(.02)
 
 if __name__ == '__main__':
     screen = Screen(None)
