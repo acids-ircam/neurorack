@@ -200,10 +200,8 @@ class Screen(ProcessInput):
                 self._signal.clear()
             else:
                 # Otherwise we can do heavy processing
-                if (self._mode == config.screen.mode_main):
+                if (state["screen"]["mode"].value == config.screen.mode_main):
                     self.perform_update(state)
-            print('In loop')
-            print(self._mode)
             self.clean_screen()
             # Write four lines of text.
             if (state["screen"]["mode"].value == config.screen.mode_main):
