@@ -20,6 +20,7 @@ import adafruit_rgb_display.st7789 as st7789
 from parallel import ProcessInput
 from graphics.utils import get_resized_image
 from stats import Stats
+from threading import Event
 
 SCREEN_MODE_INIT = 0
 SCREEN_MODE_MAIN = 1
@@ -32,6 +33,7 @@ class Screen(ProcessInput):
     '''
     
     def __init__(self, 
+                 callback: callable,
                  height: int = 240,
                  rotation: int = 180,
                  x_offset: int = 0,
@@ -42,8 +44,6 @@ class Screen(ProcessInput):
             Parameters:
                 callbak:    [callable]
                             Outside function to call on button push
-                signal:     [any], optional 
-                            Eventual signal to wake up a thread waiting on button
                 i2c_addr:   [int], optional
                             Integer of I2C addresses to find mapped rotary [default: 0x0F]
                 rgb_pins:   [list], optional 
@@ -54,6 +54,10 @@ class Screen(ProcessInput):
                             Maximum fraction of LED will be on
         '''
         super().__init__('screen')
+        # Setup button callback 
+        self._callback = callback
+        # Create our own event signal
+        self._signal = Event()
         # Configuration for CS and DC pins (these are PiTFT defaults)
         self._cs_pin = digitalio.DigitalInOut(board.CE0)
         self._dc_pin = digitalio.DigitalInOut(board.D25)
@@ -85,7 +89,7 @@ class Screen(ProcessInput):
         # Perform initial settings
         self.reset_screen()
         self.init_text_properties()
-        # 
+        # Set initial screen mode
         self._mode = SCREEN_MODE_INIT
 
     def reset_screen(self):

@@ -40,11 +40,11 @@ class Neurorack():
         self.init_state()
         # Need to import Screen after cleanup
         #from screen import Screen
-        self.screen = Screen()
+        self.screen = Screen(self.callback_screen)
         # Perform GPIO cleanup
         GPIO.cleanup()
         # Create audio engine
-        self.audio = Audio()
+        self.audio = Audio(self.callback_audio)
         # Create rotary
         self.rotary = Rotary(self.callback_rotary)
         # Create CV channels
@@ -54,7 +54,7 @@ class Neurorack():
         # Create push button
         self.button = Button(self.callback_button)
         # List of objects to create processes
-        self.objects = [self.audio, self.rotary, self.cvs, self.button]
+        self.objects = [self.audio, self.screen, self.rotary, self.cvs, self.button]
         # Find number of CPUs
         self.nb_cpus = mp.cpu_count()
         # Create a pool of jobs
@@ -94,6 +94,12 @@ class Neurorack():
         '''
         pass
     
+    def callback_audio(self):
+        '''
+            Callback for handling events from the audio engine
+        '''
+        print('Audio callback')
+    
     def callback_button(self, channel, value):
         '''
             Callback for handling events from the button
@@ -111,6 +117,12 @@ class Neurorack():
             Callback for handling events from the rotary
         '''
         print('Rotary callback')
+        
+    def callback_screen(self, channel, value):
+        '''
+            Callback for handling events from the screen
+        '''
+        print('Screen callback')
             
     def start(self):
         '''

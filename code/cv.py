@@ -16,6 +16,7 @@
 import time
 from ads1015 import ADS1015
 from parallel import ProcessInput
+from threading import Event
 
 class CVChannels(ProcessInput):
     '''
@@ -25,16 +26,13 @@ class CVChannels(ProcessInput):
 
     def __init__(self, 
             callback: callable,
-            signal: any = None,
             i2c_addr: list = [0x48, 0x49],
             channels: list = ['in0/ref', 'in1/ref', 'in2/ref']):
         '''
             Constructor - Creates a new instance of the CV class.
             Parameters:
-                callbak:    [callable]
-                            Outside function to call on button push
-                signal:     [any], optional 
-                            Eventual signal to wake up a thread waiting on button
+                callback:   [callable]
+                            Outside function to call on CV event
                 i2c_addr:   [list], optional
                             List of I2C addresses to find mapped CVs
                 channels:   [list], optional
@@ -43,7 +41,7 @@ class CVChannels(ProcessInput):
         super().__init__('cv')
         # Set signaling
         self._callback = callback
-        self._signal = signal
+        self._signal = Event()
         # Configure I2C addresses and channels
         self._i2c_addresses = i2c_addr
         self._channels = channels

@@ -17,6 +17,7 @@ import colorsys
 import ioexpander as io
 import Jetson.GPIO as GPIO
 from parallel import ProcessInput
+from threading import Event
 
 class Rotary(ProcessInput):
     '''
@@ -26,7 +27,6 @@ class Rotary(ProcessInput):
 
     def __init__(self,
             callback: callable,
-            signal: any = None,
             i2c_addr: int = 0x0F,
             rgb_pins: list = [1, 7, 2],
             enc_pins: list = [12, 3, 11],
@@ -50,7 +50,7 @@ class Rotary(ProcessInput):
         super().__init__('rotary')
         # Set signaling
         self._callback = callback
-        self._signal = signal
+        self._signal = Event()
         # Set I2C properties
         self._i2c_address = i2c_addr
         self._rgb_pins = rgb_pins
@@ -112,8 +112,6 @@ class Rotary(ProcessInput):
             # Signal other components
             if (self._callback is not None):
                 self._callback(0, new_pos)
-            if (self._signal is not None):
-                self._signal.set()
             h = (self._position % 360) / 360.0
             # Compute new RGB values
             self._r, self._g, self._b = [int(c * self._period * self._brightness) for c in colorsys.hsv_to_rgb(h, 1.0, 1.0)]

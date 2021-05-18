@@ -30,7 +30,7 @@ class Button(InterruptInput):
         '''
             Constructor - Creates a new instance of the Navigation class.
             Parameters:
-                callbak:    [callable]
+                callback:   [callable]
                             Outside function to call on button push
                 pins:       [int], optional
                             Specify GPIO pins that connect buttons [default: 11]

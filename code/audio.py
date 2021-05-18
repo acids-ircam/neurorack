@@ -20,6 +20,7 @@ import numpy as np
 import sounddevice as sd
 from parallel import ProcessInput
 from models.ddsp import DDSP
+from threading import Event
 
 class Audio(ProcessInput):
     '''
@@ -27,35 +28,42 @@ class Audio(ProcessInput):
         It is based on the ProcessInput system for multiprocessing
     '''
 
-    def __init__(self, 
+    def __init__(self,
+                 callback: callable,
                  model: str = 'ddsp', 
                  sr: int = 22050):
         '''
             Constructor - Creates a new instance of the Audio class.
             Parameters:
+                callback:   [callable]
+                            Outside function to call on audio event
                 model:      [str], optional
                             Specify the audio model to load [default : 'ddsp']
                 sr:         int, optional
                             Specify the sampling rate [default: 22050]
         '''
         super().__init__('audio')
+        # Setup audio callback 
+        self._callback = callback
+        # Create our own event signal
+        self._signal = Event()
         # Configure audio
-        self.sr = sr
+        self._sr = sr
         # Set devices default
         self.set_defaults()
-        self.model_name = model
+        self._model_name = model
         # Set model
         if (model == 'ddsp'):
-            self.model = DDSP()
+            self._model = DDSP()
         else:
             raise NotImplementedError
     
     def set_defaults(self):
-        """
+        '''
             Sets default parameters for the soundevice library.
             See 
-        """
-        sd.default.samplerate = self.sr
+        '''
+        sd.default.samplerate = self._sr
         sd.default.device = 1
         sd.default.latency = 'low'
         sd.default.dtype = 'float32'
@@ -63,6 +71,14 @@ class Audio(ProcessInput):
         sd.default.clip_off = False
         sd.default.dither_off = False
         sd.default.never_drop_input = False
+        
+    def model_burn_in(self):
+        '''
+            The model burn-in allows to warmup the GPU.
+            The first PyTorch Tensor creation is extremely slow.
+            Therefore, we just make two useless pass during the init.
+        '''
+        self._model.generate_random()
 
     def play_noise(self, wait: bool = True, length: float = 4.0):
         '''
@@ -73,8 +89,8 @@ class Audio(ProcessInput):
                 length:     [float], optional
                             Length of signal to generate (in seconds)
         '''
-        audio = np.random.randn(length * self.sr)
-        sd.play(audio, self.sr)
+        audio = np.random.randn(length * self._sr)
+        sd.play(audio, self._sr)
         if (wait):
             self.wait_playback()
 
@@ -85,8 +101,8 @@ class Audio(ProcessInput):
                 wait:       [bool], optional
                             Wait on the end of the playback
         '''
-        audio = self.model.generate_random()
-        sd.play(audio, self.sr)
+        audio = self._model.generate_random()
+        sd.play(audio, self._sr)
         if (wait):
             self.wait_playback()
             
@@ -119,19 +135,19 @@ class Audio(ProcessInput):
             if status:
                 print(status)
             global start_idx
-            t = (start_idx + np.arange(frames)) / self.sr
+            t = (start_idx + np.arange(frames)) / self._sr
             t = t.reshape(-1, 1)
             outdata[:] = amplitude * np.sin(2 * np.pi * frequency * t)
             start_idx += frames
     
         with sd.OutputStream(device=sd.default.device, channels=1, callback=callback,
-                             samplerate=self.sr):
+                             samplerate=self._sr):
             input()
             
     def plot_text_spectrogram(self, columns=6, block_duration=50, f_range=[100, 2000]):
         high, low = f_range
         delta_f = (high - low) / (columns - 1)
-        fftsize = np.ceil(self.sr / delta_f)
+        fftsize = np.ceil(self._sr / delta_f)
         low_bin = np.floor(low / delta_f)
         def callback(indata, frames, time, status):
             if status:
@@ -148,8 +164,8 @@ class Audio(ProcessInput):
                 print('no input')
 
         with sd.InputStream(device=sd.default.device, channels=1, callback=callback,
-                            blocksize=int(self.sr * block_duration / 1000),
-                            samplerate=self.sr):
+                            blocksize=int(self._sr * block_duration / 1000),
+                            samplerate=self._sr):
             while True:
                 response = input()
                 print(response)
