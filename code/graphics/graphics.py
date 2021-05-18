@@ -118,10 +118,10 @@ class TextGraphic(Graphic):
         return ctx
     
     def get_height(self):
-        self._font.getsize(self._text)[1]
+        return self._font.getsize(self._text)[1]
     
     def get_width(self):
-        self._font.getsize(self._text)[0]
+        return self._font.getsize(self._text)[0]
         
 class ImageGraphic(Graphic):
     
