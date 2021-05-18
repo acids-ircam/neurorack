@@ -44,6 +44,7 @@ class Neurorack():
         # Create CV channels
         self.cvs = CVChannels(self.callback_cv)
         # Create push button
+        GPIO.cleanup()
         self.button = Button(self.callback_button)
         # Perform GPIO cleanup
         GPIO.cleanup()
