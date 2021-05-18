@@ -21,10 +21,7 @@ from parallel import ProcessInput
 from graphics.utils import get_resized_image
 from stats import Stats
 from multiprocessing import Event
-
-SCREEN_MODE_INIT = 0
-SCREEN_MODE_MAIN = 1
-SCREEN_MODE_MENU = 2
+import config as config
 
 class Screen(ProcessInput):
     '''
@@ -90,7 +87,7 @@ class Screen(ProcessInput):
         self.reset_screen()
         self.init_text_properties()
         # Set initial screen mode
-        self._mode = SCREEN_MODE_INIT
+        self._mode = config.screen.mode_init
 
     def reset_screen(self):
         '''
@@ -149,7 +146,7 @@ class Screen(ProcessInput):
     def callback(self, state, queue):
         # Begin screen startup animation
         # self.startup_animation()
-        self._mode = SCREEN_MODE_MAIN
+        self._mode = config.screen.mode_main
         # Perform display loop
         while True:
             self._signal.wait(1.0)
