@@ -121,7 +121,7 @@ class Neurorack():
             Callback for handling events from the button
         '''
         print('Button callback')
-        self._state["screen"]["event"] = config.events.button
+        self._state["screen"]["event"].value = config.events.button
         self._signal_screen.set()
     
     def callback_cv(self, channel, value):
@@ -135,7 +135,7 @@ class Neurorack():
             Callback for handling events from the rotary
         '''
         print('Rotary callback')
-        self._state["screen"]["event"] = config.events.rotary
+        self._state["screen"]["event"].value = config.events.rotary
         self._signal_screen.set()
         
     def callback_screen(self, channel, value):
