@@ -62,7 +62,7 @@ class Menu(ScrollableGraphicScene):
         # Generate items menu
         for item in self._config["items"]:
             self._items[item] = MenuItem.create_item(item, self._config["items"][item])
-        self._elements = self._current_items
+        #self._elements = self._current_items
 
     def process_select(self, 
                        select_index: int, 
