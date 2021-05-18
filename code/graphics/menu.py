@@ -57,12 +57,12 @@ class Menu(ScrollableGraphicScene):
             self._config = yaml.load(file, Loader=yaml.FullLoader)
         self._root_menu = self._config["root"]
         self._current_menu = self._root_menu
-        self._current_items = []
         for item in self._current_menu: 
-            self._current_items.append(item)
+            self._elements.append(TextGraphic(item))
         # Generate items menu
         for item in self._config["items"]:
-            self._items[item] = MenuItem.create_item(self._config["items"][item])
+            self._items[item] = MenuItem.create_item(item, self._config["items"][item])
+        self._elements = self._current_items
 
     def process_select(self, 
                        select_index: int, 
@@ -77,16 +77,16 @@ class Menu(ScrollableGraphicScene):
                                 The selected menu item
         """
         items = [".."]
-        if type(self._current_menu[select_item]) is str:
+        if type(self._current_menu[select_item]) is TextGraphic:
             print(f"Execute {self._current_menu[select_item]}")
             self._items[self._current_menu[select_item]].run(display=self.__disp)
         else:
             print(f"Load {self._current_menu[select_item]}")
             self._current_menu = self._current_menu[select_item]
             self._history.append(select_item)
+            self._elements = []
             for item in self._current_menu: 
-                items.append(item)
-            self.__disp.Items = items
+                self._elements.append(TextGraphic(item))
 
     def process_history(self):
         """
@@ -155,9 +155,11 @@ class Menu(ScrollableGraphicScene):
             if (event_type == 'rotary' and direction > 0):
                 if self._selected_index == self.__max_index - 1 and self._scroll_down is False: 
                     return
+                self._elements[self.selected_index]._selected = False
                 if self.__selected_index == self._max_index - 1: 
-                    self.__scrollStartIndex +=1
+                    self.__scroll_start +=1
                 self._selected_index += 1
+                self._elements[self.selected_index]._selected = True
                 return
             if (event_type == 'rotary' and direction < 0):
                 if self._selected_index == 0 and self._scroll_up is False: 
@@ -166,9 +168,11 @@ class Menu(ScrollableGraphicScene):
                     self._selected_index = 0
                     self._scroll_start = 0
                 else:
+                    self._elements[self.selected_index]._selected = False
                     if self._selected_index == self._scroll_start: 
                         self.__scroll_start -= 1
-                    self._selectedIndex -= 1
+                    self._selected_index -= 1
+                    self._elements[self.selected_index]._selected = True
                 return
             if (event_type == 'button'):
                 if self._selected_index == 0 and self._elements[0] == config.menu.back_element:
@@ -212,6 +216,7 @@ class MenuItem():
 
     #region constructor
     def __init__(self, 
+                 title: str,
                  type: int, 
                  command: str, 
                  confirm: bool = False):
@@ -219,31 +224,47 @@ class MenuItem():
             Initializes a new instance of the Command class
             Parameters:
                 type:       int
-                            The type of command. Either COMMAND_BUILTIN or COMMAND_SHELL
+                            The type of menu item. 
                 command:    str
-                            The actual command to execute. If type is COMMAND_BUILTIN the value must be a valid key inhte 
-                            Command.buildInCommands list. If type is COMMAND_SHELL the value must be a command that can be 
-                            executed at a shell command prompt
-                processor:  str
-                            Optional, for future functionality. Not currently used.
+                            The actual command to execute.
                 confirm:    bool
                             True to require confirmation before the command is executed, false otherwise. 
-                cwd:        str
-                            Current Working Directory to execute the command in
         """
-        self.__type: int = type
-        self.__command: str = command
-        self.__returnCode: int = 0
-        self.__output: str = ''
-        self.__confirm: bool = confirm
-        self.__confirmationHandler: callable = None
-        self.__spinHandler: callable = None
-        self.__outputHandler: callable = None
-        self.__running: bool = False
-    #endregion
-
-    #region public instance methods
-    def Run(self, confirmed=config.menu.confirm_cancel):
+        self._title = title
+        self._type: int = type
+        self._command: str = command
+        self._output: str = ''
+        self._confirm: bool = confirm
+        self._running: bool = False
+    
+    @staticmethod
+    def create_item(data):
+        """
+            Deserialized a command from YAML. 
+            Parameters:
+                data:   object
+                        Representation of the Command data.
+            Returns:
+                Instance of Command
+        """
+        if "type" not in data.keys() or (data["type"] not in config.menu.accepted_types):
+            message = "Menu item is of unexpected type " + data["type"]
+            raise Exception(message)
+        if "command" not in data.keys() or data["command"] == "":
+            message = "Could not find attribute command"
+            raise Exception(message)
+        command = MenuItem(
+            type = data["type"],
+            command = data["command"],
+            confirm = data["confirm"] if "confirm" in data.keys() else False
+          )
+        return command
+    
+    def render(self, ctx):
+        ctx = self.graphic.render(ctx)
+        
+    
+   def Run(self, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:
@@ -280,28 +301,7 @@ class MenuItem():
     #endregion
 
     #region public class (static) methods
-    @staticmethod
-    def create_item(data):
-        """
-            Deserialized a command from YAML. 
-            Parameters:
-                data:   object
-                        Representation of the Command data.
-            Returns:
-                Instance of Command
-        """
-        if "type" not in data.keys() or (data["type"] not in config.menu.accepted_types):
-            message = "Menu item is of unexpected type " + data["type"]
-            raise Exception(message)
-        if "command" not in data.keys() or data["command"] == "":
-            message = "Could not find attribute command"
-            raise Exception(message)
-        command = MenuItem(
-            type= data["type"],
-            command = data["command"],
-            confirm = data["confirm"] if "confirm" in data.keys() else False
-          )
-        return command
+    
 
 class MenuBar():
     def __init__(self):
