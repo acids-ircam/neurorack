@@ -24,6 +24,7 @@ from graphics.graphics import GraphicScene, TextGraphic, DynamicTextGraphic
 from stats import Stats
 from multiprocessing import Event
 from config import config
+from ctypes import c_char_p
 
 class Screen(ProcessInput):
     '''
@@ -162,11 +163,11 @@ class Screen(ProcessInput):
         
     def perform_update(self, state):
         self._cur_stats = self._stats.retrieve_stats()
-        state['ip'] = multiprocessing.Value(self._cur_stats[0])
-        state['cpu'] =  multiprocessing.Value(self._cur_stats[1])
-        state['memory'] =  multiprocessing.Value(self._cur_stats[2])
-        state['disk'] =  multiprocessing.Value(self._cur_stats[3])
-        state['temperature'] =  multiprocessing.Value(self._cur_stats[4])
+        state['ip'] = multiprocessing.Value(c_char_p, self._cur_stats[0])
+        state['cpu'] =  multiprocessing.Value(c_char_p, self._cur_stats[1])
+        state['memory'] =  multiprocessing.Value(c_char_p, self._cur_stats[2])
+        state['disk'] =  multiprocessing.Value(c_char_p, self._cur_stats[3])
+        state['temperature'] =  multiprocessing.Value(c_char_p, self._cur_stats[4])
         
     def button_callback(self):
         if (self._mode == config.screen.mode_main):
