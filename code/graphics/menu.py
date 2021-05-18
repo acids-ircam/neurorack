@@ -262,7 +262,6 @@ class MenuItem():
         """
         self.__type: int = type
         self.__command: str = command
-        self.__processor: str = processor
         self.__returnCode: int = 0
         self.__output: str = ''
         self.__confirm: bool = confirm
@@ -270,7 +269,6 @@ class MenuItem():
         self.__spinHandler: callable = None
         self.__outputHandler: callable = None
         self.__running: bool = False
-        self.__cwd: str = cwd
     #endregion
 
     #region public instance methods
