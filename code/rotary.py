@@ -58,10 +58,11 @@ class Rotary(ProcessInput):
         # Swap the interrupt pin for the Rotary Encoder breakout
         if self._i2c_address == 0x0F:
             self._ioe.enable_interrupt_out(pin_swap=False)
-        self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
+        self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])                              
+        GPIO.setmode(GPIO.BOARD)
         GPIO.add_event_detect(self._enc_pins[0], GPIO.BOTH, callback=self.test, bouncetime=50)
-        GPIO.add_event_detect(self._enc_pins[0], GPIO.BOTH, callback=self.test, bouncetime=50)
-        GPIO.add_event_detect(self._enc_pins[0], GPIO.BOTH, callback=self.test, bouncetime=50)
+        GPIO.add_event_detect(self._enc_pins[1], GPIO.BOTH, callback=self.test, bouncetime=50)
+        GPIO.add_event_detect(self._enc_pins[2], GPIO.BOTH, callback=self.test, bouncetime=50)
         self._ioe.set_pwm_period(self._period) 
         self._ioe.clear_interrupt()
         # PWM as fast as we can to avoid LED flicker
