@@ -95,6 +95,7 @@ class TextGraphic(Graphic):
         self._font = font
         self._selected = selected
         self._color = color
+        self.load()
     
     def load(self, ctx=None):
         if (self._font is None):
@@ -130,6 +131,7 @@ class ImageGraphic(Graphic):
                  y:int = config.screen.padding,
                  absolute: bool = False):
         super().__init__(x, y, absolute)
+        self.load()
     
     def load(self, ctx=None):
         if (self._font is None):
