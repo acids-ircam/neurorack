@@ -268,7 +268,7 @@ class MenuItem():
     #endregion
 
     #region public instance methods
-    def Run(self, display: Display, confirmed=config.menu.confirm_cancel):
+    def Run(self, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:
