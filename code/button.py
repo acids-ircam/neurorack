@@ -25,7 +25,7 @@ class Button(InterruptInput):
     
     def __init__(self, 
             callback: callable,
-            pins: list=[17], 
+            pins: list=[11], 
             debounce: int=250):
         '''
             Constructor - Creates a new instance of the Navigation class.
@@ -44,10 +44,14 @@ class Button(InterruptInput):
         # Create our own event signal
         self._signal = Event()
         GPIO.setwarnings(False)                                     
-        GPIO.setmode(GPIO.TEGRA_SOC)                                      
+        GPIO.setmode(GPIO.TEGRA_SOC)   
+        board_to_tegra = {
+            k: list(GPIO.gpio_pin_data.get_data()[-1]['TEGRA_SOC'].keys())[i] 
+            for i, k in enumerate(GPIO.gpio_pin_data.get_data()[-1]['BOARD'])}                                   
         for pin in self._pins:
-            GPIO.setup('UART2_RTS', GPIO.IN)    
-            GPIO.add_event_detect('UART2_RTS', GPIO.FALLING, callback=self.callback_event, bouncetime=self._debounce)
+            tegra_soc_name = board_to_tegra[pin]
+            GPIO.setup(tegra_soc_name, GPIO.IN)    
+            GPIO.add_event_detect(tegra_soc_name, GPIO.FALLING, callback=self.callback_event, bouncetime=self._debounce)
     
     def callback_event(self, channel: int):
         print("Button event - pushed")
