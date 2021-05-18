@@ -49,8 +49,8 @@ class Neurorack():
         # Perform GPIO cleanup
         # GPIO.cleanup()
         # Need to import Screen after cleanup
-        from screen import Screen
-        self.screen = Screen()
+        #from screen import Screen
+        #self.screen = Screen()
         # List of objects to create processes
         self.objects = [self.audio, self.rotary, self.cvs, self.button]
         # Find number of CPUs
