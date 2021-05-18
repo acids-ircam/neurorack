@@ -75,10 +75,13 @@ class Neurorack():
         self._state = self._manager.dict()
         self._state['global'] = self._manager.dict()
         self._state['cv'] = self._manager.list([0.0] * self._N_CVs)
-        self._state['rotary'] = 0
-        self._state['button'] = 0
-        self._state['menu'] = 0
-        self._state['audio'] = 0
+        self._state['rotary'] = self._manager.Value(int, 0)
+        self._state['button'] = self._manager.Value(int, 0)
+        # Menu-related parameters (dict)
+        self._state['menu'] = self._manager.dict()
+        # Audio-related parameters (dict)
+        self._state['audio'] = self._manager.dict()
+        # Stats (cpu, memory) computing
         self._state['stats'] = self._manager.dict()
         self._state['stats']['ip'] = self._manager.Value(c_char_p, "ip".encode('utf-8'))
         self._state['stats']['cpu'] =  self._manager.Value(c_char_p, "cpu".encode('utf-8'))

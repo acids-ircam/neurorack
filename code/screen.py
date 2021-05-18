@@ -21,6 +21,7 @@ import adafruit_rgb_display.st7789 as st7789
 from parallel import ProcessInput
 from graphics.utils import get_resized_image
 from graphics.graphics import GraphicScene, TextGraphic, DynamicTextGraphic
+from graphics.menu import Menu
 from stats import Stats
 from multiprocessing import Event
 from config import config
@@ -129,19 +130,26 @@ class Screen(ProcessInput):
         # Load a TTF font (needs to be in same directory as script)
         self._font = ImageFont.truetype(config.text.font_main, config.text.size_main)
         self._font_big = ImageFont.truetype(config.text.font_main, config.text.size_big)
+        self._font_large = ImageFont.truetype(config.text.font_main, config.text.size_large)
         
     def init_graphic_scenes(self, state):
         self._main_scene = GraphicScene(
             x = config.screen.main_x,
             y = config.screen.padding,
             absolute = True,
-            elements = [DynamicTextGraphic(state['stats']['ip']),
-                        DynamicTextGraphic(state['stats']['cpu']),
-                        DynamicTextGraphic(state['stats']['memory']),
-                        DynamicTextGraphic(state['stats']['disk']),
-                        DynamicTextGraphic(state['stats']['temperature']),
-                        TextGraphic(str(state['rotary']), font=self._font_big, color=config.text.color_alt)]
+            elements = [DynamicTextGraphic(state['stats']['ip'], color=config.colors.white),
+                        DynamicTextGraphic(state['stats']['cpu'], color=config.colors.white),
+                        DynamicTextGraphic(state['stats']['memory'], color=config.colors.white),
+                        DynamicTextGraphic(state['stats']['disk'], color=config.colors.white),
+                        DynamicTextGraphic(state['stats']['temperature'], color=config.colors.white),
+                        DynamicTextGraphic(state['rotary'], font=self._font_large, color=config.text.color_main)]
             )
+        self._menu_scene = Menu(
+            x = config.screen.main_x,
+            y = config.screen.padding,
+            height = self._height,
+            width = self.width,
+            absolute = True)
 
     def startup_animation(self):
         header = 'Neurorack'

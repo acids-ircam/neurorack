@@ -17,20 +17,6 @@
 import yaml
 from .graphics import GraphicScene
 
-MENU_MODE_BASIC = 0
-MENU_MODE_CONFIRM = 1
-MENU_MODE_OUTPUT = 2
-MENU_MODE_EXTERNAL = 3
-CONFIRM_CANCEL = 0
-CONFIRM_OK = 1
-MSG_OK = "OK"
-MSG_CANCEL = "CANCEL"
-MSG_RUN = "You are about to run"
-MSG_PROCEED = "Proceed?"
-MSG_RESULTS = "'%s'"
-MSG_CODE = "Return Code: %x"
-MSG_OUTPUT = "Output:"
-
 class Menu(GraphicScene):
     '''
         Main class for the LCD Menu. 
