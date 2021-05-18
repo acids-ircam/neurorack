@@ -13,8 +13,9 @@
 """
 
 import time
-import digitalio
 import board
+import digitalio
+import multiprocessing
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_rgb_display.st7789 as st7789
 from parallel import ProcessInput
