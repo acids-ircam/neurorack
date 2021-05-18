@@ -67,8 +67,6 @@ class Button(InterruptInput):
 
 if __name__ == '__main__':
     button = Button(None)
-    while True:
-        print('Loop')
-        time.sleep(1)
+    button.callback()
 
     
