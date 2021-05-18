@@ -91,6 +91,7 @@ class TextGraphic(Graphic):
                  color: str = config.text.color_main,
                  selected: bool = False):
         super().__init__(x, y, absolute)
+        self._text = text
         self._font = font
         self._selected = selected
         self._color = color
