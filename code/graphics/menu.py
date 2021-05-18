@@ -264,7 +264,7 @@ class MenuItem():
         ctx = self.graphic.render(ctx)
         
     
-   def Run(self, confirmed=config.menu.confirm_cancel):
+    def Run(self, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:
