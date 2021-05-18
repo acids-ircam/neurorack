@@ -321,22 +321,17 @@ class MenuItem():
             Returns:
                 Instance of Command
         """
-        if "type" not in data.keys() or (data["type"] != "shell" and data["type"] != "builtin"):
+        if "type" not in data.keys() or (data["type"] not in config.menu.accepted_types):
             message = "Menu item is of unexpected type " + data["type"]
             raise Exception(message)
         if "command" not in data.keys() or data["command"] == "":
-            message = """Data not in the appropriate format. 
-                Expect 'command' attribute to be present and have a value."""
-            logging.exception(message)
+            message = "Could not find attribute command"
             raise Exception(message)
         command = MenuItem(
-            type=COMMAND_BUILTIN if data["type"] == "builtin" else COMMAND_SHELL,
+            type= data["type"],
             command = data["command"],
-            processor = data["processor"] if "processor" in data.keys() else None,
-            confirm = data["confirm"] if "confirm" in data.keys() else False,
-            cwd = data["cwd"] if "cwd" in data.keys() else None
+            confirm = data["confirm"] if "confirm" in data.keys() else False
           )
-        logging.info(f"Deserialized command {command.Command} successfully")
         return command
 
 class MenuBar():

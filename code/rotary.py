@@ -105,10 +105,12 @@ class Rotary(ProcessInput):
             if (new_pos == self._position):
                 time.sleep(0.02)
                 continue
+            delta = new_pos - self._position
             # Update position
             self._position = new_pos
             # Update global state
             state['rotary'].value = self._position
+            state['rotary_delta'].value = delta
             # Signal other components
             if (self._callback is not None):
                 self._callback(0, new_pos)

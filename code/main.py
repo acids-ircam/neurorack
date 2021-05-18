@@ -76,6 +76,7 @@ class Neurorack():
         self._state['global'] = self._manager.dict()
         self._state['cv'] = self._manager.list([0.0] * self._N_CVs)
         self._state['rotary'] = self._manager.Value(int, 0)
+        self._state['rotary_delta'] = self._manager.Value(int, 0)
         self._state['button'] = self._manager.Value(int, 0)
         # Menu-related parameters (dict)
         self._state['menu'] = self._manager.dict()
