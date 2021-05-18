@@ -171,7 +171,7 @@ class Menu(ScrollableGraphicScene):
                 else:
                     self._elements[self._selected_index]._selected = False
                     if self._selected_index == self._scroll_start: 
-                        self.__scroll_start -= 1
+                        self._scroll_start -= 1
                     self._selected_index -= 1
                     self._elements[self._selected_index]._selected = True
                 return
