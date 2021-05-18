@@ -57,7 +57,7 @@ class Rotary(ProcessInput):
         self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=18)
         # Swap the interrupt pin for the Rotary Encoder breakout
         if self._i2c_address == 0x0F:
-            self._ioe.enable_interrupt_out(pin_swap=False)
+            self._ioe.enable_interrupt_out(pin_swap=True)
         self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
         self._ioe.enable_interrupt_out()
         self._ioe.set_pwm_period(self._period) 
