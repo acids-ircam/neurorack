@@ -78,8 +78,9 @@ class Neurorack():
         self._state['rotary'] = self._manager.Value(int, 0)
         self._state['rotary_delta'] = self._manager.Value(int, 0)
         self._state['button'] = self._manager.Value(int, 0)
-        # Menu-related parameters (dict)
-        self._state['menu'] = self._manager.dict()
+        # Screen-related parameters (dict)
+        self._state['screen'] = self._manager.dict()
+        self._state['screen']['mode'] = self._manager.Value(int, 0)
         # Audio-related parameters (dict)
         self._state['audio'] = self._manager.dict()
         # Stats (cpu, memory) computing
@@ -118,7 +119,7 @@ class Neurorack():
             Callback for handling events from the button
         '''
         print('Button callback')
-        self._screen.button_callback()
+        self._screen.button_callback(self._state)
         self._signal_screen.set()
     
     def callback_cv(self, channel, value):
@@ -132,6 +133,7 @@ class Neurorack():
             Callback for handling events from the rotary
         '''
         print('Rotary callback')
+        self._screen.rotary_callback(self._state)
         self._signal_screen.set()
         
     def callback_screen(self, channel, value):

@@ -91,8 +91,6 @@ class Screen(ProcessInput):
         self.reset_screen()
         # Initialize text properties
         self.init_text_properties()
-        # Set initial screen mode
-        self._mode = config.screen.mode_init
 
     def reset_screen(self):
         '''
@@ -178,14 +176,13 @@ class Screen(ProcessInput):
         state['stats']['disk'].value = self._cur_stats[3]
         state['stats']['temperature'].value = self._cur_stats[4]
         
-    def button_callback(self):
+    def button_callback(self, state):
         print('Inside screen')
-        print(self._mode)
-        if (self._mode == config.screen.mode_main):
-            self._mode = config.screen.mode_menu
-        if (self._mode == config.screen.mode_menu):
-            self._menu_scene.button_callback()
-        print(self._mode)
+        mode = state["screen"]["mode"].value
+        if (mode == config.screen.mode_main):
+            state["screen"]["mode"].value = config.screen.mode_menu
+        if (mode == config.screen.mode_menu):
+            self._menu_scene.button_callback(state)
         
     def callback(self, state, queue):
         # Perform a first heavy update
@@ -194,9 +191,7 @@ class Screen(ProcessInput):
         self.init_graphic_scenes(state)
         # Begin screen startup animation
         # self.startup_animation()
-        self._mode = config.screen.mode_main
-        print('End init screen')
-        print(self._mode)
+        state["screen"]["mode"].value = config.screen.mode_main
         # Perform display loop
         while True:
             self._signal.wait(1.0)
@@ -211,9 +206,9 @@ class Screen(ProcessInput):
             print(self._mode)
             self.clean_screen()
             # Write four lines of text.
-            if (self._mode == config.screen.mode_main):
+            if (state["screen"]["mode"].value == config.screen.mode_main):
                 self._main_scene.render(self._ctx)
-            elif (self._mode == config.screen.mode_menu):
+            elif (state["screen"]["mode"].value == config.screen.mode_menu):
                 self._menu_scene.render(self._ctx)
             # Display image.
             self._disp.image(self._image)
