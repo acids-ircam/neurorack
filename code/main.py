@@ -34,33 +34,35 @@ class Neurorack():
             Constructor - Creates a new instance of the Neurorack class.
         '''
         # Main properties
-        self.N_CVs = 6
+        self._N_CVs = 6
         # Init states of information
         self.init_state()
         # Create audio engine
-        self.audio = Audio(self.callback_audio)
+        self._audio = Audio(self.callback_audio)
         # Create rotary
-        self.rotary = Rotary(self.callback_rotary)
+        self._rotary = Rotary(self.callback_rotary)
         # Create CV channels
-        self.cvs = CVChannels(self.callback_cv)
+        self._cvs = CVChannels(self.callback_cv)
         # Perform GPIO cleanup
         GPIO.cleanup()
         # Need to import Screen after cleanup
         from screen import Screen
-        self.screen = Screen(self.callback_screen)
+        self._screen = Screen(self.callback_screen)
         # Create push button
-        self.button = Button(self.callback_button)
+        self._button = Button(self.callback_button)
         # List of objects to create processes
-        self.objects = [self.audio, self.screen, self.rotary, self.cvs, self.button]
+        self._objects = [self.audio, self.screen, self.rotary, self.cvs, self.button]
         # Find number of CPUs
-        self.nb_cpus = mp.cpu_count()
+        self._nb_cpus = mp.cpu_count()
         # Create a pool of jobs
-        self.pool = mp.Pool(self.nb_cpus)
+        self._pool = mp.Pool(self.nb_cpus)
+        # Handle signal informations
+        self.set_signals()
         # Create a queue for sharing information
-        self.queue = Queue()
-        self.processes = []
-        for o in self.objects:
-            self.processes.append(Process(target=o.callback, args=(self.state, self.queue)))
+        self._queue = Queue()
+        self._processes = []
+        for o in self._objects:
+            self._processes.append(Process(target=o.callback, args=(self._state, self._queue)))
 
     def init_state(self):
         '''
@@ -68,21 +70,24 @@ class Neurorack():
             The global properties are shared by a multiprocessing manager.
         '''
         # Use a multi-processing Manager
-        self.manager = Manager()
-        self.state = self.manager.dict()
-        self.state['global'] = self.manager.dict()
-        self.state['cv'] = self.manager.list([0.0] * self.N_CVs)
-        self.state['rotary'] = 0
-        self.state['button'] = 0
-        self.state['menu'] = 0
-        self.state['audio'] = 0
+        self._manager = Manager()
+        self._state = self._manager.dict()
+        self._state['global'] = self._manager.dict()
+        self._state['cv'] = self._manager.list([0.0] * self._N_CVs)
+        self._state['rotary'] = 0
+        self._state['button'] = 0
+        self._state['menu'] = 0
+        self._state['audio'] = 0
         
     def set_signals(self):
         '''
             Set the complete signaling mechanism.
-            Currently unused but for further versions
         '''
-        pass
+        self._signal_audio = self._audio._signal
+        self._signal_rotary  = self._rotary._signal
+        self._signal_cvs =  self._cvs._signal
+        self._signal_screen = self._screen._signal
+        self._signal_button = self._button._signal
     
     def set_callbacks(self):
         '''
@@ -125,14 +130,14 @@ class Neurorack():
         '''
             Start all parallel processses
         '''
-        for p in self.processes:
+        for p in self._processes:
             p.start()
 
     def run(self):
         '''
             Wait (join) on all parallel processses
         '''
-        for p in self.processes:
+        for p in self._processes:
             p.join()
 
     def __del__(self):
