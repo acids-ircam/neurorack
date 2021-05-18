@@ -14,6 +14,9 @@ class config:
         mode_init   = 0
         mode_main   = 1
         mode_menu   = 2
+        # General screen properties
+        height      = 240
+        width       = 180
         # Display config
         padding     = -2
         main_x      = 0
