@@ -165,7 +165,7 @@ class TextGraphic(Graphic):
             x, y = self._x, self._y
         if (self._selected):
             color = config.text.color_select
-            ctx["draw"].rectangle((x, y, self.get_width(), self.get_height()), outline=color, fill=config.colors.main)
+            ctx["draw"].rectangle((x, y, x+self.get_width(), y+self.get_height()), outline=color, fill=config.colors.main)
         ctx["draw"].text((x, y), self._text, font = self._font, fill=color)
         if (not self._absolute):
             ctx["y"] += self.get_height()
