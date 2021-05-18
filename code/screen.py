@@ -163,11 +163,11 @@ class Screen(ProcessInput):
         
     def perform_update(self, state):
         self._cur_stats = self._stats.retrieve_stats()
-        state['ip'] = multiprocessing.Value(c_char_p, self._cur_stats[0])
-        state['cpu'] =  multiprocessing.Value(c_char_p, self._cur_stats[1])
-        state['memory'] =  multiprocessing.Value(c_char_p, self._cur_stats[2])
-        state['disk'] =  multiprocessing.Value(c_char_p, self._cur_stats[3])
-        state['temperature'] =  multiprocessing.Value(c_char_p, self._cur_stats[4])
+        state['ip'] = multiprocessing.Value(c_char_p, self._cur_stats[0].encode('utf-8'))
+        state['cpu'] =  multiprocessing.Value(c_char_p, self._cur_stats[1].encode('utf-8'))
+        state['memory'] =  multiprocessing.Value(c_char_p, self._cur_stats[2].encode('utf-8'))
+        state['disk'] =  multiprocessing.Value(c_char_p, self._cur_stats[3].encode('utf-8'))
+        state['temperature'] =  multiprocessing.Value(c_char_p, self._cur_stats[4].encode('utf-8'))
         
     def button_callback(self):
         if (self._mode == config.screen.mode_main):
