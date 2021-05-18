@@ -48,30 +48,32 @@ class Rotary(ProcessInput):
                             Maximum fraction of LED will be on
         '''
         super().__init__('rotary')
+        # Set signaling
+        self._callback = callback
+        self._signal = signal
+        # Set I2C properties
         self._i2c_address = i2c_addr
         self._rgb_pins = rgb_pins
         self._enc_pins = enc_pins
         self._brightness = brightness
         # Period to get 0-255 range in brightness
         self._period = int(255.0 / brightness)
-        self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=18)
+        self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=18, interrupt_timeout=1)
         # Swap the interrupt pin for the Rotary Encoder breakout
         if self._i2c_address == 0x0F:
             self._ioe.enable_interrupt_out(pin_swap=True)
         self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
-        self._ioe.enable_interrupt_out()
-        self._ioe.set_pwm_period(self._period) 
-        self._ioe.clear_interrupt()
+        self._ioe.set_pwm_period(self._period)
         # PWM as fast as we can to avoid LED flicker
         self._ioe.set_pwm_control(divider=2) 
         # Set RGB modes
         self._ioe.set_mode(self._rgb_pins[0], io.PWM, invert=True)
         self._ioe.set_mode(self._rgb_pins[1], io.PWM, invert=True)
         self._ioe.set_mode(self._rgb_pins[2], io.PWM, invert=True)
-        # Current position value
-        self._position = 0
         # Current RGB values
         self._r, self._g, self._b, = 0, 0, 0
+        # Set an initial value for shifting the rotary state
+        self._position = self._ioe.read_rotary_encoder(1)
 
     def startup_animation(self):
         '''
@@ -99,15 +101,19 @@ class Rotary(ProcessInput):
         '''
         #self.startup_animation()
         while True:
-            if self._ioe.get_interrupt():
-                print('Yaaaaay')
-                self._ioe.clear_interrupt()
             new_pos = self._ioe.read_rotary_encoder(1)
             if (new_pos == self._position):
-                time.sleep(1.0 / 30)
+                time.sleep(0.001)
                 continue
+            # Update position
             self._position = new_pos
+            # Update global state
             state['rotary'] = self._position
+            # Signal other components
+            if (self._callback is not None):
+                self._callback(channel, value)
+            if (self._signal is not None):
+                self._signal.set()
             h = (self._position % 360) / 360.0
             # Compute new RGB values
             self._r, self._g, self._b = [int(c * self._period * self._brightness) for c in colorsys.hsv_to_rgb(h, 1.0, 1.0)]
@@ -115,11 +121,7 @@ class Rotary(ProcessInput):
             self._ioe.output(self._rgb_pins[1], self._g)
             self._ioe.output(self._rgb_pins[2], self._b)
             print('Rotary moved - %i - %i,%i,%i'%(self._position, self._r, self._g, self._b))
-            self._ioe.clear_interrupt()
-            
-    def test(self, channel: int):
-        print('EAAYEAYRIUYAZIRUYRIAYIUR')
-        
+                    
 if __name__ == '__main__':
     rotary = Rotary(None)
     rotary.callback({'rotary':0}, None)
