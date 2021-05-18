@@ -15,7 +15,7 @@
 
 """
 import yaml
-from .graphics import ScrollableGraphicScene
+from .graphics import ScrollableGraphicScene, TextGraphic
 from .config import config
 
 class Menu(ScrollableGraphicScene):
