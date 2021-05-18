@@ -155,11 +155,11 @@ class Menu(ScrollableGraphicScene):
             if (event_type == 'rotary' and direction > 0):
                 if self._selected_index == self._max_index - 1 and self._scroll_down is False: 
                     return
-                self._elements[self.selected_index]._selected = False
+                self._elements[self._selected_index]._selected = False
                 if self.__selected_index == self._max_index - 1: 
                     self.__scroll_start +=1
                 self._selected_index += 1
-                self._elements[self.selected_index]._selected = True
+                self._elements[self._selected_index]._selected = True
                 return
             if (event_type == 'rotary' and direction < 0):
                 if self._selected_index == 0 and self._scroll_up is False: 
@@ -168,11 +168,11 @@ class Menu(ScrollableGraphicScene):
                     self._selected_index = 0
                     self._scroll_start = 0
                 else:
-                    self._elements[self.selected_index]._selected = False
+                    self._elements[self._selected_index]._selected = False
                     if self._selected_index == self._scroll_start: 
                         self.__scroll_start -= 1
                     self._selected_index -= 1
-                    self._elements[self.selected_index]._selected = True
+                    self._elements[self._selected_index]._selected = True
                 return
             if (event_type == 'button'):
                 if self._selected_index == 0 and self._elements[0] == config.menu.back_element:
