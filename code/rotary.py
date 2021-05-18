@@ -54,16 +54,12 @@ class Rotary(ProcessInput):
         self._brightness = brightness
         # Period to get 0-255 range in brightness
         self._period = int(255.0 / brightness)
-        self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=None)
+        self._ioe = io.IOE(i2c_addr=self._i2c_address, interrupt_pin=18)
         # Swap the interrupt pin for the Rotary Encoder breakout
         if self._i2c_address == 0x0F:
             self._ioe.enable_interrupt_out(pin_swap=False)
-        self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])                              
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(16, GPIO.IN)  
-        GPIO.setup(18, GPIO.IN)  
-        GPIO.add_event_detect(16, GPIO.BOTH, callback=self.test, bouncetime=50)
-        GPIO.add_event_detect(18, GPIO.BOTH, callback=self.test, bouncetime=50)
+        self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
+        self._ioe.enable_interrupt_out()
         self._ioe.set_pwm_period(self._period) 
         self._ioe.clear_interrupt()
         # PWM as fast as we can to avoid LED flicker
@@ -103,6 +99,9 @@ class Rotary(ProcessInput):
         '''
         self.startup_animation()
         while True:
+            if self._ioe.get_interrupt():
+                print('Yaaaaay')
+                self._ioe.clear_interrupt()
             new_pos = self._ioe.read_rotary_encoder(1)
             if (new_pos == self._position):
                 time.sleep(1.0 / 30)
