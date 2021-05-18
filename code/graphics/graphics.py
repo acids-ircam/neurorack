@@ -33,7 +33,7 @@ class GraphicScene(Graphic):
         
 class TextGraphic(Graphic):
     
-    def __init__(self):
+    def __init__(self, x, y):
         super().__init__()
 
     def render(self, ctx=None):

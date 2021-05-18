@@ -59,12 +59,10 @@ class Rotary(ProcessInput):
         if self._i2c_address == 0x0F:
             self._ioe.enable_interrupt_out(pin_swap=False)
         self._ioe.setup_rotary_encoder(1, self._enc_pins[0], self._enc_pins[1], pin_c=self._enc_pins[2])
-        self._ioe.set_pwm_period(self._period)
-        GPIO.cleanup()
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(16, GPIO.IN)
-        GPIO.add_event_detect(16, GPIO.BOTH, callback=test, bouncetime=1)        
-        # self.ioe.on_interrupt(callback)
+        GPIO.add_event_detect(self._enc_pins[0], GPIO.BOTH, callback=self.test, bouncetime=50)
+        GPIO.add_event_detect(self._enc_pins[0], GPIO.BOTH, callback=self.test, bouncetime=50)
+        GPIO.add_event_detect(self._enc_pins[0], GPIO.BOTH, callback=self.test, bouncetime=50)
+        self._ioe.set_pwm_period(self._period) 
         self._ioe.clear_interrupt()
         # PWM as fast as we can to avoid LED flicker
         self._ioe.set_pwm_control(divider=2) 
@@ -102,18 +100,13 @@ class Rotary(ProcessInput):
                             Specifies the wait delay between read operations [default: 0.001s]
         '''
         self.startup_animation()
-        #self._ioe.on_interrupt(self.test)
         while True:
-            #if self._ioe.get_interrupt():
-            #    print('Yaaaaaaay cacacacacaca')
-            
             new_pos = self._ioe.read_rotary_encoder(1)
             if (new_pos == self._position):
                 time.sleep(1.0 / 30)
                 continue
             self._position = new_pos
             state['rotary'] = self._position
-            #ioe.clear_interrupt()
             h = (self._position % 360) / 360.0
             # Compute new RGB values
             self._r, self._g, self._b = [int(c * self._period * self._brightness) for c in colorsys.hsv_to_rgb(h, 1.0, 1.0)]
@@ -121,15 +114,10 @@ class Rotary(ProcessInput):
             self._ioe.output(self._rgb_pins[1], self._g)
             self._ioe.output(self._rgb_pins[2], self._b)
             print('Rotary moved - %i - %i,%i,%i'%(self._position, self._r, self._g, self._b))
-
-def test(self):
-    print('yyyyyaaaaaay caca')
+            
+    def test(self, channel: int):
+        print('EAAYEAYRIUYAZIRUYRIAYIUR')
         
 if __name__ == '__main__':
-    #import Jetson.GPIO as gpio
-    #gpio.setwarnings(False)
-    #gpio.setmode(gpio.BOARD)
-    #gpio.setup(24, gpio.IN)
-    #gpio.add_event_detect(24, gpio.BOTH, callback=activate_reading)
     rotary = Rotary(None)
     rotary.callback({'rotary':0}, None)

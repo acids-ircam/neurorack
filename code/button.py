@@ -47,18 +47,15 @@ class Button(InterruptInput):
         GPIO.setmode(GPIO.BOARD)                                      
         for pin in self._pins:
             GPIO.setup(pin, GPIO.IN)    
-            GPIO.add_event_detect(pin, GPIO.RISING, callback=self.callback, bouncetime=self._debounce)
-            #GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.callback_fall, bouncetime=self._debounce)
+            GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.callback, bouncetime=self._debounce)
     
     def callback(self, channel: int):
         print("Button event - pushed")
         value = GPIO.input(channel)
-        print(value)
-        time.sleep(1)
-    
-    def callback_fall(self, channel: int):
-        print("Button event - released")
-        value = GPIO.input(channel)
+        if (self._callback is not None):
+            self._callback(channel, value)
+        if (self._signal is not None):
+            self._signal.set()
 
     def __del__(self):
         '''
