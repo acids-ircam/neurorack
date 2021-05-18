@@ -115,7 +115,7 @@ class Rotary(ProcessInput):
             self._ioe.output(self._rgb_pins[1], self._g)
             self._ioe.output(self._rgb_pins[2], self._b)
             print('Rotary moved - %i - %i,%i,%i'%(self._position, self._r, self._g, self._b))
-            self.ioe.clear_interrupt()
+            self._ioe.clear_interrupt()
             
     def test(self, channel: int):
         print('EAAYEAYRIUYAZIRUYRIAYIUR')
