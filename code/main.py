@@ -18,7 +18,8 @@ from cv import CVChannels
 from audio import Audio
 from button import Button
 import multiprocessing as mp
-from multiprocessing import Process, Manager, Queue
+from multiprocessing import Process, Manager, Queue, Value
+from ctypes import c_char_p
 
 class Neurorack():
     '''
@@ -78,6 +79,12 @@ class Neurorack():
         self._state['button'] = 0
         self._state['menu'] = 0
         self._state['audio'] = 0
+        self._state['stats'] = self._manager.list(5)
+        self._state['stats']['ip'] = Value(c_char_p, "-".encode('utf-8'))
+        self._state['stats']['cpu'] =  Value(c_char_p, "-".encode('utf-8'))
+        self._state['stats']['memory'] =  Value(c_char_p, "-".encode('utf-8'))
+        self._state['stats']['disk'] =  Value(c_char_p, "-".encode('utf-8'))
+        self._state['stats']['temperature'] =  Value(c_char_p, "-".encode('utf-8'))
         
     def set_signals(self):
         '''
