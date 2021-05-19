@@ -46,6 +46,7 @@ class Menu(ScrollableGraphicScene):
         self._current_items = []
         self._history = [""]
         self._mode = config.menu.mode_basic
+        self._screen_signal = screen_signal
         self.load()
 
     def load(self):
