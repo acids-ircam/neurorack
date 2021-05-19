@@ -26,7 +26,7 @@ class config:
         confirm_cancel  = 0
         confirm_ok      = 1
         back_element    = "< Back"
-        exitt_element    = "< Exit"
+        exit_element    = "< Exit"
         msg_ok          = "OK"
         msg_cancel      = "CANCEL"
         msg_run         = "You are about to run"
