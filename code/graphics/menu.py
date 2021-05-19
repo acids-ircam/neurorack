@@ -69,6 +69,7 @@ class Menu(ScrollableGraphicScene):
                 self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
             else:
                 self._elements.append(MenuItem(title = item, type = 'builtin', command = ''))
+        self._elements.append(MenuItem(title = config.menu.back_element, type = 'menu', command = ''))
 
     def process_select(self, 
                        select_index: int, 
@@ -104,10 +105,7 @@ class Menu(ScrollableGraphicScene):
                 self._current_menu = self._root_menu
             else: 
                 self._current_menu = self._current_menu[level]
-                items.append(config.menu.back_element)
-        for item in self._current_menu: 
-            items.append(item)
-        self._elements = items
+        self.generate_current_elements()
 
     def process_confirm(self, command:any, confirmState: int):
         """
