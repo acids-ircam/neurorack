@@ -69,7 +69,10 @@ class Menu(ScrollableGraphicScene):
                 self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
             else:
                 self._elements.append(MenuItem(title = item, type = 'builtin', command = ''))
-        self._elements.append(MenuItem(title = config.menu.back_element, type = 'menu', command = ''))
+        if (self._current_menu == self._root_menu):
+            self._elements.append(MenuItem(title = config.menu.exit_element, type = 'menu', command = ''))
+        else:
+            self._elements.append(MenuItem(title = config.menu.back_element, type = 'menu', command = ''))
 
     def process_select(self, 
                        select_index: int, 
@@ -180,6 +183,8 @@ class Menu(ScrollableGraphicScene):
             if (event_type == 'button'):
                 if self._elements[self._selected_index]._title == config.menu.back_element:
                     self.process_history()
+                elif self._elements[self._selected_index]._title == config.menu.exit_element:
+                    state["screen"]["mode"].value = config.screen.mode_main
                 elif self._selected_index > -1: 
                     self.process_select(self._selected_index, self._elements[self._selected_index])
                 return
