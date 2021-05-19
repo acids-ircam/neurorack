@@ -55,7 +55,9 @@ class Menu(ScrollableGraphicScene):
         with open(self._config_file) as file:
             # The FullLoader handles conversion from scalar values to Python dict
             self._config = yaml.load(file, Loader=yaml.FullLoader)
+        print(self._config)
         self._root_menu = self._config["root"]
+        print(self._root_menu)
         self._current_menu = self._root_menu
         for item in self._current_menu: 
             self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
