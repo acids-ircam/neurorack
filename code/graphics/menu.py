@@ -87,7 +87,7 @@ class Menu(ScrollableGraphicScene):
                                 The selected menu item
         """
         items = [".."]
-        if self._elements[select_index].type != 'menu':
+        if self._elements[select_index]._type != 'menu':
             print(f"Execute {self._current_menu[select_item]}")
             self._items[self._current_menu[select_item]].run(display=self.__disp)
         else:

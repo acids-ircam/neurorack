@@ -12,7 +12,7 @@ class config:
         font_alt        = './fonts/dmpopmin.ttf'
         size_main       = 18
         size_big        = 24
-        size_large      = 32
+        size_large      = 30
         size_small      = 16
         color_main      = '#B80F0A'
         color_alt       = '#581845'
