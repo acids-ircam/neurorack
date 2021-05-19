@@ -92,7 +92,7 @@ class ScrollableGraphicScene(GraphicScene):
                  width:int = config.screen.width,
                  elements: list = []):
         super().__init__(x, y, absolute, elements)
-        self.elements = elements
+        self._elements = elements
         # Scrolling properties
         self._scroll_start = 0
         self._scroll_down = False
@@ -100,6 +100,9 @@ class ScrollableGraphicScene(GraphicScene):
         # Index properties
         self._selected_index = -1
         self._max_index = -1
+        # General size
+        self._height = height
+        self._width = width
     
     def render(self, ctx):
         """
@@ -119,7 +122,7 @@ class ScrollableGraphicScene(GraphicScene):
         while idx < len(self._elements):
             item = self._elements[idx]
             height = item.get_height()
-            if ctx["y"] + height > self.height: 
+            if ctx["y"] + height > self._height: 
                 self._scroll_down = True
                 break
             ctx = item.render(ctx)
