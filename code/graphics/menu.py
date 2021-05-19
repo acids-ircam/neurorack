@@ -88,8 +88,8 @@ class Menu(ScrollableGraphicScene):
             self._items[self._current_menu[select_item]].run(display=self.__disp)
         else:
             print(f"Load {self._elements[select_index]._title}")
-            self._current_menu = self._current_menu[select_item.title]
-            self._history.append(select_item.title)
+            self._current_menu = self._current_menu[select_item._title]
+            self._history.append(select_item._title)
             self.generate_current_elements()
 
     def process_history(self):
