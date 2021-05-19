@@ -216,6 +216,7 @@ class SliderGraphic(TextGraphic):
         ctx["draw"].rectangle((x + 10, y, x + self._width - 10, y + 3), outline=config.colors.main, fill='#000000')
         ctx["draw"].rectangle((x + 10, y, x + (self._width / 2), y + 3), outline=None, fill=config.colors.main)
         ctx["y"] += 5
+        return ctx
     
     def get_height(self):
         return self._font.getsize(self._text)[1] + 5
