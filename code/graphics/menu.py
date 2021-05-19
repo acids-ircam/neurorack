@@ -26,8 +26,8 @@ class Menu(ScrollableGraphicScene):
     
     def __init__(self, 
                  config_file = "./menu.yaml",
-                 x:int = 0,
-                 y:int = 0,
+                 x:int = 5,
+                 y:int = 5,
                  height = 240,
                  width = 180,
                  absolute = True):
