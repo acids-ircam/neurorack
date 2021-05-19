@@ -55,9 +55,7 @@ class Menu(ScrollableGraphicScene):
         with open(self._config_file) as file:
             # The FullLoader handles conversion from scalar values to Python dict
             self._config = yaml.load(file, Loader=yaml.FullLoader)
-        print(self._config)
         self._root_menu = self._config["root"]
-        print(self._root_menu)
         self._current_menu = self._root_menu
         self.generate_current_elements()
         # Generate items menu
@@ -71,8 +69,6 @@ class Menu(ScrollableGraphicScene):
                 self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
             else:
                 self._elements.append(MenuItem(title = item, type = 'builtin', command = ''))
-        print('GENERATED ELEMENTS')
-        print(self._elements)
 
     def process_select(self, 
                        select_index: int, 

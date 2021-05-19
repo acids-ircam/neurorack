@@ -90,6 +90,7 @@ class ScrollableGraphicScene(GraphicScene):
                  selectable: bool = True,
                  height:int = config.screen.height, 
                  width:int = config.screen.width,
+                 padding:int = 5,
                  elements: list = []):
         super().__init__(x, y, absolute, elements)
         self._elements = elements
@@ -103,6 +104,7 @@ class ScrollableGraphicScene(GraphicScene):
         # General size
         self._height = height
         self._width = width
+        self._padding = 5
     
     def render(self, ctx):
         """
@@ -115,7 +117,6 @@ class ScrollableGraphicScene(GraphicScene):
                             contained in Display.Items will be used. If specified, the supplied list will be stored in 
                             Display.Items. 
         """
-        print('MAIN RENDER IN SCENE')
         self._scroll_down = False
         self._scroll_up = self._scroll_start > 0
         idx = self._scroll_start
@@ -127,7 +128,6 @@ class ScrollableGraphicScene(GraphicScene):
                 break
             ctx = item.render(ctx)
             idx += 1
-            ctx["y"] += height
         self._max_index = idx
         #self.draw_scrollbars(ctx["draw"])
         
