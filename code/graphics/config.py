@@ -34,7 +34,7 @@ class config:
         msg_results     = "'%s'"
         msg_code        = "Return Code: %x"
         msg_output      = "Output:"
-        accepted_types  = ["builtin", "list", "parameter", "shell"]
+        accepted_types  = ["function", "list", "parameter", "shell", "slider"]
     
     class events:
         none        = -1
