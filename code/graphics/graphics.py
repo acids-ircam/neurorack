@@ -117,7 +117,7 @@ class ScrollableGraphicScene(GraphicScene):
         self._scroll_up = self._scroll_start > 0
         idx = self._scroll_start
         while idx < len(self._elements):
-            item = self.elements[idx]
+            item = self._elements[idx]
             height = item.get_height()
             if ctx["y"] + height > self.height: 
                 self._scroll_down = True
