@@ -178,7 +178,7 @@ class Menu(ScrollableGraphicScene):
                     self._elements[self._selected_index]._graphic._selected = True
                 return
             if (event_type == 'button'):
-                if self._selected_index == 0 and self._elements[0] == config.menu.back_element:
+                if self._elements[self._selected_index]._title == config.menu.back_element:
                     self.process_history()
                 elif self._selected_index > -1: 
                     self.process_select(self._selected_index, self._elements[self._selected_index])
