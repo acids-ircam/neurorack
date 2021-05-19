@@ -59,11 +59,18 @@ class Menu(ScrollableGraphicScene):
         self._root_menu = self._config["root"]
         print(self._root_menu)
         self._current_menu = self._root_menu
-        for item in self._current_menu: 
-            self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
+        self.generate_current_elements()
         # Generate items menu
         for item in self._config["items"]:
             self._items[item] = MenuItem.create_item(item, self._config["items"][item])
+    
+    def generate_current_elements(self):
+        self._elements = []
+        for item in self._current_menu:
+            if (type(self._current_menu[item]) == dict):
+                self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
+            else:
+                self._elements.append(MenuItem(title = item, type = 'builtin', command = ''))
 
     def process_select(self, 
                        select_index: int, 
@@ -83,11 +90,9 @@ class Menu(ScrollableGraphicScene):
             self._items[self._current_menu[select_item]].run(display=self.__disp)
         else:
             print(f"Load {self._current_menu[select_item]}")
-            self._current_menu = self._current_menu[select_item]
-            self._history.append(select_item)
-            self._elements = []
-            for item in self._current_menu: 
-                self._elements.append(TextGraphic(item))
+            self._current_menu = self._current_menu[select_item.title]
+            self._history.append(select_item.title)
+            self.generate_current_elements()
 
     def process_history(self):
         """
@@ -157,11 +162,11 @@ class Menu(ScrollableGraphicScene):
                 if self._selected_index == self._max_index - 1 and self._scroll_down is False: 
                     return
                 if (self._selected_index >= 0):
-                    self._elements[self._selected_index]._selected = False
+                    self._elements[self._selected_index]._graphic._selected = False
                 if self._selected_index == self._max_index - 1: 
                     self._scroll_start +=1
                 self._selected_index += 1
-                self._elements[self._selected_index]._selected = True
+                self._elements[self._selected_index]._graphic._selected = True
                 return
             if (event_type == 'rotary' and direction < 0):
                 if self._selected_index == 0 and self._scroll_up is False: 
@@ -170,15 +175,15 @@ class Menu(ScrollableGraphicScene):
                     self._selected_index = 0
                     self._scroll_start = 0
                 else:
-                    self._elements[self._selected_index]._selected = False
+                    self._elements[self._selected_index]._graphic._selected = False
                     if self._selected_index == self._scroll_start: 
                         self._scroll_start -= 1
                     self._selected_index -= 1
-                    self._elements[self._selected_index]._selected = True
+                    self._elements[self._selected_index]._graphic._selected = True
                 return
             if (event_type == 'button'):
                 if self._selected_index == 0 and self._elements[0] == config.menu.back_element:
-                    self.process_history
+                    self.process_history()
                 elif self._selected_index > -1: 
                     self.process_select(self._selected_index, self._elements[self._selected_index])
                 return
@@ -239,8 +244,17 @@ class MenuItem(Graphic):
         self._confirm: bool = confirm
         self._running: bool = False
         self._graphic: Graphic = None
-        if (self._type == 'menu'):
-            self._graphic = TextGraphic()
+        if (self._type == 'menu' or self._type == 'shell' or self._tyoe == 'builtin'):
+            self._graphic = TextGraphic(title)
+            
+    def render(self, ctx):
+        return self._graphic.render(ctx)
+    
+    def get_height(self):
+        return self._graphic.get_height()
+    
+    def get_width(self):
+        return self._graphic.get_width()
     
     @staticmethod
     def create_item(title, data):
