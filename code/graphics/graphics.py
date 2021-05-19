@@ -112,6 +112,7 @@ class ScrollableGraphicScene(GraphicScene):
                             contained in Display.Items will be used. If specified, the supplied list will be stored in 
                             Display.Items. 
         """
+        print('MAIN RENDER IN SCENE')
         self._scroll_down = False
         self._scroll_up = self._scroll_start > 0
         idx = self._scroll_start
@@ -126,13 +127,6 @@ class ScrollableGraphicScene(GraphicScene):
             ctx["y"] += height
         self._max_index = idx
         self.draw_scrollbars(ctx["draw"])
-
-    def render(self, ctx=None):
-        if (self._absolute):
-            ctx["x"], ctx["y"] = self._x, self._y
-        for e in self.elements:
-            ctx = e.render(ctx)
-        return ctx
         
 class TextGraphic(Graphic):
     
