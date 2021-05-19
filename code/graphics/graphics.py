@@ -129,7 +129,7 @@ class ScrollableGraphicScene(GraphicScene):
             idx += 1
             ctx["y"] += height
         self._max_index = idx
-        self.draw_scrollbars(ctx["draw"])
+        #self.draw_scrollbars(ctx["draw"])
         
 class TextGraphic(Graphic):
     
