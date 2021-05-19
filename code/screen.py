@@ -185,7 +185,7 @@ class Screen(ProcessInput):
                 self._menu_scene.navigation_callback(state, 'button')
         if (state["screen"]["event"].value == config.events.rotary and mode == config.screen.mode_menu):
             self._menu_scene.navigation_callback(state, 'rotary')
-        state["screen"]["event"]
+        state["screen"]["event"].value = config.events.none
     
     def callback(self, state, queue):
         # Perform a first heavy update

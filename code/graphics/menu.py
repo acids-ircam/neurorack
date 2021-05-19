@@ -15,7 +15,7 @@
 
 """
 import yaml
-from .graphics import ScrollableGraphicScene, TextGraphic
+from .graphics import Graphic, TextGraphic, ScrollableGraphicScene
 from .config import config
 
 class Menu(ScrollableGraphicScene):
@@ -58,11 +58,10 @@ class Menu(ScrollableGraphicScene):
         self._root_menu = self._config["root"]
         self._current_menu = self._root_menu
         for item in self._current_menu: 
-            self._elements.append(TextGraphic(item))
+            self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
         # Generate items menu
         for item in self._config["items"]:
             self._items[item] = MenuItem.create_item(item, self._config["items"][item])
-        #self._elements = self._current_items
 
     def process_select(self, 
                        select_index: int, 
@@ -77,7 +76,7 @@ class Menu(ScrollableGraphicScene):
                                 The selected menu item
         """
         items = [".."]
-        if type(self._current_menu[select_item]) is TextGraphic:
+        if self._current_menu[select_index].type != 'menu':
             print(f"Execute {self._current_menu[select_item]}")
             self._items[self._current_menu[select_item]].run(display=self.__disp)
         else:
@@ -210,7 +209,7 @@ class Menu(ScrollableGraphicScene):
         self.__selectedIndex = -1
         self.DrawMenu()
 
-class MenuItem():    
+class MenuItem(Graphic):    
     '''
     Represents a menu item
     '''
@@ -237,6 +236,9 @@ class MenuItem():
         self._output: str = ''
         self._confirm: bool = confirm
         self._running: bool = False
+        self._graphic: Graphic = None
+        if (self._type == 'menu'):
+            self._graphic = TextGraphic()
     
     @staticmethod
     def create_item(title, data):

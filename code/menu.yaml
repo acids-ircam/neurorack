@@ -9,7 +9,7 @@ root:
     Control Voltage: assign_cv
     Knob: assign_knob
     Rotary: assign_rotary
-  Administration:
+  Admin:
     Statistics: admin_stats
     Shutdown: shutdown
     Reboot: reboot
