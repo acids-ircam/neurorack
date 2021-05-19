@@ -87,6 +87,6 @@ items:
     confirm: true
 
   admin_stats:
-    type: builtin
+    type: function
     command: display_stats
     confirm: false
