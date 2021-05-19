@@ -141,7 +141,7 @@ class TextGraphic(Graphic):
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
-                 width: int = config.screen.width,
+                 width: int = config.screen.width+40,
                  selected: bool = False):
         super().__init__(x, y, absolute)
         self._text = text
@@ -186,7 +186,7 @@ class DynamicTextGraphic(TextGraphic):
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
-                 width: int = config.screen.width,
+                 width: int = config.screen.width+40,
                  selected: bool = False):
         super().__init__('', x, y, absolute, font, color, width, selected)
         self._dynamic_text = text
@@ -206,7 +206,7 @@ class SliderGraphic(TextGraphic):
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
-                 width: int = config.screen.width,
+                 width: int = config.screen.width+40,
                  selected: bool = False):
         super().__init__(text, x, y, absolute, font, color, width, selected)
     
