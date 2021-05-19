@@ -62,6 +62,8 @@ class Menu(ScrollableGraphicScene):
         # Generate all items from menu
         for item in self._config["items"]:
             self._items[item] = MenuItem.create_item(item, self._config["items"][item])
+        print(self._items)
+        print(self._current_menu)
         self.generate_current_elements()
     
     def generate_current_elements(self):
