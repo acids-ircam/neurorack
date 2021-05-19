@@ -30,7 +30,8 @@ class Menu(ScrollableGraphicScene):
                  y:int = 5,
                  height = 240,
                  width = 180,
-                 absolute = True):
+                 absolute = True,
+                 screen_signal = None):
         '''
             Constructor. Creates a new instance of the ContollerMenu class. 
             Paramters: 
@@ -185,6 +186,8 @@ class Menu(ScrollableGraphicScene):
                     self.process_history()
                 elif self._elements[self._selected_index]._title == config.menu.exit_element:
                     state["screen"]["mode"].value = config.screen.mode_main
+                    self._screen_signal.set()
+                    return
                 elif self._selected_index > -1: 
                     self.process_select(self._selected_index, self._elements[self._selected_index])
                 return

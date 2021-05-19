@@ -148,7 +148,8 @@ class Screen(ProcessInput):
             y = config.screen.padding,
             height = self._height,
             width = self._width,
-            absolute = True)
+            absolute = True,
+            screen_signal = self._signal)
 
     def startup_animation(self):
         header = 'Neurorack'
