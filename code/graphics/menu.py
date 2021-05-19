@@ -84,10 +84,10 @@ class Menu(ScrollableGraphicScene):
         """
         items = [".."]
         if self._elements[select_index]._type != 'menu':
-            print(f"Execute {self._current_menu[select_item]}")
+            print(f"Execute {self._elements[select_index]._title}")
             self._items[self._current_menu[select_item]].run(display=self.__disp)
         else:
-            print(f"Load {self._current_menu[select_item]}")
+            print(f"Load {self._elements[select_index]._title}")
             self._current_menu = self._current_menu[select_item.title]
             self._history.append(select_item.title)
             self.generate_current_elements()
@@ -246,7 +246,6 @@ class MenuItem(Graphic):
             self._graphic = TextGraphic(title)
             
     def render(self, ctx):
-        print('UESH RENDER')
         return self._graphic.render(ctx)
     
     def get_height(self):
