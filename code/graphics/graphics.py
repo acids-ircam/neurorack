@@ -127,6 +127,7 @@ class ScrollableGraphicScene(GraphicScene):
                 self._scroll_down = True
                 break
             ctx = item.render(ctx)
+            ctx["y"] += self._padding
             idx += 1
         self._max_index = idx
         #self.draw_scrollbars(ctx["draw"])
