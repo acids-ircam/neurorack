@@ -244,7 +244,7 @@ class MenuItem(Graphic):
         self._confirm: bool = confirm
         self._running: bool = False
         self._graphic: Graphic = None
-        if (self._type == 'menu' or self._type == 'shell' or self._tyoe == 'builtin'):
+        if (self._type == 'menu' or self._type == 'shell' or self._type == 'builtin'):
             self._graphic = TextGraphic(title)
             
     def render(self, ctx):
