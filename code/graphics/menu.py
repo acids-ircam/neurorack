@@ -15,7 +15,7 @@
 
 """
 import yaml
-from .graphics import Graphic, TextGraphic, ScrollableGraphicScene
+from .graphics import Graphic, TextGraphic, SliderGraphic, ScrollableGraphicScene
 from .config import config
 
 class Menu(ScrollableGraphicScene):
@@ -251,7 +251,7 @@ class MenuItem(Graphic):
         self._graphic: Graphic = None
         if (self._type == 'menu' or self._type == 'shell' or self._type == 'function'):
             self._graphic = TextGraphic(title)
-        elif (self.type == 'slider'):
+        elif (self._type == 'slider'):
             self._graphic = SliderGraphic(title, None)
             
     def render(self, ctx):
