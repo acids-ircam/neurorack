@@ -211,14 +211,14 @@ class SliderGraphic(TextGraphic):
         super().__init__(text, x, y, absolute, font, color, width, selected)
     
     def render(self, ctx=None):
-        self._text = str(self._dynamic_text.value)
         ctx = super().render(ctx)
         x, y = ctx["x"], ctx["y"]
         ctx["draw"].rectangle((x + 10, y, x + self._width - 10, y + 3), outline=config.colors.main, fill='#000000')
         ctx["draw"].rectangle((x + 10, y, x + (self._width / 2), y + 3), outline=None, fill=config.colors.main)
+        ctx["y"] += 5
     
     def get_height(self):
-        return self._font.getsize(self._text)[1] + 10
+        return self._font.getsize(self._text)[1] + 5
         
 class ImageGraphic(Graphic):
     
