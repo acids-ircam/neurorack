@@ -59,10 +59,10 @@ class Menu(ScrollableGraphicScene):
             self._config = yaml.load(file, Loader=yaml.FullLoader)
         self._root_menu = self._config["root"]
         self._current_menu = self._root_menu
-        self.generate_current_elements()
-        # Generate items menu
+        # Generate all items from menu
         for item in self._config["items"]:
             self._items[item] = MenuItem.create_item(item, self._config["items"][item])
+        self.generate_current_elements()
     
     def generate_current_elements(self):
         self._elements = []
@@ -70,7 +70,7 @@ class Menu(ScrollableGraphicScene):
             if (type(self._current_menu[item]) == dict):
                 self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
             else:
-                self._elements.append(MenuItem(title = item, type = 'builtin', command = ''))
+                self._elements.append(self._items[item])
         if (self._current_menu == self._root_menu):
             self._elements.append(MenuItem(title = config.menu.exit_element, type = 'menu', command = ''))
         else:
@@ -249,8 +249,10 @@ class MenuItem(Graphic):
         self._confirm: bool = confirm
         self._running: bool = False
         self._graphic: Graphic = None
-        if (self._type == 'menu' or self._type == 'shell' or self._type == 'builtin'):
+        if (self._type == 'menu' or self._type == 'shell' or self._type == 'function'):
             self._graphic = TextGraphic(title)
+        elif (self.type == 'slider'):
+            self._graphic = SliderGraphic(title, None)
             
     def render(self, ctx):
         return self._graphic.render(ctx)
@@ -315,9 +317,9 @@ class MenuItem(Graphic):
                 if self.__spinHandler is not None: self.__spinHandler(False)
                 if self.__outputHandler is not None: self.__outputHandler(self.__command, self.__returnCode, self.__output)
                 self.__running = False
-            if self.__type == COMMAND_BUILTIN:
-                if self.__command in Command.builtInCommands:
-                    x = Command.builtInCommands[self.__command](display)
+            if self.__type == COMMAND_function:
+                if self.__command in Command.functionCommands:
+                    x = Command.functionCommands[self.__command](display)
                     x.Run(stop=lambda : display.StopCommand, completed=self.__complete)
     #endregion
 

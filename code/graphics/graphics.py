@@ -141,12 +141,14 @@ class TextGraphic(Graphic):
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
+                 width: int = config.screen.width,
                  selected: bool = False):
         super().__init__(x, y, absolute)
         self._text = text
         self._font = font
         self._selected = selected
         self._color = color
+        self._width = width
         self.load()
     
     def load(self, ctx=None):
@@ -163,7 +165,7 @@ class TextGraphic(Graphic):
             x, y = self._x, self._y
         if (self._selected):
             color = config.text.color_select
-            ctx["draw"].rectangle((x, y, x+self.get_width(), y+self.get_height()), outline=color, fill=config.colors.main)
+            ctx["draw"].rectangle((x, y, x + self._width - 5, y+self.get_height()), outline=color, fill=config.colors.main)
         ctx["draw"].text((x, y), self._text, font = self._font, fill=color)
         if (not self._absolute):
             ctx["y"] += self.get_height()
@@ -184,14 +186,39 @@ class DynamicTextGraphic(TextGraphic):
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
+                 width: int = config.screen.width,
                  selected: bool = False):
-        super().__init__('', x, y, absolute, font, color, selected)
+        super().__init__('', x, y, absolute, font, color, width, selected)
         self._dynamic_text = text
         self._text = text.value
     
     def render(self, ctx=None):
         self._text = str(self._dynamic_text.value)
         return super().render(ctx)
+    
+class SliderGraphic(TextGraphic):
+    
+    def __init__(self, 
+                 text:str,
+                 value:multiprocessing.Value,
+                 x:int = config.screen.main_x, 
+                 y:int = config.screen.padding,
+                 absolute: bool = False,
+                 font: ImageFont = None,
+                 color: str = config.text.color_main,
+                 width: int = config.screen.width,
+                 selected: bool = False):
+        super().__init__(text, x, y, absolute, font, color, width, selected)
+    
+    def render(self, ctx=None):
+        self._text = str(self._dynamic_text.value)
+        ctx = super().render(ctx)
+        x, y = ctx["x"], ctx["y"]
+        ctx["draw"].rectangle((x + 10, y, x + self._width - 10, y + 3), outline=config.colors.main, fill='#000000')
+        ctx["draw"].rectangle((x + 10, y, x + (self._width / 2), y + 3), outline=None, fill=config.colors.main)
+    
+    def get_height(self):
+        return self._font.getsize(self._text)[1] + 10
         
 class ImageGraphic(Graphic):
     

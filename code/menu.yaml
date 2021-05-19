@@ -1,13 +1,16 @@
 root:
   Models:
+    Play: model_play
     Select: model_select
     Reload: model_reload
     Benchmark: model_benchmark
   Parameters:
     Volume: params_volume
+    Stereo: params_stereo
+    Stereo: params_stereo
   Assignment:
     Control Voltage: assign_cv
-    Knob: assign_knob
+    Button: assign_button
     Rotary: assign_rotary
   Admin:
     Statistics: admin_stats
@@ -17,9 +20,60 @@ root:
   About: about
 
 items:
+
+  model_play:
+    type: function
+    command: model_play
+    confirm: false
+    
   model_select:
     type: list
     command: sudo shutdown -h now
+    confirm: true
+
+  model_reload:
+    type: function
+    command: model_reload
+    confirm: true
+    
+  model_benchmark:
+    type: function
+    command: model_benchmark
+    confirm: true
+    
+  params_volume:
+    type: slider
+    command: params_volume
+    confirm: false
+    
+  params_stereo:
+    type: slider
+    command: params_volume
+    confirm: false
+    
+  assign_cv:
+    type: function
+    command: assign_cv
+    confirm: true
+    
+  assign_button:
+    type: function
+    command: assign_button
+    confirm: true
+    
+  assign_rotary:
+    type: function
+    command: assign_rotary
+    confirm: true
+  
+  admin_stats:
+    type: function
+    command: admin_stats
+    confirm: true
+    
+  about:
+    type: function
+    command: about
     confirm: true
     
   shutdown:
