@@ -71,6 +71,8 @@ class Menu(ScrollableGraphicScene):
                 self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
             else:
                 self._elements.append(MenuItem(title = item, type = 'builtin', command = ''))
+        print('GENERATED ELEMENTS')
+        print(self._elements)
 
     def process_select(self, 
                        select_index: int, 
@@ -248,6 +250,7 @@ class MenuItem(Graphic):
             self._graphic = TextGraphic(title)
             
     def render(self, ctx):
+        print('UESH RENDER')
         return self._graphic.render(ctx)
     
     def get_height(self):
