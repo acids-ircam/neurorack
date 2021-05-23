@@ -255,12 +255,12 @@ class SliderGraphic(TextGraphic):
         super().__init__(text, x, y, absolute, font, color, width, selected, active)
         self._value = value
         self._range_value = range_value
-        self._range = range_value[1] - range_value[0]
     
     def render(self, ctx=None):
         ctx = super().render(ctx)
         x, y = ctx["x"], ctx["y"]
         cur_value = self._value.value
+        self._range = self._range_value[1] - self._range_value[0]
         range_draw = ((cur_value - self.range_value[0]) / (self._range)) * self.width
         ctx["draw"].rounded_rectangle((x + 10, y, x + self._width - 10, y + 3), outline=config.colors.main, fill='#000000')
         ctx["draw"].rectangle((x + 10, y, x + range_draw, y + 3), outline=None, fill=config.colors.main)

@@ -50,6 +50,7 @@ class Menu(ScrollableGraphicScene):
         self._mode = config.menu.mode_basic
         self._signals = signals
         self._current_dialog = None
+        self._linked = False
         self.load()
 
     def load(self):
@@ -65,8 +66,6 @@ class Menu(ScrollableGraphicScene):
         # Generate all items from menu
         for item in self._config["items"]:
             self._items[item] = MenuItem.create_item(item, self._config["items"][item], signals = self._signals)
-        print(self._items)
-        print(self._current_menu)
         self.generate_current_elements()
     
     def generate_current_elements(self):
@@ -75,8 +74,6 @@ class Menu(ScrollableGraphicScene):
             if (type(self._current_menu[item]) == dict):
                 self._elements.append(MenuItem(title = item, signals = self._signals, type = 'menu', command = ''))
             else:
-                print(item)
-                print(self._items[self._current_menu[item]])
                 self._items[self._current_menu[item]]._title = item
                 self._items[self._current_menu[item]]._graphic._text = item
                 self._elements.append(self._items[self._current_menu[item]])
@@ -135,6 +132,17 @@ class Menu(ScrollableGraphicScene):
         else:
             command.Run(display=self.__disp, confirmed=config.menu.confirm_ok)
 
+    def link_parameters_state(self, state):
+        if (self._linked):
+            return
+        for item in self._config["items"]:
+            type_p = self._items[item]._type
+            if (type_p == 'slider'):
+                self._items[item]._graphic._value = state["audio"][self._items[item]._command]
+                self._items[item]._graphic._range_value = state["audio"][self._items[item]._command + '_range']
+        self._linked = True
+        
+
     def navigation_callback(self, state, event_type):
         """
             Delegate called by the Navigation model when a navigation event occurs on the GPIO. Handles 
@@ -148,6 +156,8 @@ class Menu(ScrollableGraphicScene):
                                 RIGHT_CLICK
                                 SELECT_CLICK
         """
+        # Check if all parameters are linked to their values
+        self.link_parameters_state(state)
         if (event_type == 'rotary'):
             direction = state['rotary_delta'].value
         if (self._mode == config.menu.mode_basic):

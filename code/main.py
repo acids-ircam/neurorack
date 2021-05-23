@@ -88,7 +88,9 @@ class Neurorack():
         self._state['audio']['mode'] = self._manager.Value(int, 0)
         self._state['audio']['event'] = self._manager.Value(str, '')
         self._state['audio']['volume'] = self._manager.Value(float, 1.0)
+        self._state['audio']['volume_range'] = [0.0, 1.0]
         self._state['audio']['stereo'] = self._manager.Value(int, 0)
+        self._state['audio']['stereo_range'] = [-1.0, 1.0]
         # Stats (cpu, memory) computing
         self._state['stats'] = self._manager.dict()
         self._state['stats']['ip'] = self._manager.Value(c_char_p, "ip".encode('utf-8'))
