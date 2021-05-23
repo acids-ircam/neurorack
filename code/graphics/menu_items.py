@@ -104,7 +104,7 @@ class MenuItem(Graphic):
           )
         return command
     
-    def run(self, state, confirmed=config.menu.confirm_cancel):
+    def run(self, state, params=None, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:
@@ -113,11 +113,14 @@ class MenuItem(Graphic):
                 confirmed:  int
                             Optional. Pass CONFIRM_OK to indicate the command has been confirmed. 
         """
-        if self._confirm and self.__confirmation_handler is not None and confirmed==CONFIRM_CANCEL:
-            self.__confirmationHandler(self)
+        print('[Pushed command ' + self._title)
+        if self._confirm and self._confirmation_handler is not None and confirmed == config.menu.confirm_cancel:
+            self._confirmation_handler(self)
         else:
-            self.__running = True
-            if self.__type == COMMAND_SHELL:
+            self._running = True
+            if self._type == 'function':
+                self.function_dispatcher[self._command](self, state, params)
+            elif self._type == 'shell':
                 if self.__spinHandler is not None: self.__spinHandler(True)
                 try:
                     #breakpoint()
@@ -134,10 +137,6 @@ class MenuItem(Graphic):
                 if self.__spinHandler is not None: self.__spinHandler(False)
                 if self.__outputHandler is not None: self.__outputHandler(self.__command, self.__returnCode, self.__output)
                 self.__running = False
-            if self.__type == COMMAND_function:
-                if self.__command in Command.functionCommands:
-                    x = Command.functionCommands[self.__command](display)
-                    x.Run(stop=lambda : display.StopCommand, completed=self.__complete)
     #endregion
 
     #region public class (static) methods
