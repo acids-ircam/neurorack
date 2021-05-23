@@ -13,8 +13,8 @@ class DDSP():
     def preload(self):
         self.model = torch.jit.load(self.m_path)
         self.model = self.model.cuda()
-        pitch = torch.randn(1, 2, 1).cuda()
-        loudness = torch.randn(1, 2, 1).cuda()
+        pitch = torch.randn(1, 200, 1).cuda()
+        loudness = torch.randn(1, 200, 1).cuda()
         for p in range(self.f_pass):
             with torch.no_grad():
                 audio = self.model(pitch, loudness)
