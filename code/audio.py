@@ -21,7 +21,7 @@ import sounddevice as sd
 from parallel import ProcessInput
 from models.ddsp import DDSP
 from multiprocessing import Event
-from .config import config
+from config import config
 
 class Audio(ProcessInput):
     '''
