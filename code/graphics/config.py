@@ -20,9 +20,10 @@ class config:
         
     class menu:
         mode_basic      = 0
-        mode_confirm    = 1
+        mode_dialog     = 1
         mode_output     = 2
-        mode_hidden     = 3
+        mode_wait       = 3
+        mode_hidden     = 4
         confirm_cancel  = 0
         confirm_ok      = 1
         back_element    = "< Back"
