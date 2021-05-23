@@ -49,6 +49,7 @@ class MenuItem(Graphic):
             self._graphic = TextGraphic(title)
         elif (self._type == 'slider'):
             self._graphic = SliderGraphic(title, None)
+        elif (self._type == 'list'):
             
     def render(self, ctx):
         return self._graphic.render(ctx)
