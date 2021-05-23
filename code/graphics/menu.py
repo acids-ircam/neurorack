@@ -103,7 +103,16 @@ class Menu(ScrollableGraphicScene):
             self.reset_menu()
         else:
             print(f"Execute {self._elements[select_index]._title}")
-            select_item.run(state)
+            if (select_item.type in ['function', 'shell']):
+                select_item.run(state)
+            elif (select_item.type in ['slider']):
+                if (select_item._graphic._active):
+                    select_item._graphic._active = False
+                    self._mode == config.menu.mode_basic
+                else:
+                    select_item._graphic._active = True
+                    self._mode = config.menu.mode_parameter
+                    
 
     def process_history(self, state):
         """
@@ -199,6 +208,13 @@ class Menu(ScrollableGraphicScene):
                 return
         elif (self._mode == config.menu.mode_dialog):
             self.process_dialog_select(event_type, direction)
+        elif (self._mode == config.menu.mode_parameter):
+            if (event_type == 'button'):
+                self.process_select(self._selected_index, self._elements[self._selected_index], state)
+            elif (event_type == 'rotary'):
+                var_range = self._elements[self._selected_index]._graphic._range_v / 100.0
+                param_name = self._elements[self._selected_index]._command
+                state["audio"][param_name].value += var_range * direction
 
     def render(self, ctx = None):
         if (self._mode == config.menu.mode_dialog):

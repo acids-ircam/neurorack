@@ -21,7 +21,7 @@ class config:
     class menu:
         mode_basic      = 0
         mode_dialog     = 1
-        mode_output     = 2
+        mode_parameter  = 2
         mode_wait       = 3
         mode_hidden     = 4
         confirm_cancel  = 0
