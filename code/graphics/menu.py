@@ -107,10 +107,10 @@ class Menu(ScrollableGraphicScene):
                 select_item.run(state)
             elif (select_item._type in ['slider']):
                 if (select_item._graphic._active):
-                    select_item._graphic._active = False
+                    self._elements[select_index]._graphic._active = False
                     self._mode == config.menu.mode_basic
                 else:
-                    select_item._graphic._active = True
+                    self._elements[select_index]._graphic._active = True
                     self._mode = config.menu.mode_parameter
                     
 
