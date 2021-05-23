@@ -139,7 +139,7 @@ class Menu(ScrollableGraphicScene):
             type_p = self._items[item]._type
             if (type_p == 'slider'):
                 self._items[item]._graphic._value = state["audio"][self._items[item]._command]
-                self._items[item]._graphic._range_value = state["audio"][self._items[item]._command + '_range']
+                self._items[item]._graphic._range = state["audio"][self._items[item]._command + '_range']
         self._linked = True
         
 
