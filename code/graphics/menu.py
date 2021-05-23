@@ -106,10 +106,13 @@ class Menu(ScrollableGraphicScene):
             if (select_item._type in ['function', 'shell']):
                 select_item.run(state)
             elif (select_item._type in ['slider']):
+                print(select_item._graphic._active)
                 if (select_item._graphic._active):
                     self._elements[select_index]._graphic._active = False
                     self._mode == config.menu.mode_basic
+                    print('UESH')
                 else:
+                    print('PAS UESH')
                     self._elements[select_index]._graphic._active = True
                     self._mode = config.menu.mode_parameter
                     
