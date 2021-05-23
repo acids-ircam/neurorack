@@ -44,6 +44,7 @@ class MenuItem(Graphic):
     #region constructor
     def __init__(self, 
                  title: str,
+                 signals: dict,
                  type: int, 
                  command: str, 
                  confirm: bool = False):
@@ -59,6 +60,7 @@ class MenuItem(Graphic):
         """
         self._title = title
         self._type: int = type
+        self._signals: dict = signals
         self._command: str = command
         self._output: str = ''
         self._confirm: bool = confirm
@@ -81,7 +83,7 @@ class MenuItem(Graphic):
         return self._graphic.get_width()
     
     @staticmethod
-    def create_item(title, data):
+    def create_item(title, data, signals):
         """
             Deserialized a command from YAML. 
             Parameters:
@@ -98,6 +100,7 @@ class MenuItem(Graphic):
             raise Exception(message)
         command = MenuItem(
             title,
+            signals,
             type = data["type"],
             command = data["command"],
             confirm = data["confirm"] if "confirm" in data.keys() else False
@@ -119,7 +122,7 @@ class MenuItem(Graphic):
         else:
             self._running = True
             if self._type == 'function':
-                self.function_dispatcher[self._command](self, state, params)
+                self.function_dispatcher[self._command](state, params)
             elif self._type == 'shell':
                 if self.__spinHandler is not None: self.__spinHandler(True)
                 try:

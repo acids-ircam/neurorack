@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-def model_play(state, signal, params):
+def model_play(state, signals, params):
     print('[Function] - Play model')
     state["audio"]["event"].value = 'play_model'
-    signal.set()
+    signals["audio"].set()
 
-def model_select(state, signal, params):
+def model_select(state, signals, params):
     print('[Function] - Select model')
     pass
 
-def model_reload(state, signal, params):
+def model_reload(state, signals, params):
     print('[Function] - Reload model')
     pass
 

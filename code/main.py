@@ -106,7 +106,13 @@ class Neurorack():
         self._signal_cvs =  self._cvs._signal
         self._signal_screen = self._screen._signal
         self._signal_button = self._button._signal
-        self._screen._signal_audio = self._signal_audio
+        signal_set = {
+            'audio': self._signal_audio, 
+            'rotary': self._signal_rotary, 
+            'cvs': self._signal_cvs, 
+            'screen': self._signal_screen,
+            'button': self._signal_button }
+        self._screen._signals = signal_set
     
     def set_callbacks(self):
         '''

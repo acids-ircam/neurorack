@@ -189,6 +189,8 @@ class Screen(ProcessInput):
         state["screen"]["event"].value = config.events.none
     
     def callback(self, state, queue):
+        # Set signals
+        self._menu_scene._signals = self._signals
         # Perform a first heavy update
         self.perform_update(state)
         # Initialize all graphic scenes
