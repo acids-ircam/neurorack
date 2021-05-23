@@ -105,7 +105,7 @@ class Menu(ScrollableGraphicScene):
             print(f"Execute {self._elements[select_index]._title}")
             if (select_item.type in ['function', 'shell']):
                 select_item.run(state)
-            elif (select_item.type in ['slider']):
+            elif (select_item._type in ['slider']):
                 if (select_item._graphic._active):
                     select_item._graphic._active = False
                     self._mode == config.menu.mode_basic
