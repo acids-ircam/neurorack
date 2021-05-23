@@ -195,7 +195,7 @@ class Menu(ScrollableGraphicScene):
             return self.current_dialog.render(ctx)
         elif (self._mode == config.menu.mode_dialog):
             return self.current_wait.render(ctx)
-        return super().render(self, ctx)
+        return super().render(ctx)
 
     def reset_menu(self):
         """
