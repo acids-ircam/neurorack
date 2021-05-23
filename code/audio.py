@@ -126,6 +126,7 @@ class Audio(ProcessInput):
         '''
         state["audio"]["mode"].value = config.audio.mode_play
         audio = self._model.generate_random()
+        audio = np.random.randn(2 * self._sr)
         print(audio.shape)
         sd.play(audio, self._sr)
         if (wait):
