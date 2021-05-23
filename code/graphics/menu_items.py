@@ -16,11 +16,30 @@
 """
 from .graphics import Graphic, TextGraphic, SliderGraphic
 from .config import config
+from .menu_functions import model_play, model_select, model_reload, model_benchmark
+from .menu_functions import params_volume, params_stereo, params_range
+from .menu_function import assign_cv, assign_button, assign_rotary
+from .menu_function import admin_stats, about
 
 class MenuItem(Graphic):    
     '''
     Represents a menu item
     '''
+    
+    function_dispatcher = {
+        'model_play': model_play,
+        'model_select': model_select,
+        'model_reload': model_reload,
+        'model_benchmark': model_benchmark,
+        'params_volume': params_volume,
+        'params_stereo': params_stereo,
+        'params_range': params_range,
+        'assign_cv': assign_cv,
+        'assign_button': assign_button,
+        'assign_rotary': assign_rotary,
+        'admin_stats': admin_stats,
+        'about': about
+    }
 
     #region constructor
     def __init__(self, 
@@ -85,7 +104,7 @@ class MenuItem(Graphic):
           )
         return command
     
-    def run(self, confirmed=config.menu.confirm_cancel):
+    def run(self, state, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:
@@ -94,7 +113,7 @@ class MenuItem(Graphic):
                 confirmed:  int
                             Optional. Pass CONFIRM_OK to indicate the command has been confirmed. 
         """
-        if self.__confirm and self.__confirmationHandler is not None and confirmed==CONFIRM_CANCEL:
+        if self._confirm and self.__confirmation_handler is not None and confirmed==CONFIRM_CANCEL:
             self.__confirmationHandler(self)
         else:
             self.__running = True

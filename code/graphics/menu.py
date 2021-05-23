@@ -107,12 +107,11 @@ class Menu(ScrollableGraphicScene):
             print(f"Execute {self._elements[select_index]._title}")
             self._items[self._current_menu[select_item]].run(state)
 
-    def process_history(self):
+    def process_history(self, state):
         """
             Delegate to respond to the navigate uo event on the controller tactile Up button. Loads the 
             previous menu. 
         """
-        items = []
         self._history.pop()
         for level in self._history:
             if level == "": 
@@ -133,24 +132,7 @@ class Menu(ScrollableGraphicScene):
         """
         if confirmState == config.menu.confirm_cancel: self.__disp.DrawMenu()
         else:
-            command.Run(display=self.__disp, confirmed=config.menu.confirm_ok)    
-        
-    def Spinner(self, run=True):
-        """
-            Loads the spinner screen while a command executes. This will start a background thread when invoked with run=True and 
-            derminate the thread (and spinner) when invoked with run=False
-            Parameters:
-                run:    bool
-                        Optional. Pass True to start the spinner, false to derminate the spinner.
-        """
-        if run==True:
-            self.__stopSpinner = False
-            self.__spinnerThread = threading.Thread(target=self.__drawSpinner, name="spinner", args=(lambda : self.__stopSpinner, ))
-            self.__spinnerThread.start()
-        else:
-            if self.__spinnerThread is None: return
-            self.__stopSpinner = True
-            self.__spinnerThread.join()
+            command.Run(display=self.__disp, confirmed=config.menu.confirm_ok)
 
     def navigation_callback(self, state, event_type):
         """
@@ -203,27 +185,6 @@ class Menu(ScrollableGraphicScene):
                 elif self._selected_index > -1: 
                     self.process_select(self._selected_index, self._elements[self._selected_index], state)
                 return
-        
-        """
-        if eventType is LEFT_CLICK and self.__mode == MODE_MENU and self.__upCallback: 
-            self.__upCallback()
-            return
-        if eventType is SELECT_CLICK and self.__mode == MODE_CONFIRM and self.__confirmCallback:
-            self.__confirmCallback(self.__confirmCommand, self.__confirmState)
-            return
-        if eventType is SELECT_CLICK and self.__mode == MODE_OUTPUT:
-            self.DrawMenu()
-            return
-        if self.__mode == MODE_EXTERNAL and (eventType is SELECT_CLICK or eventType is LEFT_CLICK):
-            self.__stopCommand = True
-            return
-        if eventType is LEFT_CLICK and self.__mode == MODE_CONFIRM: 
-            self.DrawConfirmation(state=CONFIRM_OK)
-            return
-        if eventType is RIGHT_CLICK and self.__mode == MODE_CONFIRM: 
-            self.DrawConfirmation(state=CONFIRM_CANCEL)
-            return
-        """
 
     def reset_menu(self):
         """
