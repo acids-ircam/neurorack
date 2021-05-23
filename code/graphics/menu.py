@@ -15,6 +15,7 @@
 
 """
 import yaml
+import multiprocessing
 from .graphics import ScrollableGraphicScene
 from .config import config
 from .menu_items import MenuItem
@@ -85,7 +86,8 @@ class Menu(ScrollableGraphicScene):
 
     def process_select(self, 
                        select_index: int, 
-                       select_item: str):
+                       select_item: str,
+                       state: multiprocessing.Manager):
         """
             Delegate to respond to a select event on the controller tactile select button. Invokes either
             navigation to a submenu or command execution. 
@@ -95,7 +97,6 @@ class Menu(ScrollableGraphicScene):
                 select_item:    [str]
                                 The selected menu item
         """
-        items = [".."]
         if self._elements[select_index]._type == 'menu':
             print(f"Load {self._elements[select_index]._title}")
             self._current_menu = self._current_menu[select_item._title]
@@ -104,7 +105,7 @@ class Menu(ScrollableGraphicScene):
             self.reset_menu()
         else:
             print(f"Execute {self._elements[select_index]._title}")
-            self._items[self._current_menu[select_item]].run()
+            self._items[self._current_menu[select_item]].run(state)
 
     def process_history(self):
         """
@@ -192,7 +193,7 @@ class Menu(ScrollableGraphicScene):
                 return
             if (event_type == 'button'):
                 if self._elements[self._selected_index]._title == config.menu.back_element:
-                    self.process_history()
+                    self.process_history(state)
                     self.reset_menu()
                 elif self._elements[self._selected_index]._title == config.menu.exit_element:
                     self.reset_menu()
@@ -200,7 +201,7 @@ class Menu(ScrollableGraphicScene):
                     self._screen_signal.set()
                     return
                 elif self._selected_index > -1: 
-                    self.process_select(self._selected_index, self._elements[self._selected_index])
+                    self.process_select(self._selected_index, self._elements[self._selected_index], state)
                 return
         
         """
