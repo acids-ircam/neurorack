@@ -105,9 +105,7 @@ class Menu(ScrollableGraphicScene):
             self.reset_menu()
         else:
             print(f"Execute {self._elements[select_index]._title}")
-            print(self._elements[select_index])
-            print(self._current_menu[select_item])
-            self._items[self._current_menu[select_item]].run(state)
+            select_item.run(state)
 
     def process_history(self, state):
         """
