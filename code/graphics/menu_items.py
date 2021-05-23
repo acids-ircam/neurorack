@@ -18,8 +18,8 @@ from .graphics import Graphic, TextGraphic, SliderGraphic
 from .config import config
 from .menu_functions import model_play, model_select, model_reload, model_benchmark
 from .menu_functions import params_volume, params_stereo, params_range
-from .menu_function import assign_cv, assign_button, assign_rotary
-from .menu_function import admin_stats, about
+from .menu_functions import assign_cv, assign_button, assign_rotary
+from .menu_functions import admin_stats, about
 
 class MenuItem(Graphic):    
     '''
