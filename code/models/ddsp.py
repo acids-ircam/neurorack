@@ -20,17 +20,17 @@ class DDSP():
                 audio = self.model(pitch, loudness)
                 
     def generate_random(self, length=200):
-        pitch = torch.randn(1, 200, 1).cuda()
-        loudness = torch.randn(1, 200, 1).cuda()
+        pitch = torch.randn(1, length, 1).cuda()
+        loudness = torch.randn(1, length, 1).cuda()
         with torch.no_grad():
-            audio = model(pitch, loudness)
+            audio = self.model(pitch, loudness)
         return audio
 
     def generate(self, pitch, loudness):
         pitch = pitch.cuda()
         loudness = loudness.cuda()
         with torch.no_grad():
-            audio = model(pitch, loudness)
+            audio = self.model(pitch, loudness)
         return audio
 
         

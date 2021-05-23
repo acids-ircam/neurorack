@@ -101,7 +101,7 @@ class Audio(ProcessInput):
             The first PyTorch Tensor creation is extremely slow.
             Therefore, we just make two useless pass during the init.
         '''
-        self._model.generate_random()
+        self._model.preload()
 
     def play_noise(self, wait: bool = True, length: float = 4.0):
         '''
