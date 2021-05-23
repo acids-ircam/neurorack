@@ -261,7 +261,7 @@ class SliderGraphic(TextGraphic):
         x, y = ctx["x"], ctx["y"]
         cur_value = self._value.value
         self._range_v = self._range[1] - self._range[0]
-        range_draw = ((cur_value - self._range[0]) / (self._range_v)) * self.width
+        range_draw = ((cur_value - self._range[0]) / (self._range_v)) * self._width
         ctx["draw"].rounded_rectangle((x + 10, y, x + self._width - 10, y + 3), outline=config.colors.main, fill='#000000')
         ctx["draw"].rectangle((x + 10, y, x + range_draw, y + 3), outline=None, fill=config.colors.main)
         ctx["y"] += 5
