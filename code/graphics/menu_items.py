@@ -83,7 +83,7 @@ class MenuItem(Graphic):
           )
         return command
     
-    def Run(self, confirmed=config.menu.confirm_cancel):
+    def run(self, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:

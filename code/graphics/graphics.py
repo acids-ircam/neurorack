@@ -141,7 +141,7 @@ class TextGraphic(Graphic):
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
-                 width: int = config.screen.width+40,
+                 width: int = config.screen.width+80,
                  selected: bool = False):
         super().__init__(x, y, absolute)
         self._text = text
