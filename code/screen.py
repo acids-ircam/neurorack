@@ -149,7 +149,8 @@ class Screen(ProcessInput):
             height = self._height,
             width = self._width,
             absolute = True,
-            screen_signal = self._signal)
+            signals = self._signals)
+        
 
     def startup_animation(self):
         header = 'Neurorack'
@@ -189,8 +190,6 @@ class Screen(ProcessInput):
         state["screen"]["event"].value = config.events.none
     
     def callback(self, state, queue):
-        # Set signals
-        self._menu_scene._signals = self._signals
         # Perform a first heavy update
         self.perform_update(state)
         # Initialize all graphic scenes
