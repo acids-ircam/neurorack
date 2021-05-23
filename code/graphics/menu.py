@@ -106,13 +106,10 @@ class Menu(ScrollableGraphicScene):
             if (select_item._type in ['function', 'shell']):
                 select_item.run(state)
             elif (select_item._type in ['slider']):
-                print(select_item._graphic._active)
                 if (select_item._graphic._active):
                     self._elements[select_index]._graphic._active = False
-                    self._mode == config.menu.mode_basic
-                    print('UESH')
+                    self._mode = config.menu.mode_basic
                 else:
-                    print('PAS UESH')
                     self._elements[select_index]._graphic._active = True
                     self._mode = config.menu.mode_parameter
                     
@@ -173,7 +170,6 @@ class Menu(ScrollableGraphicScene):
         if (event_type == 'rotary'):
             direction = state['rotary_delta'].value
         if (self._mode == config.menu.mode_basic):
-            print('IN BASIC')
             if (event_type == 'rotary'): 
                 if (direction > 0):
                     if self._selected_index == self._max_index - 1 and self._scroll_down is False: 
@@ -213,15 +209,10 @@ class Menu(ScrollableGraphicScene):
         elif (self._mode == config.menu.mode_dialog):
             self.process_dialog_select(event_type, direction)
         elif (self._mode == config.menu.mode_parameter):
-            print('IN PARAM')
             if (event_type == 'button'):
-                print(self._mode)
-                print(self._selected_index)
-                print(self._elements[self._selected_index])
                 self.process_select(self._selected_index, self._elements[self._selected_index], state)
-                print(self._mode)
             elif (event_type == 'rotary'):
-                var_range = self._elements[self._selected_index]._graphic._range_v / 100.0
+                var_range = self._elements[self._selected_index]._graphic._range_v / 50.0
                 param_name = self._elements[self._selected_index]._command
                 state["audio"][param_name].value += var_range * direction
 
