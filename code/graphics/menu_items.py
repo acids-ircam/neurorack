@@ -31,7 +31,7 @@ class MenuItem(Graphic):
         'model_benchmark': model_benchmark,
         'assign_cv': assign_cv,
         'assign_button': assign_button,
-        'assign_rotary': assign_rotary,
+        'assign_rotary': assign_rotary
     }
 
     #region constructor

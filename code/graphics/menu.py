@@ -49,6 +49,7 @@ class Menu(ScrollableGraphicScene):
         self._history = [""]
         self._mode = config.menu.mode_basic
         self._signals = signals
+        self._current_dialog = None
         self.load()
 
     def load(self):
@@ -186,7 +187,15 @@ class Menu(ScrollableGraphicScene):
                 elif self._selected_index > -1: 
                     self.process_select(self._selected_index, self._elements[self._selected_index], state)
                 return
-        elif (self._mode == )
+        elif (self._mode == config.menu.mode_dialog):
+            self.process_dialog_select(event_type, direction)
+
+    def render(self, ctx = None):
+        if (self._mode == config.menu.mode_dialog):
+            return self.current_dialog.render(ctx)
+        elif (self._mode == config.menu.mode_dialog):
+            return self.current_wait.render(ctx)
+        return super().render(self, ctx)
 
     def reset_menu(self):
         """
