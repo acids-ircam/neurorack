@@ -122,7 +122,7 @@ class MenuItem(Graphic):
         else:
             self._running = True
             if self._type == 'function':
-                self.function_dispatcher[self._command](state, params)
+                self.function_dispatcher[self._command](state, self._signals, params)
             elif self._type == 'shell':
                 if self.__spinHandler is not None: self.__spinHandler(True)
                 try:
