@@ -17,9 +17,7 @@
 from .graphics import Graphic, TextGraphic, SliderGraphic
 from .config import config
 from .menu_functions import model_play, model_select, model_reload, model_benchmark
-from .menu_functions import params_volume, params_stereo, params_range
 from .menu_functions import assign_cv, assign_button, assign_rotary
-from .menu_functions import admin_stats, about
 
 class MenuItem(Graphic):    
     '''
@@ -31,14 +29,9 @@ class MenuItem(Graphic):
         'model_select': model_select,
         'model_reload': model_reload,
         'model_benchmark': model_benchmark,
-        'params_volume': params_volume,
-        'params_stereo': params_stereo,
-        'params_range': params_range,
         'assign_cv': assign_cv,
         'assign_button': assign_button,
         'assign_rotary': assign_rotary,
-        'admin_stats': admin_stats,
-        'about': about
     }
 
     #region constructor
@@ -65,6 +58,7 @@ class MenuItem(Graphic):
         self._output: str = ''
         self._confirm: bool = confirm
         self._running: bool = False
+        self._active: bool = False
         self._graphic: Graphic = None
         if (self._type == 'menu' or self._type == 'shell' or self._type == 'function'):
             self._graphic = TextGraphic(title)

@@ -24,6 +24,16 @@ class Graphic():
                  x:int = config.screen.main_x, 
                  y:int = config.screen.padding,
                  absolute: bool = False):
+        '''
+            Constructor. Creates a new instance of the ContollerMenu class. 
+            Paramters: 
+                x:          [int]
+                            Absolute X position
+                y:          [int]
+                            Absolute Y position
+                absolute:   [bool]
+                            Draw in absolute position
+        '''
         self._x = x
         self._y = y
         self._absolute = absolute
@@ -142,11 +152,13 @@ class TextGraphic(Graphic):
                  font: ImageFont = None,
                  color: str = config.text.color_main,
                  width: int = config.screen.width+60,
-                 selected: bool = False):
+                 selected: bool = False,
+                 active:bool = False):
         super().__init__(x, y, absolute)
         self._text = text
         self._font = font
         self._selected = selected
+        self._active = active
         self._color = color
         self._width = width
         self.load()
@@ -163,8 +175,11 @@ class TextGraphic(Graphic):
         x, y = ctx["x"], ctx["y"]
         if (self._absolute):
             x, y = self._x, self._y
-        if (self._selected):
+        if (self._selected and not self._active):
             color = config.text.color_select
+            ctx["draw"].rectangle((x, y, x + self._width - 5, y+self.get_height()), outline=color, fill=config.colors.main)
+        if (self._active):
+            color = config.text.color_alt
             ctx["draw"].rectangle((x, y, x + self._width - 5, y+self.get_height()), outline=color, fill=config.colors.main)
         ctx["draw"].text((x, y), self._text, font = self._font, fill=color)
         if (not self._absolute):
@@ -187,8 +202,9 @@ class DynamicTextGraphic(TextGraphic):
                  font: ImageFont = None,
                  color: str = config.text.color_main,
                  width: int = config.screen.width+40,
-                 selected: bool = False):
-        super().__init__('', x, y, absolute, font, color, width, selected)
+                 selected: bool = False,
+                 active:bool = False):
+        super().__init__('', x, y, absolute, font, color, width, selected, active)
         self._dynamic_text = text
         self._text = text.value
     
@@ -196,25 +212,58 @@ class DynamicTextGraphic(TextGraphic):
         self._text = str(self._dynamic_text.value)
         return super().render(ctx)
     
+class ButtonGraphic(TextGraphic):
+    
+    def __init__(self, 
+                 text:str,
+                 x:int = config.screen.main_x, 
+                 y:int = config.screen.padding,
+                 absolute: bool = False,
+                 font: ImageFont = None,
+                 color: str = config.text.color_main,
+                 height: int = config.screen.height+40,
+                 width: int = config.screen.width+40,
+                 selected: bool = False,
+                 active: bool = False):
+        super().__init__(text, x, y, absolute, font, color, width, selected)
+    
+    def render(self, ctx=None):
+        x, y = self._x, self._y
+        ctx["draw"].rounded_rectangle((x, y, x + self._width, y + self._height), radius = 2, outline=config.colors.main, fill='#000000')
+        if (self._selected):
+            ctx["draw"].rounded_rectangle((x, y, x + self._width, y + self._height), outline=config.colors.main, fill=config.colors.alt)
+        select = self._selected
+        self._selected = False
+        ctx = super().render(ctx)
+        self._selected = select
+        return ctx
+    
 class SliderGraphic(TextGraphic):
     
     def __init__(self, 
                  text:str,
                  value:multiprocessing.Value,
+                 range_value:list = [0.0, 1.0],
                  x:int = config.screen.main_x, 
                  y:int = config.screen.padding,
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
                  width: int = config.screen.width+40,
-                 selected: bool = False):
-        super().__init__(text, x, y, absolute, font, color, width, selected)
+                 selected: bool = False,
+                 active:bool = False):
+        super().__init__(text, x, y, absolute, active, font, color, width, selected, active)
+        self._value = value
+        self._range_value = range_value
+        self._range = range_value[1] - range_value[0]
     
     def render(self, ctx=None):
         ctx = super().render(ctx)
         x, y = ctx["x"], ctx["y"]
-        ctx["draw"].rectangle((x + 10, y, x + self._width - 10, y + 3), outline=config.colors.main, fill='#000000')
-        ctx["draw"].rectangle((x + 10, y, x + (self._width / 2), y + 3), outline=None, fill=config.colors.main)
+        cur_value = self._value.value
+        range_draw = ((cur_value - self.range_value[0]) / (self._range)) * self.width
+        ctx["draw"].rounded_rectangle((x + 10, y, x + self._width - 10, y + 3), outline=config.colors.main, fill='#000000')
+        ctx["draw"].rectangle((x + 10, y, x + range_draw, y + 3), outline=None, fill=config.colors.main)
         ctx["y"] += 5
         return ctx
     

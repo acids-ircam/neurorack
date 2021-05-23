@@ -14,18 +14,48 @@
 
 """
 
-class Dialog():
+from .graphics import ScrollableGraphicScene, ButtonGraphic, TextGraphic
+from config import config
+
+class Dialog(ScrollableGraphicScene):
     
-    def __init__(self):
-        pass
+    def __init__(self,
+                 x:int = config.screen.main_x, 
+                 y:int = config.screen.padding,
+                 absolute: bool = True,
+                 selectable: bool = True,
+                 height:int = config.screen.height, 
+                 width:int = config.screen.width,
+                 padding:int = 5,
+                 elements: list = []):
+        super().__init__(x, y, absolute, selectable, height, width, padding, elements)
 
     def render(self, ctx=None):
-        raise NotImplementedError
+        x, y = self._x, self._y
+        ctx["draw"].rounded_rectangle((x, y, x + self._width, y + self._height), radius = 2,  outline=config.colors.main, fill='#000000')
+        return super.render(ctx)
         
 class ConfirmDialog(Dialog):
     
-    def __init__(self):
-        super().__init__()
+    def __init__(self,
+                 text: str = None,
+                 x:int = config.screen.main_x, 
+                 y:int = config.screen.padding,
+                 absolute: bool = True,
+                 selectable: bool = False,
+                 height:int = config.screen.height, 
+                 width:int = config.screen.width,
+                 padding:int = 5,
+                 elements: list = []):
+        super().__init__(x, y, absolute, selectable, height, width, padding, elements)
+        # Add title
+        if (text is None):
+            text = config.menu.msg_proceed
+        self._text = text
+        self._elements.append(TextGraphic(self._text, x=x//4, y=y//3, absolute=True, selectable=False))
+        # Add OK button
+        self._elements.append(ButtonGraphic(config.menu.msg_ok, x=x//4, y=2*y//3, width=x//5, absolute=True, selectable=True))
+        self._elements.append(ButtonGraphic(config.menu.msg_cancel, x=3*x//4, y=2*y//3, width=x//5, absolute=True, selectable=True))
 
     def render(self, ctx=None):
         """
@@ -64,6 +94,7 @@ class ConfirmDialog(Dialog):
         self.__draw.text(c3, MSG_OK, font=self.__font, fill="#000000")
         self.__draw.text(c4, MSG_CANCEL, font=self.__font, fill="#000000")
         self.__disp.LCD_ShowImage(self.__image)
+        return super.render(ctx)
         
 class SpinnerDialog(Dialog):
     

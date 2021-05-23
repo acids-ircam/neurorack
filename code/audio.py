@@ -54,11 +54,14 @@ class Audio(ProcessInput):
         self.set_defaults()
         self._model_name = model
         # Set model
-        if (model == 'ddsp'):
+        self.load_model()
+    
+    def load_model(self):
+        if (self._model_name == 'ddsp'):
             self._model = DDSP()
         else:
             raise NotImplementedError
-            
+    
     def callback(self, state, queue):
         # First perform a model burn-in
         print('Performing model burn-in')
@@ -77,8 +80,15 @@ class Audio(ProcessInput):
                 
     def handle_signal_event(self, state):
         cur_event = state["audio"]["event"].value
-        if (cur_event == "play_model"):
+        if (cur_event == "model_play"):
             self.play_model(state)
+        elif (cur_event == "model_reload"):
+            self.load_model()
+            self.model_burnin()
+        elif (cur_event == "model_select"):
+            self._model_name = state["audio"]["model"].value
+            self.load_model()
+            self.model_burnin()
         state["audio"]["event"].value = ''
                 
     def set_defaults(self):

@@ -150,30 +150,31 @@ class Menu(ScrollableGraphicScene):
         if (event_type == 'rotary'):
             direction = state['rotary_delta'].value
         if (self._mode == config.menu.mode_basic):
-            if (event_type == 'rotary' and direction > 0):
-                if self._selected_index == self._max_index - 1 and self._scroll_down is False: 
-                    return
-                if (self._selected_index >= 0):
-                    self._elements[self._selected_index]._graphic._selected = False
-                if self._selected_index == self._max_index - 1: 
-                    self._scroll_start +=1
-                self._selected_index += 1
-                self._elements[self._selected_index]._graphic._selected = True
-                return
-            if (event_type == 'rotary' and direction < 0):
-                if self._selected_index == 0 and self._scroll_up is False: 
-                    return
-                if self._selected_index == -1: 
-                    self._selected_index = 0
-                    self._scroll_start = 0
-                else:
-                    self._elements[self._selected_index]._graphic._selected = False
-                    if self._selected_index == self._scroll_start: 
-                        self._scroll_start -= 1
-                    self._selected_index -= 1
+            if (event_type == 'rotary'): 
+                if (direction > 0):
+                    if self._selected_index == self._max_index - 1 and self._scroll_down is False: 
+                        return
+                    if (self._selected_index >= 0):
+                        self._elements[self._selected_index]._graphic._selected = False
+                    if self._selected_index == self._max_index - 1: 
+                        self._scroll_start +=1
+                    self._selected_index += 1
                     self._elements[self._selected_index]._graphic._selected = True
-                return
-            if (event_type == 'button'):
+                    return
+                if (direction < 0):
+                    if self._selected_index == 0 and self._scroll_up is False: 
+                        return
+                    if self._selected_index == -1: 
+                        self._selected_index = 0
+                        self._scroll_start = 0
+                    else:
+                        self._elements[self._selected_index]._graphic._selected = False
+                        if self._selected_index == self._scroll_start: 
+                            self._scroll_start -= 1
+                        self._selected_index -= 1
+                        self._elements[self._selected_index]._graphic._selected = True
+                    return
+            elif (event_type == 'button'):
                 if self._elements[self._selected_index]._title == config.menu.back_element:
                     self.process_history(state)
                     self.reset_menu()
@@ -185,6 +186,7 @@ class Menu(ScrollableGraphicScene):
                 elif self._selected_index > -1: 
                     self.process_select(self._selected_index, self._elements[self._selected_index], state)
                 return
+        elif (self._mode == )
 
     def reset_menu(self):
         """

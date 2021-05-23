@@ -43,17 +43,17 @@ items:
     
   params_volume:
     type: slider
-    command: params_volume
+    command: volume
     confirm: false
     
   params_stereo:
     type: slider
-    command: params_volume
+    command: stereo
     confirm: false
     
   params_range:
     type: slider
-    command: params_volume
+    command: range
     confirm: false
     
   assign_cv:
