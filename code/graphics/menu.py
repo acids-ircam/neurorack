@@ -73,9 +73,7 @@ class Menu(ScrollableGraphicScene):
             if (type(self._current_menu[item]) == dict):
                 self._elements.append(MenuItem(title = item, type = 'menu', command = ''))
             else:
-                print(item)
-                print(self._current_menu[item])
-                self._items[self._current_menu[item]]._title = item
+                self._items[self._current_menu[item]]._text = item
                 self._elements.append(self._items[self._current_menu[item]])
         if (self._current_menu == self._root_menu):
             self._elements.append(MenuItem(title = config.menu.exit_element, type = 'menu', command = ''))
