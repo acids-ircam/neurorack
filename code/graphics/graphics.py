@@ -252,7 +252,7 @@ class SliderGraphic(TextGraphic):
                  width: int = config.screen.width+40,
                  selected: bool = False,
                  active:bool = False):
-        super().__init__(text, x, y, absolute, active, font, color, width, selected, active)
+        super().__init__(text, x, y, absolute, font, color, width, selected, active)
         self._value = value
         self._range_value = range_value
         self._range = range_value[1] - range_value[0]
