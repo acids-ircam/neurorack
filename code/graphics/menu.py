@@ -213,6 +213,8 @@ class Menu(ScrollableGraphicScene):
             print('IN PARAM')
             if (event_type == 'button'):
                 print(self._mode)
+                print(self._selected_index)
+                print(self._elements[self._selected_index])
                 self.process_select(self._selected_index, self._elements[self._selected_index], state)
                 print(self._mode)
             elif (event_type == 'rotary'):
