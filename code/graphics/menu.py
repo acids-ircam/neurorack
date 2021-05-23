@@ -170,6 +170,7 @@ class Menu(ScrollableGraphicScene):
         if (event_type == 'rotary'):
             direction = state['rotary_delta'].value
         if (self._mode == config.menu.mode_basic):
+            print('IN BASIC')
             if (event_type == 'rotary'): 
                 if (direction > 0):
                     if self._selected_index == self._max_index - 1 and self._scroll_down is False: 
@@ -209,8 +210,11 @@ class Menu(ScrollableGraphicScene):
         elif (self._mode == config.menu.mode_dialog):
             self.process_dialog_select(event_type, direction)
         elif (self._mode == config.menu.mode_parameter):
+            print('IN PARAM')
             if (event_type == 'button'):
+                print(self._mode)
                 self.process_select(self._selected_index, self._elements[self._selected_index], state)
+                print(self._mode)
             elif (event_type == 'rotary'):
                 var_range = self._elements[self._selected_index]._graphic._range_v / 100.0
                 param_name = self._elements[self._selected_index]._command
