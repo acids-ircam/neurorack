@@ -21,6 +21,7 @@ import sounddevice as sd
 from parallel import ProcessInput
 from models.ddsp import DDSP
 from multiprocessing import Event
+from .config import config
 
 class Audio(ProcessInput):
     '''
@@ -57,7 +58,29 @@ class Audio(ProcessInput):
             self._model = DDSP()
         else:
             raise NotImplementedError
-    
+            
+    def callback(self, state, queue):
+        # First perform a model burn-in
+        print('Performing model burn-in')
+        state["audio"]["mode"].value = config.audio.mode_burnin
+        self.model_burn_in()
+        # Then switch to wait (idle) mode
+        print('Audio ready')
+        state["audio"]["mode"].value = config.audio.mode_idle
+        # Perform display loop
+        while True:
+            self._signal.wait(1000.0)
+            if (self._signal.is_set()):
+                # The refresh comes from an external signal
+                self._signal.clear()
+                self.handle_signal_event(state)
+                
+    def handle_signal_event(self, state):
+        cur_event = state["audio"]["event"].value
+        if (cur_event == "play_model"):
+            self.play_model(state)
+        state["audio"]["event"].value = ''
+                
     def set_defaults(self):
         '''
             Sets default parameters for the soundevice library.
@@ -94,17 +117,19 @@ class Audio(ProcessInput):
         if (wait):
             self.wait_playback()
 
-    def play_model(self, wait: bool = True):
+    def play_model(self, state, wait: bool = True):
         '''
             Play some random noise of a given length for checkup.
             Parameters:
                 wait:       [bool], optional
                             Wait on the end of the playback
         '''
+        state["audio"]["mode"].value = config.audio.mode_play
         audio = self._model.generate_random()
         sd.play(audio, self._sr)
         if (wait):
             self.wait_playback()
+        state["audio"]["mode"].value = config.audio.mode_idle
             
     def input_through(self, length: float = 4.0):
         '''

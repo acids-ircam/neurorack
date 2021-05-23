@@ -85,6 +85,10 @@ class Neurorack():
         self._state['screen']['event'] = self._manager.Value(int, 0)
         # Audio-related parameters (dict)
         self._state['audio'] = self._manager.dict()
+        self._state['audio']['mode'] = self._manager.Value(int, 0)
+        self._state['audio']['event'] = self._manager.Value(str, '')
+        self._state['audio']['volume'] = self._manager.Value(float, 1.0)
+        self._state['audio']['stereo'] = self._manager.Value(int, 0)
         # Stats (cpu, memory) computing
         self._state['stats'] = self._manager.dict()
         self._state['stats']['ip'] = self._manager.Value(c_char_p, "ip".encode('utf-8'))
@@ -102,6 +106,7 @@ class Neurorack():
         self._signal_cvs =  self._cvs._signal
         self._signal_screen = self._screen._signal
         self._signal_button = self._button._signal
+        self._screen._signal_audio = self._signal_audio
     
     def set_callbacks(self):
         '''

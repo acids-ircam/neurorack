@@ -144,8 +144,8 @@ class Screen(ProcessInput):
             )
         self._menu_scene = Menu(
             config_file = "./menu.yaml",
-            x = 10,
-            y = 10,
+            x = 20,
+            y = 20,
             height = self._height,
             width = self._width,
             absolute = True,

@@ -20,7 +20,19 @@ class config:
         # Display config
         padding     = -2
         main_x      = 0
-        bg_image    = './data/acids.png'
+        bg_image    = './data/acids.png' 
+    
+    # Global audio info
+    class audio:
+        # Screen modes
+        mode_idle   = 0
+        mode_burnin = 1
+        mode_play   = 2
+        mode_rec    = 3
+        mode_busy   = 4
+        # General screen properties
+        volume      = 1.0
+        stereo      = 0.0
     
     class events:
         none        = -1

@@ -7,7 +7,7 @@ root:
   Parameters:
     Volume: params_volume
     Stereo: params_stereo
-    Stereo: params_stereo
+    Range: params_range
   Assignment:
     Control Voltage: assign_cv
     Button: assign_button
@@ -28,7 +28,7 @@ items:
     
   model_select:
     type: list
-    command: sudo shutdown -h now
+    command: model_select
     confirm: true
 
   model_reload:
@@ -47,6 +47,11 @@ items:
     confirm: false
     
   params_stereo:
+    type: slider
+    command: params_volume
+    confirm: false
+    
+  params_range:
     type: slider
     command: params_volume
     confirm: false
@@ -85,8 +90,3 @@ items:
     type: shell
     command: sudo shutdown -r now
     confirm: true
-
-  admin_stats:
-    type: function
-    command: display_stats
-    confirm: false
