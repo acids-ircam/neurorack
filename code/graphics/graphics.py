@@ -183,7 +183,7 @@ class TextGraphic(Graphic):
             ctx["draw"].rectangle((x, y, x + self._width - 5, y+self.get_height()), outline=color, fill=config.colors.main)
         ctx["draw"].text((x, y), self._text, font = self._font, fill=color)
         if (not self._absolute):
-            ctx["y"] += self.get_height()
+            ctx["y"] += self._font.getsize(self._text)[1]
         return ctx
     
     def get_height(self):
