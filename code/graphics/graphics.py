@@ -221,11 +221,12 @@ class ButtonGraphic(TextGraphic):
                  absolute: bool = False,
                  font: ImageFont = None,
                  color: str = config.text.color_main,
-                 height: int = config.screen.height+40,
+                 height: int = 40,
                  width: int = config.screen.width+40,
                  selected: bool = False,
                  active: bool = False):
         super().__init__(text, x, y, absolute, font, color, width, selected)
+        self._height = height
     
     def render(self, ctx=None):
         x, y = self._x, self._y
