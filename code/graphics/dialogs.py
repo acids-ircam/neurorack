@@ -52,10 +52,10 @@ class ConfirmDialog(Dialog):
         if (text is None):
             text = config.menu.msg_proceed
         self._text = text
-        self._elements.append(TextGraphic(self._text, x=x//4, y=y//3, absolute=True, selectable=False))
+        self._elements.append(TextGraphic(self._text, x=x//4, y=y//3, absolute=True))
         # Add OK button
-        self._elements.append(ButtonGraphic(config.menu.msg_ok, x=x//4, y=2*y//3, width=x//5, absolute=True, selectable=True))
-        self._elements.append(ButtonGraphic(config.menu.msg_cancel, x=3*x//4, y=2*y//3, width=x//5, absolute=True, selectable=True))
+        self._elements.append(ButtonGraphic(config.menu.msg_ok, x=x//4, y=2*y//3, width=x//5, absolute=True))
+        self._elements.append(ButtonGraphic(config.menu.msg_cancel, x=3*x//4, y=2*y//3, width=x//5, absolute=True))
 
     def render(self, ctx=None):
         """
