@@ -113,7 +113,7 @@ class MenuItem(Graphic):
                             Optional. Pass CONFIRM_OK to indicate the command has been confirmed. 
         """
         print('[Pushed command ' + self._title)
-        if self._confirm and self._confirmation_handler is not None and confirmed == config.menu.confirm_cancel:
+        if self._confirm and confirmed == config.menu.confirm_cancel:
             dial = ConfirmDialog()
             menu._current_dialog = dial
             menu._mode = config.menu.mode_dialog
