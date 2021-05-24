@@ -72,7 +72,7 @@ class ConfirmDialog(Dialog):
         if command != None: self.__confirmCommand = command
         self.__confirmState = state
         """
-        return super.render(ctx)
+        return super().render(ctx)
         
 class SpinnerDialog(Dialog):
     
