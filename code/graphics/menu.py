@@ -104,7 +104,7 @@ class Menu(ScrollableGraphicScene):
         else:
             print(f"Execute {self._elements[select_index]._title}")
             if (select_item._type in ['function', 'shell']):
-                select_item.run(state)
+                select_item.run(state, self)
             elif (select_item._type in ['slider']):
                 if (select_item._graphic._active):
                     self._elements[select_index]._graphic._active = False
@@ -113,7 +113,6 @@ class Menu(ScrollableGraphicScene):
                     self._elements[select_index]._graphic._active = True
                     self._mode = config.menu.mode_parameter
                     
-
     def process_history(self, state):
         """
             Delegate to respond to the navigate uo event on the controller tactile Up button. Loads the 

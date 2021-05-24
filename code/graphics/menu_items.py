@@ -14,8 +14,10 @@
  All authors contributed equally to the project and are listed aphabetically.
 
 """
+import subprocess
 from .graphics import Graphic, TextGraphic, SliderGraphic
 from .config import config
+from .dialogs import ConfirmDialog
 from .menu_functions import model_play, model_select, model_reload, model_benchmark
 from .menu_functions import assign_cv, assign_button, assign_rotary
 
@@ -101,7 +103,7 @@ class MenuItem(Graphic):
           )
         return command
     
-    def run(self, state, params=None, confirmed=config.menu.confirm_cancel):
+    def run(self, state, menu, params=None, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
             Parameters:
@@ -112,37 +114,20 @@ class MenuItem(Graphic):
         """
         print('[Pushed command ' + self._title)
         if self._confirm and self._confirmation_handler is not None and confirmed == config.menu.confirm_cancel:
-            self._confirmation_handler(self)
+            dial = ConfirmDialog()
+            menu._current_dialog = dial
+            menu._mode = config.menu.mode_dialog
         else:
             self._running = True
             if self._type == 'function':
                 self.function_dispatcher[self._command](state, self._signals, params)
             elif self._type == 'shell':
-                if self.__spinHandler is not None: self.__spinHandler(True)
-                try:
-                    #breakpoint()
-                    self.__output = subprocess.check_output(self.__command, shell=True,  cwd=self.__cwd).decode()
-                    self.__returnCode = 0
-                except subprocess.CalledProcessError as e:
-                    self.__output = e.output.decode()
-                    self.__returnCode = e.returncode
-                    logging.exception(e)
-                except Exception as e:
-                    self.__output = str(e)
-                    self.__returnCode = -1000
-                    logging.exception(e)
-                if self.__spinHandler is not None: self.__spinHandler(False)
-                if self.__outputHandler is not None: self.__outputHandler(self.__command, self.__returnCode, self.__output)
+                self._output = subprocess.check_output(self._command, shell=True).decode()
+                self.__returnCode = 0
                 self.__running = False
-    #endregion
-
-    #region public class (static) methods
     
 
 class MenuBar():
     def __init__(self):
         pass
-
-if __name__ == '__main__':
-    menu = Menu('../menu.yaml')
     
