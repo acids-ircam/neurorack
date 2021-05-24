@@ -33,7 +33,7 @@ class Dialog(ScrollableGraphicScene):
     def render(self, ctx=None):
         x, y = self._x, self._y
         ctx["draw"].rounded_rectangle((x, y, x + self._width, y + self._height), radius = 2,  outline=config.colors.main, fill='#000000')
-        return super.render(ctx)
+        return super().render(ctx)
         
 class ConfirmDialog(Dialog):
     
