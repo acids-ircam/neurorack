@@ -217,9 +217,9 @@ class Menu(ScrollableGraphicScene):
 
     def render(self, ctx = None):
         if (self._mode == config.menu.mode_dialog):
-            return self.current_dialog.render(ctx)
+            return self._current_dialog.render(ctx)
         elif (self._mode == config.menu.mode_wait):
-            return self.current_wait.render(ctx)
+            return self._current_wait.render(ctx)
         return super().render(ctx)
 
     def reset_menu(self):
