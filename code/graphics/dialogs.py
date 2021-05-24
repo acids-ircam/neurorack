@@ -15,7 +15,7 @@
 """
 
 from .graphics import ScrollableGraphicScene, ButtonGraphic, TextGraphic
-from config import config
+from .config import config
 
 class Dialog(ScrollableGraphicScene):
     
