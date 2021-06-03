@@ -67,14 +67,16 @@ class CVChannels(ProcessInput):
                 state:      [Manager]
                             Shared memory through a Multiprocessing manager
         """
-        start = (time.monotonic())
-        values = [None] * (len(self._cvs) * len(self._channels))
-        cur_v = 0
-        for cv in self._cvs:
-            for chan in self._channels:
-                values[cur_v] = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
-                state['cv'][cur_v] = values[cur_v]
-                cur_v += 1
+        while True:
+            start = (time.monotonic())
+            values = [None] * (len(self._cvs) * len(self._channels))
+            cur_v = 0
+            for cv in self._cvs:
+                for chan in self._channels:
+                    values[cur_v] = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
+                    state['cv'][cur_v] = values[cur_v]
+                    cur_v += 1
+            print('Read in : ' + str(time.monotonic() - start))
         return values
 
     def thread_read_infinite(self, cv, chan, cv_id, state):
