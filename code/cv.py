@@ -59,8 +59,8 @@ class CVChannels(ProcessInput):
             self._cvs.append(c)
         self._ref = self._cvs[0].get_reference_voltage()
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
-        #GPIO.setwarnings(False)
-        #GPIO.setmode(GPIO.TEGRA_SOC)
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BOARD)
         #board_to_tegra = {
         #    k: list(GPIO.gpio_pin_data.get_data()[-1]['TEGRA_SOC'].keys())[i]
         #    for i, k in enumerate(GPIO.gpio_pin_data.get_data()[-1]['BOARD'])}
@@ -97,7 +97,7 @@ class CVChannels(ProcessInput):
             start = (time.monotonic())
             value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
             state['cv'][cv_id] = value
-            print('[' + str(cv_id) + '] Independent read in : ' + str(time.monotonic() - start))
+            #print('[' + str(cv_id) + '] Independent read in : ' + str(time.monotonic() - start))
 
     def thread_read(self, cv, chan, cv_id):
         start = (time.monotonic())
