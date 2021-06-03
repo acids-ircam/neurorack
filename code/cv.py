@@ -191,5 +191,5 @@ class CVChannels(ProcessInput):
 
 if __name__ == "__main__":
     cv = CVChannels(None)
-    # cv.callback()
-    cv.read()
+    cv.callback({'cv':[0, 0, 0, 0, 0, 0]}, None)
+    #cv.read()
