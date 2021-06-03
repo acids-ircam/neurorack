@@ -94,19 +94,20 @@ class CVChannels(ProcessInput):
 
     def read_loop(self, state):
         with concurrent.futures.ThreadPoolExecutor(max_workers=(len(self._cvs) * len(self._channels))) as executor:
-            while True:
-                start = (time.monotonic())
+            #while True:
+                #start = (time.monotonic())
                 cur_v = 0
                 futures_cv = []
                 for cv in self._cvs:
                     for chan in self._channels:
-                        futures_cv.append(executor.submit(self.thread_read, cv=cv, chan=chan, cv_id=cur_v))
+                        futures_cv.append(executor.submit(self.thread_read_infinite, cv=cv, chan=chan, cv_id=cur_v, state=state))
                         cur_v += 1
                 cur_v = 0
                 for futures_cv in concurrent.futures.as_completed(futures_cv):
-                    state['cv'][cur_v] = futures_cv.result()
-                    cur_v += 1
-                print('Read in : ' + str(time.monotonic() - start))
+                #    state['cv'][cur_v] = futures_cv.result()
+                    futures_cv.result()
+                #    cur_v += 1
+                #print('Read in : ' + str(time.monotonic() - start))
 
     def callback(self, state, queue, delay=0.001):
         """
