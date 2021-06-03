@@ -95,11 +95,11 @@ class CVChannels(ProcessInput):
             while True:
                 start = (time.monotonic())
                 cur_v = 0
+                futures_cv = []
                 for cv in self._cvs:
                     for chan in self._channels:
                         futures_cv.append(executor.submit(self.thread_read, cv=cv, chan=chan, cv_id=cur_v))
                         cur_v += 1
-                futures_cv = []
                 cur_v = 0
                 for futures_cv in concurrent.futures.as_completed(futures_cv):
                     state['cv'][cur_v] = futures_cv.result()
