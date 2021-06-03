@@ -16,6 +16,7 @@ from ads1015 import ADS1015
 from parallel import ProcessInput
 from multiprocessing import Event
 import concurrent.futures
+import Jetson.GPIO as GPIO
 
 
 class CVChannels(ProcessInput):
@@ -58,6 +59,18 @@ class CVChannels(ProcessInput):
             self._cvs.append(c)
         self._ref = self._cvs[0].get_reference_voltage()
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
+        #GPIO.setwarnings(False)
+        #GPIO.setmode(GPIO.TEGRA_SOC)
+        #board_to_tegra = {
+        #    k: list(GPIO.gpio_pin_data.get_data()[-1]['TEGRA_SOC'].keys())[i]
+        #    for i, k in enumerate(GPIO.gpio_pin_data.get_data()[-1]['BOARD'])}
+        #for pin in self._pins:
+        #    tegra_soc_name = board_to_tegra[pin]
+        GPIO.setup(18, GPIO.IN)
+        GPIO.add_event_detect(18, GPIO.BOTH, callback=self.irq_detect, bouncetime=1)
+
+    def irq_detect(self):
+        print('aaaaahaaahahahahahahah')
 
     def read0(self, state):
         """
