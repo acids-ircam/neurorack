@@ -124,8 +124,8 @@ class CVChannels(ProcessInput):
         #vals = self.read(state)
         c_time = time.time()
         try:
-            #self.read_loop(state)
-            self.read0(state)
+            self.read_loop(state)
+            #self.read0(state)
             #while True:
             #    vals = self.read(state)
             #    c_time = time.time()
