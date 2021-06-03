@@ -66,8 +66,8 @@ class CVChannels(ProcessInput):
         #    for i, k in enumerate(GPIO.gpio_pin_data.get_data()[-1]['BOARD'])}
         #for pin in self._pins:
         #    tegra_soc_name = board_to_tegra[pin]
-        GPIO.setup(18, GPIO.IN)
-        GPIO.add_event_detect(18, GPIO.BOTH, callback=self.irq_detect, bouncetime=1)
+        GPIO.setup(16, GPIO.IN)
+        GPIO.add_event_detect(16, GPIO.BOTH, callback=self.irq_detect, bouncetime=1)
 
     def irq_detect(self, channel):
         print('aaaaahaaahahahahahahah')
