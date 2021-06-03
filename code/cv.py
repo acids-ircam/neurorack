@@ -69,7 +69,7 @@ class CVChannels(ProcessInput):
         GPIO.setup(18, GPIO.IN)
         GPIO.add_event_detect(18, GPIO.BOTH, callback=self.irq_detect, bouncetime=1)
 
-    def irq_detect(self):
+    def irq_detect(self, channel):
         print('aaaaahaaahahahahahahah')
 
     def read0(self, state):
