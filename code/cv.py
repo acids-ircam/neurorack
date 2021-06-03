@@ -59,22 +59,23 @@ class CVChannels(ProcessInput):
         self._ref = self._cvs[0].get_reference_voltage()
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
 
-    # def read0(self, state):
-    #     """
-    #         Function for reading the current CV values.
-    #         Also updates the shared memory (state) with all CV values
-    #         Parameters:
-    #             state:      [Manager]
-    #                         Shared memory through a Multiprocessing manager
-    #     """
-    #     values = [None] * (len(self._cvs) * len(self._channels))
-    #     cur_v = 0
-    #     for cv in self._cvs:
-    #         for chan in self._channels:
-    #             values[cur_v] = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
-    #             state['cv'][cur_v] = values[cur_v]
-    #             cur_v += 1
-    #     return values
+    def read0(self, state):
+        """
+            Function for reading the current CV values.
+            Also updates the shared memory (state) with all CV values
+            Parameters:
+                state:      [Manager]
+                            Shared memory through a Multiprocessing manager
+        """
+        start = (time.monotonic())
+        values = [None] * (len(self._cvs) * len(self._channels))
+        cur_v = 0
+        for cv in self._cvs:
+            for chan in self._channels:
+                values[cur_v] = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
+                state['cv'][cur_v] = values[cur_v]
+                cur_v += 1
+        return values
 
     def thread_read_infinite(self, cv, chan, cv_id, state):
         while True:
@@ -117,7 +118,7 @@ class CVChannels(ProcessInput):
                 delay:      [int], optional
                             Specifies the wait delay between read operations [default: 0.001s]
         """
-        vals = self.read(state)
+        #vals = self.read(state)
         c_time = time.time()
         try:
             self.read_loop(state)
