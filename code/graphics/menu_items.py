@@ -21,6 +21,7 @@ from .dialogs import ConfirmDialog
 from .menu_functions import model_play, model_select, model_reload, model_benchmark
 from .menu_functions import assign_cv, assign_button, assign_rotary
 
+
 class MenuItem(Graphic):    
     '''
     Represents a menu item

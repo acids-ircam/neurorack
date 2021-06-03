@@ -102,7 +102,7 @@ class Rotary(ProcessInput):
         #self.startup_animation()
         while True:
             new_pos = self._ioe.read_rotary_encoder(1)
-            if (new_pos == self._position):
+            if new_pos == self._position:
                 time.sleep(0.02)
                 continue
             delta = new_pos - self._position
@@ -112,7 +112,7 @@ class Rotary(ProcessInput):
             state['rotary'].value = self._position
             state['rotary_delta'].value = delta
             # Signal other components
-            if (self._callback is not None):
+            if self._callback is not None:
                 self._callback(0, new_pos)
             h = (self._position % 360) / 360.0
             # Compute new RGB values
@@ -121,7 +121,8 @@ class Rotary(ProcessInput):
             self._ioe.output(self._rgb_pins[1], self._g)
             self._ioe.output(self._rgb_pins[2], self._b)
             print('Rotary moved - %i - %i,%i,%i'%(self._position, self._r, self._g, self._b))
-                    
+
+
 if __name__ == '__main__':
     rotary = Rotary(None)
     rotary.callback({'rotary':0}, None)
