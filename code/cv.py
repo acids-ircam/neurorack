@@ -87,7 +87,7 @@ class CVChannels(ProcessInput):
         if len(buffer) == self._buffer:
             state['buffer'] = buffer
             buffer.clear()
-        self._callback("cv", cv_id, value)
+        # self._callback("cv", cv_id, value)
 
     def thread_read(self, cv, chan, cv_id, state):
         buffer = []
