@@ -70,9 +70,9 @@ class CVChannels(ProcessInput):
     #     print('aaaaahaaahahahahahahah')
 
     def handle_gate(self, cv_id, value, state):
-        if cv_id == 0:
-            print("Value: ")
-            print(value)
+        #if cv_id == 0:
+        #    print("Value: ")
+        #    print(value)
         cur_state = state['cv'][cv_id]
         cur_time = time.monotonic()
         if cur_state == 0:
