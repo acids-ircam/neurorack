@@ -40,9 +40,11 @@ class NSF:
     def preload(self):
         self._model = torch.load(self.m_path, map_location="cuda")
         self._model = self._model.cuda()
+        print("loaded")
         features = self.dummy_features()
-        features = torch.tensor(features).unsqueeze(0).cuda().float()
+        features = torch.tensor(features[:2, :]).unsqueeze(0).cuda().float()
         for p in range(self.f_pass):
+            print("pass")
             with torch.no_grad():
                 self._model(features)
 
