@@ -61,7 +61,7 @@ class CVChannels(ProcessInput):
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
         self._cv_type = ["gate", "gate", "cv", "cv", "cv", "cv"]
         self._buffer = 10
-        self._eps = 0.05
+        self._eps = 1
         self._gate_time = 0.1
         self._rate = 3300
         self._samples = 1000
