@@ -1,6 +1,7 @@
 import time
 import torch
 
+
 class DDSP():
     m_path = "/home/martin/Desktop/ddsp_pytorch/models/ddsp_demo_pretrained.ts"
     f_pass = 3

@@ -59,10 +59,6 @@ class CVChannels(ProcessInput):
             self._cvs.append(c)
         self._ref = self._cvs[0].get_reference_voltage()
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(16, GPIO.IN)
-        GPIO.add_event_detect(16, GPIO.BOTH, callback=self.irq_detect, bouncetime=1)
         self._cv_type = ["gate", "gate", "cv", "cv", "cv", "cv"]
         self._buffer = 10
         self._eps = 0.05
