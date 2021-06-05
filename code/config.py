@@ -38,6 +38,12 @@ class config:
         none        = -1
         button      = 0
         rotary      = 1
+        gate0       = 2
+        gate1       = 3
+        cv2         = 4
+        cv3         = 5
+        cv4         = 6
+        cv5         = 7
 
     # Add the graphics classes
     colors = graph_cfg.colors

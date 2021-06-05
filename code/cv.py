@@ -61,66 +61,67 @@ class CVChannels(ProcessInput):
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
-        #board_to_tegra = {
-        #    k: list(GPIO.gpio_pin_data.get_data()[-1]['TEGRA_SOC'].keys())[i]
-        #    for i, k in enumerate(GPIO.gpio_pin_data.get_data()[-1]['BOARD'])}
-        #for pin in self._pins:
-        #    tegra_soc_name = board_to_tegra[pin]
         GPIO.setup(16, GPIO.IN)
         GPIO.add_event_detect(16, GPIO.BOTH, callback=self.irq_detect, bouncetime=1)
+        self._cv_type = ["gate", "gate", "cv", "cv", "cv", "cv"]
+        self._buffer = 10
+        self._eps = 0.05
+        self._gate_time = 0.1
+        self._rate = 3300
+        self._samples = 1000
 
-    def irq_detect(self, channel):
-        print('aaaaahaaahahahahahahah')
+    # def irq_detect(self, channel):  # TODO: does not work.
+    #     print('aaaaahaaahahahahahahah')
 
-    def read0(self, state):
-        """
-            Function for reading the current CV values.
-            Also updates the shared memory (state) with all CV values
-            Parameters:
-                state:      [Manager]
-                            Shared memory through a Multiprocessing manager
-        """
+    def handle_gate(self, cv_id, value, state):
+        cur_state = state['cv'][cv_id]
+        cur_time = time.monotonic()
+        if cur_state == 0:
+            if value > self._ref + self._eps:
+                state['cv'][cv_id] = cur_time
+                self._callback("gate", cv_id, value)
+        else:
+            elapsed_time = cur_time - state['cv'][cv_id]
+            if (value < self._ref + self._eps) and (elapsed_time > self._gate_time):
+                state['cv'][cv_id] = 0
+
+    def handle_cv(self, cv_id, value, buffer, state):
+        # Right now just append value to buffer
+        buffer.append(value)
+        if len(buffer) == self._buffer:
+            state['buffer'] = buffer
+            buffer.clear()
+        self._callback("cv", cv_id, value)
+
+    def thread_read(self, cv, chan, cv_id, state):
+        buffer = []
+        sample_interval = 1.0 / self._rate
+        start = time.monotonic()
+        time_next_sample = start + sample_interval
         while True:
-            start = (time.monotonic())
-            values = [None] * (len(self._cvs) * len(self._channels))
-            cur_v = 0
-            for cv in self._cvs:
-                for chan in self._channels:
-                    values[cur_v] = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
-                    state['cv'][cur_v] = values[cur_v]
-                    cur_v += 1
-            print('Read in : ' + str(time.monotonic() - start))
-        return values
-
-    def thread_read_infinite(self, cv, chan, cv_id, state):
-        while True:
-            start = (time.monotonic())
-            value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
-            state['cv'][cv_id] = value
-            #print('[' + str(cv_id) + '] Independent read in : ' + str(time.monotonic() - start))
-
-    def thread_read(self, cv, chan, cv_id):
-        start = (time.monotonic())
-        value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
-        print('[' + str(cv_id) + '] Independent read in : ' + str(time.monotonic() - start))
-        return value
+            if self._cv_type[cv_id] == "gate":
+                value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
+                self.handle_gate(cv_id, value, state)
+            if self._cv_type[cv_id] == "cv":
+                while time.monotonic() < time_next_sample:
+                    pass
+                time_next_sample = time.monotonic() + sample_interval
+                value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
+                self.handle_cv(cv_id, value, buffer, state)
+                state['cv'][cv_id] = value
 
     def read_loop(self, state):
         with concurrent.futures.ThreadPoolExecutor(max_workers=(len(self._cvs) * len(self._channels))) as executor:
-            #while True:
-                #start = (time.monotonic())
                 cur_v = 0
                 futures_cv = []
                 for cv in self._cvs:
                     for chan in self._channels:
-                        futures_cv.append(executor.submit(self.thread_read_infinite, cv=cv, chan=chan, cv_id=cur_v, state=state))
+                        futures_cv.append(executor.submit(self.thread_read, cv=cv,
+                                                          chan=chan, cv_id=cur_v, state=state))
                         cur_v += 1
-                cur_v = 0
+
                 for futures_cv in concurrent.futures.as_completed(futures_cv):
-                #    state['cv'][cur_v] = futures_cv.result()
                     futures_cv.result()
-                #    cur_v += 1
-                #print('Read in : ' + str(time.monotonic() - start))
 
     def callback(self, state, queue, delay=0.001):
         """

@@ -76,6 +76,7 @@ class Neurorack():
         self._state = self._manager.dict()
         self._state['global'] = self._manager.dict()
         self._state['cv'] = self._manager.list([0.0] * self._N_CVs)
+        self._state['buffer'] = self._manager.list()  # TODO
         self._state['rotary'] = self._manager.Value(int, 0)
         self._state['rotary_delta'] = self._manager.Value(int, 0)
         self._state['button'] = self._manager.Value(int, 0)
@@ -96,10 +97,10 @@ class Neurorack():
         # Stats (cpu, memory) computing
         self._state['stats'] = self._manager.dict()
         self._state['stats']['ip'] = self._manager.Value(c_char_p, "ip".encode('utf-8'))
-        self._state['stats']['cpu'] =  self._manager.Value(c_char_p, "cpu".encode('utf-8'))
-        self._state['stats']['memory'] =  self._manager.Value(c_char_p, "memory".encode('utf-8'))
-        self._state['stats']['disk'] =  self._manager.Value(c_char_p, "disk".encode('utf-8'))
-        self._state['stats']['temperature'] =  self._manager.Value(c_char_p, "temperature".encode('utf-8'))
+        self._state['stats']['cpu'] = self._manager.Value(c_char_p, "cpu".encode('utf-8'))
+        self._state['stats']['memory'] = self._manager.Value(c_char_p, "memory".encode('utf-8'))
+        self._state['stats']['disk'] = self._manager.Value(c_char_p, "disk".encode('utf-8'))
+        self._state['stats']['temperature'] = self._manager.Value(c_char_p, "temperature".encode('utf-8'))
         
     def set_signals(self):
         '''
@@ -139,12 +140,33 @@ class Neurorack():
         self._state["screen"]["event"].value = config.events.button
         self._signal_screen.set()
     
-    def callback_cv(self, channel, value):
+    def callback_cv(self, type_cv, cv_id, value):
         '''
             Callback for handling events from the CV
         '''
         print('CV callback')
-        
+        if type_cv == "gate":
+            if cv_id == 0:
+                self._state['audio']['event'] = config.events.gate0
+                self._signal_audio.set()
+            else:
+                self._state['audio']['event'] = config.events.gate1
+                self._signal_audio.set()
+
+        elif type_cv == "cv":
+            if cv_id == 2:
+                self._state['audio']['event'] = config.events.cv2
+                self._signal_audio.set()
+            elif cv_id == 3:
+                self._state['audio']['event'] = config.events.cv3
+                self._signal_audio.set()
+            elif cv_id == 4:
+                self._state['audio']['event'] = config.events.cv4
+                self._signal_audio.set()
+            else:
+                self._state['audio']['event'] = config.events.cv5
+                self._signal_audio.set()
+
     def callback_rotary(self, channel, value):
         '''
             Callback for handling events from the rotary
@@ -178,6 +200,7 @@ class Neurorack():
             Destructor - cleans up GPIO resources when the object is destroyed. 
         '''
         GPIO.cleanup()      
+
 
 if __name__ == '__main__':
     import argparse

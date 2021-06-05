@@ -20,8 +20,10 @@ import numpy as np
 import sounddevice as sd
 from parallel import ProcessInput
 from models.ddsp import DDSP
+from models.nsf import NSF
 from multiprocessing import Event
 from config import config
+
 
 class Audio(ProcessInput):
     '''
@@ -31,7 +33,7 @@ class Audio(ProcessInput):
 
     def __init__(self,
                  callback: callable,
-                 model: str = 'ddsp', 
+                 model: str = 'nsf',
                  sr: int = 22050):
         '''
             Constructor - Creates a new instance of the Audio class.
@@ -39,7 +41,7 @@ class Audio(ProcessInput):
                 callback:   [callable]
                             Outside function to call on audio event
                 model:      [str], optional
-                            Specify the audio model to load [default : 'ddsp']
+                            Specify the audio model to load [default : 'nsf']
                 sr:         int, optional
                             Specify the sampling rate [default: 22050]
         '''
@@ -57,8 +59,10 @@ class Audio(ProcessInput):
         self.load_model()
     
     def load_model(self):
-        if (self._model_name == 'ddsp'):
+        if self._model_name == 'ddsp':
             self._model = DDSP()
+        elif self._model_name == 'nsf':
+            self._model = NSF()
         else:
             raise NotImplementedError
     
@@ -72,23 +76,16 @@ class Audio(ProcessInput):
         state["audio"]["mode"].value = config.audio.mode_idle
         # Perform display loop
         while True:
-            self._signal.wait(1000.0)
-            if (self._signal.is_set()):
+            self._signal.wait()
+            if self._signal.is_set():
                 # The refresh comes from an external signal
                 self._signal.clear()
                 self.handle_signal_event(state)
                 
     def handle_signal_event(self, state):
         cur_event = state["audio"]["event"].value
-        if (cur_event == "model_play"):
+        if cur_event in [config.events.gate0, config.events.gate1]:
             self.play_model(state)
-        elif (cur_event == "model_reload"):
-            self.load_model()
-            self.model_burnin()
-        elif (cur_event == "model_select"):
-            self._model_name = state["audio"]["model"].value
-            self.load_model()
-            self.model_burnin()
         state["audio"]["event"].value = ''
                 
     def set_defaults(self):
@@ -135,9 +132,7 @@ class Audio(ProcessInput):
                             Wait on the end of the playback
         '''
         state["audio"]["mode"].value = config.audio.mode_play
-        audio = self._model.generate_random()
-        audio = np.random.randn(2 * self._sr)
-        print(audio.shape)
+        audio = self._model.generate()
         sd.play(audio, self._sr)
         if (wait):
             self.wait_playback()
