@@ -132,9 +132,6 @@ class Audio(ProcessInput):
                             Wait on the end of the playback
         '''
         state["audio"]["mode"].value = config.audio.mode_play
-        print('play noise')
-        audio = np.random.randn(1 * self._sr)
-        sd.play(audio, self._sr)
         audio = self._model.generate()
         print('generate ended')
         sd.play(audio, self._sr)
