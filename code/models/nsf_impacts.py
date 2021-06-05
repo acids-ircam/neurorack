@@ -38,7 +38,7 @@ class NSF:
         return features
 
     def preload(self):
-        self._model = torch.load(self.m_path)
+        self._model = torch.load(self.m_path, map_location="cpu")
         self._model = self._model.cuda()
         features = self.dummy_features()
         for p in range(self.f_pass):
