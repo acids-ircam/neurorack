@@ -58,6 +58,7 @@ class NSF:
     def generate(self):
         features = self.dummy_features()
         features = torch.tensor(features).unsqueeze(0).cuda().float()
+        print(features.shape)
         with torch.no_grad():
             audio = self._model(features)
         return audio.squeeze().detach().numpy()
