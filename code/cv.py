@@ -70,24 +70,37 @@ class CVChannels(ProcessInput):
     #     print('aaaaahaaahahahahahahah')
 
     def handle_gate(self, cv_id, value, state):
+        print("GATE ID: ")
+        print(cv_id)
+        print("Value: ")
+        print(value)
         cur_state = state['cv'][cv_id]
         cur_time = time.monotonic()
         if cur_state == 0:
             if value > self._ref + self._eps:
                 state['cv'][cv_id] = cur_time
                 self._callback("gate", cv_id, value)
+                print("CV ID: ")
+                print(cv_id)
+                print("Value: ")
+                print(value)
         else:
             elapsed_time = cur_time - state['cv'][cv_id]
             if (value < self._ref + self._eps) and (elapsed_time > self._gate_time):
                 state['cv'][cv_id] = 0
 
     def handle_cv(self, cv_id, value, buffer, state):
+        if cv_id == 2:
+            print("CV ID: ")
+            print(cv_id)
+            print("Value: ")
+            print(value)
         # Right now just append value to buffer
         buffer.append(value)
         if len(buffer) == self._buffer:
             state['buffer'] = buffer
             buffer.clear()
-        # self._callback("cv", cv_id, value)
+        self._callback("cv", cv_id, value)
 
     def thread_read(self, cv, chan, cv_id, state):
         buffer = []
