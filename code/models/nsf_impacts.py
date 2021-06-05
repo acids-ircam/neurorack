@@ -41,6 +41,7 @@ class NSF:
         self._model = torch.load(self.m_path, map_location="cpu")
         self._model = self._model.cuda()
         features = self.dummy_features()
+        features = torch.tensor(features).unsqueeze(0).cuda()
         for p in range(self.f_pass):
             with torch.no_grad():
                 self._model(features)
