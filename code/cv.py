@@ -99,7 +99,7 @@ class CVChannels(ProcessInput):
             state['buffer'] = buffer
             buffer.clear()
         if len(plot) == self._plot:
-            plt.plot(plot[:])
+            plt.plot(plot)
             plt.tight_layout(True)
             plt.savefig(cv_id)
             plt.close()
