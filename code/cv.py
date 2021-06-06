@@ -73,8 +73,6 @@ class CVChannels(ProcessInput):
     #     print('aaaaahaaahahahahahahah')
 
     def handle_gate(self, cv_id, value, state):
-        if cv_id == 0:
-            print("Value: " + value)
         cur_state = state['cv'][cv_id]
         cur_time = time.monotonic()
         if cur_state == 0:
@@ -86,20 +84,16 @@ class CVChannels(ProcessInput):
             if (value < self._ref + self._eps) and (elapsed_time > self._gate_time):
                 state['cv'][cv_id] = 0
 
-    def handle_cv(self, cv_id, value, buffer, state, plot):
-        if cv_id == 2:
-            print("CV ID: ")
-            print(cv_id)
-            print("Value: ")
-            print(value)
+    def handle_cv(self, cv_id, value, buffer, state):
         # Right now just append value to buffer
-        plot.append(value)
+        # plot[cv_id % 3].append(value)
         buffer.append(value)
         if len(buffer) == self._buffer:
             state['buffer'] = buffer
             buffer.clear()
-        if len(plot) == self._plot:
-            np.save("plot_" + str(cv_id) + ".npy", plot)
+        #if len(plot[cv_id % 3]) == self._plot:
+        #    np.save("plot_" + str(cv_id) + ".npy", plot[cv_id % 3])
+        #    print('plot on ' + str(cv_id))
         # self._callback("cv", cv_id, value)
 
     def update_line(self, hl, new_data):
@@ -108,8 +102,10 @@ class CVChannels(ProcessInput):
         plt.draw()
 
     def thread_read(self, cv, cv_full_id, state):
-        buffer = []
-        plot_points = []
+        buffer = [] 
+        # plot_points = []
+        # for i in range(3):
+        #     plot_points.append([])
         sample_interval = 1.0 / self._rate
         start = time.monotonic()
         time_next_sample = start + sample_interval
@@ -121,11 +117,11 @@ class CVChannels(ProcessInput):
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                     self.handle_gate(cv_id, value, state)
                 if self._cv_type[cv_id] == "cv":
-                    while time.monotonic() < time_next_sample:
-                        pass
-                    time_next_sample = time.monotonic() + sample_interval
+                    #while time.monotonic() < time_next_sample:
+                    #    pass
+                    #time_next_sample = time.monotonic() + sample_interval
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
-                    self.handle_cv(cv_id, value, buffer, state, plot_points)
+                    self.handle_cv(cv_id, value, buffer, state)
                     state['cv'][cv_id] = value
                 c += 1
 
