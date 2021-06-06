@@ -99,8 +99,6 @@ class NSF:
             self._thread = threading.Thread(target=self.generate_thread, args=(1,))
             self._thread.start()
         return self.generated_queue[block_idx]
-                
-
 
 if __name__ == '__main__':
     root_dir = "/home/hime/Work/dataset/toydataset"
