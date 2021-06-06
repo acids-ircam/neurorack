@@ -117,7 +117,7 @@ class CVChannels(ProcessInput):
             c = 0
             for chan in self._channels:
                 cv_id = (cv_full_id * 3) + c
-                if self._cv_type[(cv_id * 3) + c] == "gate":
+                if self._cv_type[cv_id] == "gate":
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                     self.handle_gate(cv_id, value, state)
                 if self._cv_type[cv_id] == "cv":
