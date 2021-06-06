@@ -112,7 +112,7 @@ class CVChannels(ProcessInput):
 
     def thread_read(self, cv, chan, cv_id, state):
         buffer = []
-        plot_points = plt.plot([], [])
+        plot_points = []
         sample_interval = 1.0 / self._rate
         start = time.monotonic()
         time_next_sample = start + sample_interval
@@ -125,7 +125,7 @@ class CVChannels(ProcessInput):
                     pass
                 time_next_sample = time.monotonic() + sample_interval
                 value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
-                self.handle_cv(cv_id, value, buffer, state)
+                self.handle_cv(cv_id, value, buffer, state, plot_points)
                 state['cv'][cv_id] = value
 
     def read_loop(self, state):
