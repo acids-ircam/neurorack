@@ -139,3 +139,5 @@ if __name__ == '__main__':
         features = torch.tensor(features).unsqueeze(0).cuda().float()
         audio = model.generate(features)
         sf.write("generate" + str(wav) + ".wav", audio, sr)
+
+
