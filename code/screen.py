@@ -200,19 +200,19 @@ class Screen(ProcessInput):
         # Perform display loop
         while True:
             self._signal.wait(1.0)
-            if (self._signal.is_set()):
+            if self._signal.is_set():
                 # The refresh comes from an external signal
                 self._signal.clear()
                 self.handle_signal_event(state)
             else:
                 # Otherwise we can do heavy processing
-                if (state["screen"]["mode"].value == config.screen.mode_main):
+                if state["screen"]["mode"].value == config.screen.mode_main:
                     self.perform_update(state)
             self.clean_screen()
             # Write four lines of text.
-            if (state["screen"]["mode"].value == config.screen.mode_main):
+            if state["screen"]["mode"].value == config.screen.mode_main:
                 self._main_scene.render(self._ctx)
-            elif (state["screen"]["mode"].value == config.screen.mode_menu):
+            elif state["screen"]["mode"].value == config.screen.mode_menu:
                 self._menu_scene.render(self._ctx)
             # Display image.
             self._disp.image(self._image)

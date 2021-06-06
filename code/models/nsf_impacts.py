@@ -2,6 +2,11 @@ import sklearn
 import torch
 import librosa
 import numpy as np
+import time
+import os
+import tqdm
+import torchaudio
+import soundfile as sf
 
 
 def spectral_features(y, sr):
@@ -23,7 +28,8 @@ def spectral_features(y, sr):
 
 
 class NSF:
-    m_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
+    # m_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
+    m_path = "/home/hime/Work/Neurorack/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
     f_pass = 3
 
     def __init__(self):
@@ -32,8 +38,8 @@ class NSF:
         self._model = None
         self._wav_file = 'reference_impact.wav'
 
-    def dummy_features(self):
-        y, sr = librosa.load(self._wav_file)
+    def dummy_features(self, wav):
+        y, sr = librosa.load(wav)
         features = spectral_features(y, sr)
         return features
 
@@ -41,7 +47,7 @@ class NSF:
         self._model = torch.load(self.m_path, map_location="cuda")
         self._model = self._model.cuda()
         print("loaded")
-        features = self.dummy_features()
+        features = self.dummy_features(self._wav_file)
         features = torch.tensor(features[:2, :]).unsqueeze(0).cuda().float()
         for p in range(self.f_pass):
             print("pass")
@@ -55,12 +61,24 @@ class NSF:
             audio = self._model(features)
         return audio.squeeze().detach().numpy()
 
-    def generate(self):
-        features = self.dummy_features()
-        features = torch.tensor(features).unsqueeze(0).cuda().float()
-        print(features.shape)
+    def generate(self, features):
+        # features = self.dummy_features(wav)
+        # features = torch.tensor(features).unsqueeze(0).cuda().float()
         with torch.no_grad():
             audio = self._model(features)
         return audio.squeeze().detach().numpy()
 
 
+if __name__ == '__main__':
+    root_dir = "/home/hime/Work/dataset/toydataset"
+    wav_adresses = [files_names for files_names in os.listdir(root_dir) if
+                    (files_names.endswith('.wav') or files_names.endswith('.mp3'))]
+    model = NSF()
+    model.preload()
+    for wav in wav_adresses:
+        y, sr = librosa.load(root_dir + '/' + wav)
+        features = spectral_features(y, sr)
+        print(features.shape)
+        features = torch.tensor(features).unsqueeze(0).cuda().float()
+        audio = model.generate(features)
+        sf.write("generate" + str(wav) + ".wav", audio, sr)
