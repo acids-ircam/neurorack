@@ -150,11 +150,15 @@ class Audio(ProcessInput):
                             Length of signal to generate (in seconds)
         '''
         def callback_block(outdata, frames, time, status):
-            global cur_idx
-            outdata[:] = self._model.generate(cur_idx)
-            cur_idx += 1
-        cur_idx = 0
-        cur_stream = sd.OutputStream(device=sd.default.device, channels=1, callback=callback_block, samplerate=self._sr)
+            print('Start of call block')
+            print(outdata.shape)
+            outdata[:] = self._model.block_generate(self.cur_idx)[:, np.newaxis]
+            self.cur_idx += 1
+        self.cur_idx = 0
+        self._model.start_generation_thread()
+        #self._model.block_generate(self.cur_idx)
+        #cur_stream = sd.OutputStream(device=sd.default.device, channels=1, callback=callback_block, samplerate=self._sr)
+        cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
         cur_stream.start()
         print('Stream launched')
             
@@ -272,4 +276,5 @@ class Audio(ProcessInput):
 if __name__ == '__main__':
     audio = Audio(None)
     audio.model_burn_in()
-    audio.play_model_block()
+    audio.play_model_block(None)
+    audio._signal.wait(1000)
