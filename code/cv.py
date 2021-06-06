@@ -99,12 +99,7 @@ class CVChannels(ProcessInput):
             state['buffer'] = buffer
             buffer.clear()
         if len(plot) == self._plot:
-            plt.plot(plot)
-            plt.tight_layout(True)
-            plt.savefig(cv_id)
-            print("saved")
-            plt.close()
-            exit()
+            np.save("plot_" + str(cv_id) + ".npy", plot)
         # self._callback("cv", cv_id, value)
 
     def update_line(self, hl, new_data):
