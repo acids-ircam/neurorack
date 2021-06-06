@@ -102,6 +102,7 @@ class CVChannels(ProcessInput):
             plt.plot(plot)
             plt.tight_layout(True)
             plt.savefig(cv_id)
+            print("saved")
             plt.close()
         # self._callback("cv", cv_id, value)
 
@@ -118,13 +119,13 @@ class CVChannels(ProcessInput):
         time_next_sample = start + sample_interval
         while True:
             if self._cv_type[cv_id] == "gate":
-                value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
+                value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                 self.handle_gate(cv_id, value, state)
             if self._cv_type[cv_id] == "cv":
                 while time.monotonic() < time_next_sample:
                     pass
                 time_next_sample = time.monotonic() + sample_interval
-                value = int(cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref))
+                value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                 self.handle_cv(cv_id, value, buffer, state, plot_points)
                 state['cv'][cv_id] = value
 
