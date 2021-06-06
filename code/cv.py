@@ -134,7 +134,7 @@ class CVChannels(ProcessInput):
                 cur_v = 0
                 futures_cv = []
                 for cv in self._cvs:
-                    futures_cv.append(executor.submit(self.thread_read, cv=cv, cv_id=cur_v, state=state))
+                    futures_cv.append(executor.submit(self.thread_read, cv=cv, cv_full_id=cur_v, state=state))
                     cur_v += 1
 
                 for futures_cv in concurrent.futures.as_completed(futures_cv):
