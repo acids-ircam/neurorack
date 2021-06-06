@@ -140,6 +140,45 @@ class Audio(ProcessInput):
             self.wait_playback()
         state["audio"]["mode"].value = config.audio.mode_idle
             
+    def play_model_block(self, state, wait: bool = True):
+        '''
+            Play a sinus signal 
+            Parameters:
+                amplitude:  [float], optional
+                            Amplitude of the sinusoid
+                length:     [int], optional
+                            Length of signal to generate (in seconds)
+        '''
+        def callback(outdata, frames, time, status):
+            global start_idx
+            outdata[:] = self._model.generate(start_idx)
+            cur_idx += 1
+        start_idx = 0
+        with sd.OutputStream(device=sd.default.device, channels=1, callback=callback_block, samplerate=self._sr):
+            input()
+            
+    def play_sine_block(self, amplitude=1.0, frequency=440.0):
+        '''
+            Play a sinus signal 
+            Parameters:
+                amplitude:  [float], optional
+                            Amplitude of the sinusoid
+                length:     [int], optional
+                            Length of signal to generate (in seconds)
+        '''
+        def callback(outdata, frames, time, status):
+            if status:
+                print(status)
+            global start_idx
+            t = (start_idx + np.arange(frames)) / self._sr
+            t = t.reshape(-1, 1)
+            outdata[:] = amplitude * np.sin(2 * np.pi * frequency * t)
+            start_idx += frames
+    
+        with sd.OutputStream(device=sd.default.device, channels=1, callback=callback,
+                             samplerate=self._sr):
+            input()
+            
     def input_through(self, length: float = 4.0):
         '''
             Play some random noise of a given length for checkup.
@@ -228,3 +267,8 @@ class Audio(ProcessInput):
         ''' Return information about host APIs '''
         return sd.query_hostapis()
 
+
+if __name__ == '__main__':
+    audio = Audio(None)
+    audio.model_burn_in()
+    audio.play_sine_block(0.5, 440)
