@@ -107,7 +107,7 @@ class CVChannels(ProcessInput):
         hl.set_ydata(np.append(hl.get_ydata(), new_data))
         plt.draw()
 
-    def thread_read(self, cv, chan, cv_full_id, state):
+    def thread_read(self, cv, cv_full_id, state):
         buffer = []
         plot_points = []
         sample_interval = 1.0 / self._rate
