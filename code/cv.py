@@ -104,6 +104,7 @@ class CVChannels(ProcessInput):
             plt.savefig(cv_id)
             print("saved")
             plt.close()
+            exit()
         # self._callback("cv", cv_id, value)
 
     def update_line(self, hl, new_data):
