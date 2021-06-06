@@ -48,7 +48,7 @@ class NSF:
         self._model = self._model.cuda()
         print("loaded")
         features = self.dummy_features(self._wav_file)
-        features = torch.tensor(features[:2, :]).unsqueeze(0).cuda().float()
+        features = torch.tensor(features[:10, :]).unsqueeze(0).cuda().float()
         for p in range(self.f_pass):
             print("pass")
             with torch.no_grad():
@@ -59,14 +59,14 @@ class NSF:
         features = [torch.randn(1, length, 1).cuda()] * 7
         with torch.no_grad():
             audio = self._model(features)
-        return audio.squeeze().detach().numpy()
+        return audio.squeeze().detach().cpu().numpy()
 
     def generate(self, features):
         # features = self.dummy_features(wav)
         # features = torch.tensor(features).unsqueeze(0).cuda().float()
         with torch.no_grad():
             audio = self._model(features)
-        return audio.squeeze().detach().numpy()
+        return audio.squeeze().detach().cpu().numpy()
 
 
 if __name__ == '__main__':
