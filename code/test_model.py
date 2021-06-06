@@ -5,9 +5,8 @@ import numpy as np
 import time
 import os
 import tqdm
-import torchaudio
 import soundfile as sf
-
+import matplotlib.pyplot as plt
 
 def spectral_features(y, sr):
     features = [None] * 7
@@ -77,7 +76,7 @@ if __name__ == '__main__':
     model.preload()
     import scipy
     import time
-    win = scipy.signal.hann(1024)
+    # win = scipy.signal.hann(1024)
     # for wav in wav_adresses:
     #     if (wav == 'Impact38.wav'):
     #         print('Yeaaaaah')
@@ -107,11 +106,46 @@ if __name__ == '__main__':
     #             final_audio = np.concatenate(final_audio)
     #             sf.write("tst_generate_" + str(n_points) + ".wav", final_audio, sr)
     #         exit()
-    for wav in wav_adresses:
+    # for wav in wav_adresses:
+    wav_list = ['dce_synth_one_shot_bumper_G#min.wav', 'SH_FFX_123BPM_IMPACT_01.wav',
+                'FF_ET_whoosh_hit_little.wav', 'Afro_FX_Oneshot_Impact_3.wav']
+    feats = []
+    for wav in wav_list:
         y, sr = librosa.load(root_dir + '/' + wav)
         features = spectral_features(y, sr)
-        print(features.shape)
         features = torch.tensor(features).unsqueeze(0).cuda().float()
         audio = model.generate(features)
         sf.write("generation_testing/" + str(wav) + ".wav", audio, sr)
+        feats.append(features)
+    x_a = feats[2]
+    x_b = feats[3]
+    # Run through alpha values
+    interp = []
+    n_steps = 11
+    size = min(x_a.shape[1], x_b.shape[1])
+    x_a = x_a[:, :size, :]
+    x_b = x_b[:, :size, :]
+    alpha_values = np.linspace(0, 1, n_steps)
+    for i, alpha in enumerate(alpha_values):
+        x_interp = (1 - alpha) * x_b + alpha * x_a
+        x_interp = model.generate(x_interp)
+        interp.append(x_interp)
+        sf.write("generation_testing/interp_" + str(i) + ".wav", x_interp, sr)
+        # Draw interpolation step by step
+        # stack_interp = torch.cat(interp, dim=0)
+        # # Draw stacked interpolation
+        # stack_test = stack_interp.clone().cpu().detach().numpy()
+        # # plt.figure(figsize=(20, 20))
+        # n_interp = stack_interp.shape[0]
+        # n_features = stack_interp.shape[1]
+        # for i in range(n_interp):
+        #     for j in range(n_features):
+        #         plt.subplot(n_features, n_interp, ((j * n_interp) + i) + 1)
+        #         plt.plot(stack_test[i, j, :])
+        # # plt.tight_layout(True)
+        # plt.title("Interpolation")
+        # plt.savefig(args.figures_path + 'interpolation.png')
+        # plt.close()
+
+
 
