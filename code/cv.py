@@ -17,6 +17,8 @@ from parallel import ProcessInput
 from multiprocessing import Event
 import concurrent.futures
 import Jetson.GPIO as GPIO
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class CVChannels(ProcessInput):
@@ -65,6 +67,7 @@ class CVChannels(ProcessInput):
         self._gate_time = 0.1
         self._rate = 3300
         self._samples = 1000
+        self._plot = 1000
 
     # def irq_detect(self, channel):  # TODO: does not work.
     #     print('aaaaahaaahahahahahahah')
@@ -83,21 +86,33 @@ class CVChannels(ProcessInput):
             if (value < self._ref + self._eps) and (elapsed_time > self._gate_time):
                 state['cv'][cv_id] = 0
 
-    def handle_cv(self, cv_id, value, buffer, state):
-        # if cv_id == 2:
-        #    print("CV ID: ")
-        #    print(cv_id)
-        #    print("Value: ")
-         #   print(value)
+    def handle_cv(self, cv_id, value, buffer, state, plot):
+        if cv_id == 2:
+            print("CV ID: ")
+            print(cv_id)
+            print("Value: ")
+            print(value)
         # Right now just append value to buffer
+        plot.append(value)
         buffer.append(value)
         if len(buffer) == self._buffer:
             state['buffer'] = buffer
             buffer.clear()
+        if len(plot) == self._plot:
+            plt.plot(plot[:])
+            plt.tight_layout(True)
+            plt.savefig(cv_id)
+            plt.close()
         # self._callback("cv", cv_id, value)
+
+    def update_line(self, hl, new_data):
+        hl.set_xdata(np.append(hl.get_xdata(), new_data))
+        hl.set_ydata(np.append(hl.get_ydata(), new_data))
+        plt.draw()
 
     def thread_read(self, cv, chan, cv_id, state):
         buffer = []
+        plot_points = plt.plot([], [])
         sample_interval = 1.0 / self._rate
         start = time.monotonic()
         time_next_sample = start + sample_interval
