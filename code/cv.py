@@ -107,33 +107,35 @@ class CVChannels(ProcessInput):
         hl.set_ydata(np.append(hl.get_ydata(), new_data))
         plt.draw()
 
-    def thread_read(self, cv, chan, cv_id, state):
+    def thread_read(self, cv, chan, cv_full_id, state):
         buffer = []
         plot_points = []
         sample_interval = 1.0 / self._rate
         start = time.monotonic()
         time_next_sample = start + sample_interval
         while True:
-            if self._cv_type[cv_id] == "gate":
-                value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
-                self.handle_gate(cv_id, value, state)
-            if self._cv_type[cv_id] == "cv":
-                while time.monotonic() < time_next_sample:
-                    pass
-                time_next_sample = time.monotonic() + sample_interval
-                value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
-                self.handle_cv(cv_id, value, buffer, state, plot_points)
-                state['cv'][cv_id] = value
+            c = 0
+            for chan in self._channels:
+                cv_id = (cv_full_id * 3) + c
+                if self._cv_type[(cv_id * 3) + c] == "gate":
+                    value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
+                    self.handle_gate(cv_id, value, state)
+                if self._cv_type[cv_id] == "cv":
+                    while time.monotonic() < time_next_sample:
+                        pass
+                    time_next_sample = time.monotonic() + sample_interval
+                    value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
+                    self.handle_cv(cv_id, value, buffer, state, plot_points)
+                    state['cv'][cv_id] = value
+                c += 1
 
     def read_loop(self, state):
         with concurrent.futures.ThreadPoolExecutor(max_workers=(len(self._cvs) * len(self._channels))) as executor:
                 cur_v = 0
                 futures_cv = []
                 for cv in self._cvs:
-                    for chan in self._channels:
-                        futures_cv.append(executor.submit(self.thread_read, cv=cv,
-                                                          chan=chan, cv_id=cur_v, state=state))
-                        cur_v += 1
+                    futures_cv.append(executor.submit(self.thread_read, cv=cv, cv_id=cur_v, state=state))
+                    cur_v += 1
 
                 for futures_cv in concurrent.futures.as_completed(futures_cv):
                     futures_cv.result()
