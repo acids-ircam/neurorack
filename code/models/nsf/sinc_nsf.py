@@ -350,8 +350,7 @@ class UpSampleLayer(torch_nn.Module):
     def forward(self, x):
         # permute to (batchsize=1, dim, length)
         up_sampled_data = self.l_upsamp(x.permute(0, 2, 1))
-        #tmp = x.permute(0, 2, 1)
-        #up_sampled_data = torch_nn_func.interpolate(tmp, None, self.scale_factor, 'linear', None)
+
         # permute it backt to (batchsize=1, length, dim)
         # and do two moving average
         return self.l_ave1(self.l_ave2(up_sampled_data.permute(0, 2, 1)))
@@ -651,23 +650,9 @@ class CondModuleHnSincNSF(torch_nn.Module):
         tmp = self.l_upsamp(tmp)
         
         # concatenat normed F0 with hidden spectral features
-        context = torch.cat([tmp[:, :, 0:self.output_dim-1], \
-                             self.l_upsamp_f0_hi(feature[:, :, -1:])], \
-                             dim=2)
-        
-        #tmp_upsamp = self.l_upsamp_f0_hi(feature[:, :, -1:])
-        #context = tmp[:, :, :self.output_dim] #torch.zeros(tmp.shape[0], tmp.shape[1], self.output_dim).to(tmp_upsamp.device)
-        #print(tmp_upsamp.shape)
-        #print(tmp.shape)
-        #print(context.shape)
-        #print(self.output_dim)
-        #context[:, :, self.output_dim-1].zero_()
-        #context[:, :, self.output_dim-1:].add_(tmp_upsamp)
-        #context[:, :, self.output_dim-1].zero_()
-        #context[:, :, 0:self.output_dim].add_(tmp[:, :, 0:self.output_dim])
-        #context[:, :, self.output_dim-1:self.output_dim].add_(tmp_upsamp)
-        #context = torch.cat((tmp[0, :, 0:self.output_dim-1].t(), tmp_upsamp[0, :, :].t()), dim=0).t()
-        #context = context.unsqueeze(0)
+        context = torch.cat((tmp[:, :, 0:self.output_dim-1], \
+                             self.l_upsamp_f0_hi(feature[:, :, -1:])), \
+                            dim=2)
         
         # hidden feature for cut-off frequency
         hidden_cut_f = tmp[:, :, self.output_dim-1:]
