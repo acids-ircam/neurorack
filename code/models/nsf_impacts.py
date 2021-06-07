@@ -41,7 +41,7 @@ class NSF:
         print('Creating empty NSF')
         self._model = None
         self._wav_file = 'reference_impact.wav'
-        self._n_blocks = 11
+        self._n_blocks = 15
         self._n_batch = 1
         self._thread = None
         self._last_gen_block = 0
@@ -153,20 +153,30 @@ class NSF:
             # We have generated the full queue
             if (self._last_gen_block + self._n_blocks + 1) > self._features.shape[1]:
                 self._generate_end = True
-                self._generate_signal.wait()
+                self._last_gen_block = 0
+            #    self._generate_signal.wait()
             # Waking up to generate
-            if (self._generate_signal.is_set()):
-                self._generate_signal.clear()
+            # if (self._generate_signal.is_set()):
+            #     self._generate_signal.clear()
             # Infer which block to generate
-            gen_block = (self.last_request_block // self._n_blocks) * self.n_blocks
-            gen_block += (self.block_lookahead * self._n_blocks)
+            # gen_block = (self.last_request_block // self._n_blocks) * self.n_blocks
+            # gen_block += (self.block_lookahead * self._n_blocks)
+            gen_block = self._last_gen_block
+            if (gen_block == 0):
+                self._last_val = None
+            else:
+                self._last_val = self._generated_queue[gen_block - 1]
             if (gen_block + self._n_blocks > len(self._generated_queue)):
                 continue
             cur_audio = self.generate_block(self._last_gen_block)
             # Change blocks to queue
             for b in range(self._n_blocks):
                 self._generated_queue[gen_block+b] = cur_audio[b]
-            print('Finished update from ' + str(gen_block) + ' to ' + str(gen_block + self._n_blocks))
+            if (gen_block + self._n_blocks < len(self._generated_queue)):
+                n_block =self._generated_queue[gen_block + self._n_blocks]
+                self._generated_queue[gen_block + self._n_blocks] = (self._last_val * np.linspace(1, 0, 512)) + (n_block * np.linspace(0, 1, 512))
+            #print('Finished update from ' + str(gen_block) + ' to ' + str(gen_block + self._n_blocks))
+            self._last_gen_block += self._n_blocks
                           
     def request_block_direct(self, block_idx):
         print('Request block : ' + str(block_idx))
