@@ -41,10 +41,14 @@ class NSF:
         self._n_blocks = 8
         self._thread = None
         self._last_gen_block = 0
+        self._block_lookahead = 2
         self._last_val = None
-        self.generated_queue = []
-        self.generate_end = False
+        self._current_chunk = None
+        self._next_chunk = None
+        self._generated_queue = []
+        self._generate_end = False
         self._generate_signal = Event()
+        self._features = None
 
     def dummy_features(self, wav):
         y, sr = librosa.load(wav)
@@ -66,7 +70,7 @@ class NSF:
         for b in range(self._n_blocks):
             self.generated_queue.append(cur_blocks[(b * 512):((b+1)*512)])
             self._last_gen_block = 8
-        self.start_generation_thread()
+        self.start_generation_thread_full()
 
     def generate_random(self, length=200):
         print('Generating random length ' + str(length))
@@ -80,52 +84,60 @@ class NSF:
             audio = self._model(features)
         return audio.squeeze().detach().cpu().numpy()
 
-    def start_generation_thread(self):
-        self._thread = threading.Thread(target=self.generate_thread, args=(1,))
+    def start_generation_thread_full(self):
+        self._thread = threading.Thread(target=self.generate_thread_full, args=(1,))
         self._thread.start()
+        
+    def generate_block(self, block_id):
+        cur_feats = self.features[:, self.block_id:(self.block_id + self._n_blocks + 1), :]
+        print(cur_feats.shape)
+        cur_audio = self._model(cur_feats).squeeze().detach().cpu().numpy()
+        if (self._last_val is not None):
+            cur_audio[:512] = (self._last_val * np.linspace(1, 0, 512)) + (cur_audio[:512] * np.linspace(0, 1, 512))
+        self._last_val = cur_audio[-512:]
+        cur_audio = cur_audio[:-512]
     
-    def generate_thread(self, args):
+    def generate_thread_full(self, args):
         while True:
+            # We have generated the full queue
             if (self._last_gen_block + self._n_blocks + 1) > self.features.shape[1]:
                 self.generate_end = True
-                self._generate_signal.wait()
-            cur_feats = self.features[:, self._last_gen_block:(self._last_gen_block + self._n_blocks + 1), :]
-            print(cur_feats.shape)
-            cur_audio = self._model(cur_feats).squeeze().detach().cpu().numpy()
-            if (self._last_val is not None):
-                cur_audio[:512] = (self._last_val * np.linspace(1, 0, 512)) + (cur_audio[:512] * np.linspace(0, 1, 512))
-            self._last_val = cur_audio[-512:]
-            cur_audio = cur_audio[:-512]
+                print('Generated full')
+            # Generate a new block
+            cur_audio = self.generate_block(self._last_gen_block)
+            # Append blocks to queue
             for b in range(self._n_blocks):
-                self.generated_queue.append(cur_audio[(b * 512):((b+1)*512)])
+                self._generated_queue.append(cur_audio[(b * 512):((b+1)*512)])
             self._last_gen_block += self._n_blocks
-            print('Thread ended')
+    
+    def generate_thread_block(self, args):
+        while True:
+            # We have generated the full queue
+            if (self._last_gen_block + self._n_blocks + 1) > self.features.shape[1]:
+                self._generate_end = True
+                self._generate_signal.wait()
+            # Waking up to generate
+            if (self._generate_signal.is_set()):
+                self._generate_signal.clear()
             
-    def block_generate(self, block_idx):
-        print(block_idx)
-        #if (block_idx == 0):
-        #    if (self._thread and self._thread.is_alive()):
-        #        self._thread.stop()
-        #    self.generated_queue = []
-        #    self.generate_end = False
-        while (len(self.generated_queue) <= block_idx):
-            print('Blooooooocked')
-            print('Blooooooocked')
-            print('Blooooooocked')
-            #self.generate_thread(0)
-            pass
-            #block_idx = -1
-            #print('After gen')
-            #self._thread = threading.Thread(target=self.generate_thread, args=(1,))
-            #print('After thread create')
-            #self._thread.start()
-            #print('After thread start')
-        #elif (not self._thread or (not self._thread.is_alive()) and (not self.generate_end)):
-        #    self._thread = threading.Thread(target=self.generate_thread, args=(1,))
-        #    self._thread.start()
+    def request_block_direct(self, block_idx):
+        print('Request block : ' + str(block_idx))
+        if (block_idx + self._n_blocks > len(self._features)):
+            return None
+        if (block_idx % self._n_blocks == 0):
+            print('Need next block')
+            self._current_chunk = self.generate_block(block_idx)
+            print('Block generated')
+        return self._current_chunk[block_idx % 8]
+    
+    def request_block_threaded(self, block_idx):
+        print('Request block : ' + str(block_idx))
+        if (len(self._generated_queue) <= block_idx):
+            return None
         print('End of gen :')
-        print(self.generated_queue[block_idx].shape)
-        return self.generated_queue[block_idx]
+        self._generate_signal.set()
+        print(self._generated_queue[block_idx].shape)
+        return self._generated_queue[block_idx]
 
 if __name__ == '__main__':
     root_dir = "/home/hime/Work/dataset/toydataset"

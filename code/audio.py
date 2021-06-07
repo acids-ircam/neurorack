@@ -154,7 +154,12 @@ class Audio(ProcessInput):
         def callback_block(outdata, frames, time, status):
             print('Start of call block')
             print(outdata.shape)
-            outdata[:] = self._model.block_generate(self.cur_idx)[:, np.newaxis]
+            #cur_data = self._model.request_block(self.cur_idx)[:, np.newaxis]
+            cur_data = self._model.request_block_direct(self.cur_idx)[:, np.newaxis]
+            if (cur_data is None):
+                print('Stream stopping (end of features)')
+                raise sd.CallbackStop()
+            outdata[:] = cur_data
             self.cur_idx += 1
         self.cur_idx = 0
         self._model.start_generation_thread()
