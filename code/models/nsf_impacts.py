@@ -8,7 +8,7 @@ import tqdm
 # import torchaudio
 import soundfile as sf
 import threading
-from multiprocessing import Event
+from multiprocessing import Event, Process
 from torch2trt import torch2trt
 from torch2trt import TRTModule
 
@@ -79,11 +79,11 @@ class NSF:
         for b in range(self._n_blocks):
             self._generated_queue.append(cur_blocks[(b * 512):((b+1)*512)])
             self._last_gen_block = 8
-        if (not os.path.exists(self.trt_path)):
-            print("Switching model to TRT")
-            self._model = torch2trt(self._model, [tmp_features])
-            print("Saving TRT model")
-            torch.save(self._model.state_dict(), self.trt_path)
+        #if (not os.path.exists(self.trt_path)):
+        #    print("Switching model to TRT")
+        #    self._model = torch2trt(self._model, [tmp_features])
+        #    print("Saving TRT model")
+        #    torch.save(self._model.state_dict(), self.trt_path)
         print(len(self._features))
         self.start_generation_thread_full()
 
@@ -100,7 +100,7 @@ class NSF:
         return audio.squeeze().detach().cpu().numpy()
 
     def start_generation_thread_full(self):
-        self._thread = threading.Thread(target=self.generate_thread_full, args=(1,))
+        self._thread = Process(target=self.generate_thread_full, args=(1,))
         self._thread.start()
 
     def signal_start_stream(self):

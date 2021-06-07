@@ -55,7 +55,7 @@ class Neurorack():
         # List of objects to create processes
         self._objects = [self._audio, self._screen, self._rotary, self._cvs, self._button]
         # Find number of CPUs
-        self._nb_cpus = mp.cpu_count()
+        self._nb_cpus = 4#mp.cpu_count()
         # Create a pool of jobs
         self._pool = mp.Pool(self._nb_cpus)
         # Handle signal informations

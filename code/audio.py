@@ -21,7 +21,7 @@ import sounddevice as sd
 from parallel import ProcessInput
 from models.ddsp import DDSP
 from models.nsf_impacts import NSF
-from multiprocessing import Event
+from multiprocessing import Event, Process
 from config import config
 
 
