@@ -87,7 +87,7 @@ class Audio(ProcessInput):
     def handle_signal_event(self, state):
         cur_event = state["audio"]["event"]
         if cur_event in [config.events.gate0, config.events.gate1]:
-            self.play_model(state)
+            self.play_model_block(state)
         # state["audio"]["event"].value = ''
                 
     def set_defaults(self):
