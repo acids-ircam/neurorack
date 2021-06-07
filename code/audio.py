@@ -155,14 +155,14 @@ class Audio(ProcessInput):
             print('Start of call block')
             print(outdata.shape)
             #cur_data = self._model.request_block(self.cur_idx)[:, np.newaxis]
-            cur_data = self._model.request_block_direct(self.cur_idx)[:, np.newaxis]
+            cur_data = self._model.request_block_threaded(self.cur_idx)
             if (cur_data is None):
                 print('Stream stopping (end of features)')
                 raise sd.CallbackStop()
-            outdata[:] = cur_data
+            outdata[:] = cur_data[:, np.newaxis]
             self.cur_idx += 1
         self.cur_idx = 0
-        self._model.start_generation_thread()
+        self._model.signal_start_stream()
         if (self._cur_stream == None):
             self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
             self._cur_stream.start()
@@ -282,5 +282,7 @@ class Audio(ProcessInput):
 if __name__ == '__main__':
     audio = Audio(None)
     audio.model_burn_in()
+    audio._signal.wait(4)
+    print('Starting play')
     audio.play_model_block(None)
     audio._signal.wait(1000)
