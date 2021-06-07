@@ -34,14 +34,15 @@ class NSF:
     m_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
     # m_path = "/home/hime/Work/Neurorack/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
     trt_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_trt_5.0.th"
-    f_pass = 3
+    f_pass = 6
 
     def __init__(self):
         # Testing NSF
         print('Creating empty NSF')
         self._model = None
         self._wav_file = 'reference_impact.wav'
-        self._n_blocks = 8
+        self._n_blocks = 11
+        self._n_batch = 1
         self._thread = None
         self._last_gen_block = 0
         self._last_request_block = -1
@@ -60,25 +61,32 @@ class NSF:
         return features
 
     def preload(self):
-        if (not os.path.exists(self.trt_path)):
-            self._model = torch.load(self.m_path, map_location="cuda")
-            self._model = self._model.cuda()
-        else:
-            self._model = TRTModule()
-            self._model.load_state_dict(torch.load(self.trt_path))
-            self._model = self._model.cuda()
+        torch.backends.cudnn.benchmark = True
+        #if (not os.path.exists(self.trt_path)):
+        self._model = torch.load(self.m_path, map_location="cuda")
+        self._model = self._model.cuda()
+        #else:
+        #    self._model = TRTModule()
+        #    self._model.load_state_dict(torch.load(self.trt_path))
+        #    self._model = self._model.cuda()
+        self._model.eval()
         print("NSF model loaded")
         self._features = self.dummy_features(self._wav_file)
         self._features = torch.tensor(self._features).unsqueeze(0).cuda().float()
-        tmp_features = self._features[:, :self._n_blocks+1, :]
+        tmp_features = []
+        for b in range(self._n_batch):
+            tmp_features.append(self._features[:, (b*self._n_blocks):((b+1)*self._n_blocks)+1, :])
+        tmp_features = torch.cat(tmp_features)
         print(tmp_features.shape)
         for p in range(self.f_pass):
             print("Starting NSF pass")
+            cur_time = time.monotonic()
             with torch.no_grad():
-                cur_blocks = self._model(tmp_features).squeeze().detach().cpu().numpy()
+                cur_blocks = self._model(tmp_features).squeeze().cpu()#.numpy()
+            print('Time : ' + str(time.monotonic() - cur_time))
         for b in range(self._n_blocks):
             self._generated_queue.append(cur_blocks[(b * 512):((b+1)*512)])
-            self._last_gen_block = 8
+            self._last_gen_block = self._n_blocks
         #if (not os.path.exists(self.trt_path)):
         #    print("Switching model to TRT")
         #    self._model = torch2trt(self._model, [tmp_features])
@@ -100,7 +108,7 @@ class NSF:
         return audio.squeeze().detach().cpu().numpy()
 
     def start_generation_thread_full(self):
-        self._thread = Process(target=self.generate_thread_full, args=(1,))
+        self._thread = threading.Thread(target=self.generate_thread_full, args=(1,))
         self._thread.start()
 
     def signal_start_stream(self):
@@ -112,7 +120,8 @@ class NSF:
     def generate_block(self, block_id):
         cur_feats = self._features[:, block_id:(block_id + self._n_blocks + 1), :]
         print(cur_feats.shape)
-        cur_audio = self._model(cur_feats).squeeze().detach().cpu().numpy()
+        with torch.no_grad():
+            cur_audio = self._model(cur_feats).squeeze().detach().cpu().numpy()
         if (self._last_val is not None):
             cur_audio[:512] = (self._last_val * np.linspace(1, 0, 512)) + (cur_audio[:512] * np.linspace(0, 1, 512))
         self._last_val = cur_audio[-512:]
