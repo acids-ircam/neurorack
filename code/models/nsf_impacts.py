@@ -8,7 +8,7 @@ import tqdm
 # import torchaudio
 import soundfile as sf
 import threading
-from multiprocessing import Event()
+from multiprocessing import Event
 
 def spectral_features(y, sr):
     features = [None] * 7
