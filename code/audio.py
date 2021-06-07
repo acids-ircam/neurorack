@@ -55,6 +55,8 @@ class Audio(ProcessInput):
         # Set devices default
         self.set_defaults()
         self._model_name = model
+        # Current block stream
+        self._cur_stream = None
         # Set model
         self.load_model()
     
@@ -156,11 +158,10 @@ class Audio(ProcessInput):
             self.cur_idx += 1
         self.cur_idx = 0
         self._model.start_generation_thread()
-        #self._model.block_generate(self.cur_idx)
-        #cur_stream = sd.OutputStream(device=sd.default.device, channels=1, callback=callback_block, samplerate=self._sr)
-        cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
-        cur_stream.start()
-        print('Stream launched')
+        if (self._cur_stream == None):
+            self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
+            self._cur_stream.start()
+            print('Stream launched')
             
     def play_sine_block(self, amplitude=1.0, frequency=440.0):
         '''

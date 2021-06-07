@@ -8,6 +8,7 @@ import tqdm
 # import torchaudio
 import soundfile as sf
 import threading
+from multiprocessing import Event()
 
 def spectral_features(y, sr):
     features = [None] * 7
@@ -43,6 +44,7 @@ class NSF:
         self._last_val = None
         self.generated_queue = []
         self.generate_end = False
+        self._generate_signal = Event()
 
     def dummy_features(self, wav):
         y, sr = librosa.load(wav)
@@ -64,6 +66,7 @@ class NSF:
         for b in range(self._n_blocks):
             self.generated_queue.append(cur_blocks[(b * 512):((b+1)*512)])
             self._last_gen_block = 8
+        self.start_generation_thread()
 
     def generate_random(self, length=200):
         print('Generating random length ' + str(length))
@@ -73,8 +76,6 @@ class NSF:
         return audio.squeeze().detach().cpu().numpy()
 
     def generate(self, features):
-        # features = self.dummy_features(wav)
-        # features = torch.tensor(features).unsqueeze(0).cuda().float()
         with torch.no_grad():
             audio = self._model(features)
         return audio.squeeze().detach().cpu().numpy()
@@ -87,7 +88,7 @@ class NSF:
         while True:
             if (self._last_gen_block + self._n_blocks + 1) > self.features.shape[1]:
                 self.generate_end = True
-                return
+                self._generate_signal.wait()
             cur_feats = self.features[:, self._last_gen_block:(self._last_gen_block + self._n_blocks + 1), :]
             print(cur_feats.shape)
             cur_audio = self._model(cur_feats).squeeze().detach().cpu().numpy()
