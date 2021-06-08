@@ -249,11 +249,14 @@ class NSF:
         # Simulate CVs
         # cv_list = [random.sample(range(-4, 4), 1)[0]] * 4
         cv_list = [(x + 4) / 8 for x in cv_list]
+        cv_sum = sum(cv_list)
+        if (abs(2 - cv_sum) < 0.1):
+            cv_list = [1, 0, 0, 0]
         print(cv_list)
         # Run through CV values
         interp = torch.zeros_like(self._features_list[0])
         for i, snd in enumerate(self._features_list):
-            interp += snd * cv_list[i]
+            interp += snd * cv_list[i] / cv_sum
         self._features = interp
 
 
