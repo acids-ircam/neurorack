@@ -242,6 +242,8 @@ class NSF:
         for i, alpha in zip(feats_list, cv_list):
             x_interp[:, :, i] = (1 - alpha) * snd_2[:, :, i] + alpha * snd_1[:, :, i]
         self._features = x_interp
+        print(torch.mean(self._features, dim=(0, 1)))
+        print('End of interpolate')
 
     def interp_trio(self, cv_list):
         # Simulate CVs
