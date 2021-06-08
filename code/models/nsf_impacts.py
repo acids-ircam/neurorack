@@ -198,7 +198,7 @@ class NSF:
         # Update requested block
         self._last_request_block = block_idx
         # Signal the generation thread
-        self._generate_signal.set()
+        # self._generate_signal.set()
         # Check if we have ended
         if len(self._generated_queue) <= block_idx:
             return None
