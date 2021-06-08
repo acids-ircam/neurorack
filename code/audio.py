@@ -168,6 +168,8 @@ class Audio(ProcessInput):
             self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
             self._cur_stream.start()
             print('Stream launched')
+        elif (not self._cur_stream.active):
+            self._cur_stream.start()
             
     def play_sine_block(self, amplitude=1.0, frequency=440.0):
         '''

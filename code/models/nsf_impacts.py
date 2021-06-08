@@ -146,7 +146,7 @@ class NSF:
                 self._generated_queue.append(cur_audio[b])
             self._last_gen_block += self._n_blocks
         # Then switch to block-wise mode
-        self.generate_thread_block(args)
+        # self.generate_thread_block(args)
     
     def generate_thread_block(self, args):
         while True:
@@ -173,7 +173,7 @@ class NSF:
             for b in range(self._n_blocks):
                 self._generated_queue[gen_block+b] = cur_audio[b]
             if (gen_block + self._n_blocks < len(self._generated_queue)):
-                n_block =self._generated_queue[gen_block + self._n_blocks]
+                n_block = self._generated_queue[gen_block + self._n_blocks]
                 self._generated_queue[gen_block + self._n_blocks] = (self._last_val * np.linspace(1, 0, 512)) + (n_block * np.linspace(0, 1, 512))
             #print('Finished update from ' + str(gen_block) + ' to ' + str(gen_block + self._n_blocks))
             self._last_gen_block += self._n_blocks
