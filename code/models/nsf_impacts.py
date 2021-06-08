@@ -232,6 +232,7 @@ class NSF:
         # Simulate CVs
         # cv_list = [random.sample(range(-4, 4), 1)[0]] * 4
         cv_list = [(x + 4) / 8 for x in cv_list]
+        print(cv_list)
         snd_1 = self._features_list[0]
         snd_2 = self._features_list[1]
         # Run through CV values

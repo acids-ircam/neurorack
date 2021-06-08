@@ -94,6 +94,7 @@ class Audio(ProcessInput):
             cv3 = state['cv'][3]
             cv4 = state['cv'][4]
             cv5 = state['cv'][5]
+            print('CV LIST DETECTED - Interpolate')
             self._model.interp_duo([cv2, cv3, cv4, cv5])
 
     def set_defaults(self):
