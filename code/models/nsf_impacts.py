@@ -74,7 +74,7 @@ class NSF:
         self._model.eval()
         print("NSF model loaded")
         self.features_loading()
-        self._features = torch.tensor(self._features_list[0]).unsqueeze(0).cuda().float()
+        self._features = torch.tensor(self._features_list[0]).cuda().float()
         tmp_features = []
         for b in range(self._n_batch):
             tmp_features.append(self._features[:, (b*self._n_blocks):((b+1)*self._n_blocks)+1, :])
