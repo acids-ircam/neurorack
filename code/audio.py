@@ -89,8 +89,13 @@ class Audio(ProcessInput):
         cur_event = state["audio"]["event"]
         if cur_event in [config.events.gate0, config.events.gate1]:
             self.play_model_block(state)
-        # state["audio"]["event"].value = ''
-                
+        if cur_event in [config.events.cv2, config.events.cv3, config.events.cv4, config.events.cv5]:
+            cv2 = state['cv'][2]
+            cv3 = state['cv'][3]
+            cv4 = state['cv'][4]
+            cv5 = state['cv'][5]
+            self._model.interp_duo([cv2, cv3, cv4, cv5])
+
     def set_defaults(self):
         '''
             Sets default parameters for the soundevice library.

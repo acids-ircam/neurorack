@@ -4,6 +4,7 @@ import librosa
 import numpy as np
 import time
 import os
+import random
 import tqdm
 # import torchaudio
 import soundfile as sf
@@ -54,6 +55,7 @@ class NSF:
         self._generate_end = False
         self._generate_signal = Event()
         self._features = None
+        self._features_list = None
 
     def dummy_features(self, wav):
         y, sr = librosa.load(wav)
@@ -71,8 +73,8 @@ class NSF:
         #    self._model = self._model.cuda()
         self._model.eval()
         print("NSF model loaded")
-        self._features = self.dummy_features(self._wav_file)
-        self._features = torch.tensor(self._features).unsqueeze(0).cuda().float()
+        self.features_loading()
+        self._features = torch.tensor(self._features_list[0]).unsqueeze(0).cuda().float()
         tmp_features = []
         for b in range(self._n_batch):
             tmp_features.append(self._features[:, (b*self._n_blocks):((b+1)*self._n_blocks)+1, :])
@@ -197,9 +199,59 @@ class NSF:
         # Signal the generation thread
         self._generate_signal.set()
         # Check if we have ended
-        if (len(self._generated_queue) <= block_idx):
+        if len(self._generated_queue) <= block_idx:
             return None
         return self._generated_queue[block_idx]
+
+    def features_loading(self):
+        wav_list = ['dce_synth_one_shot_bumper_G#min.wav', 'SH_FFX_123BPM_IMPACT_01.wav',
+                    'FF_ET_whoosh_hit_little.wav', 'Afro_FX_Oneshot_Impact_3.wav']
+        for wav in wav_list:
+            if not os.path.exists("models/features_interp" + str(wav) + ".th"):
+                y, sr = librosa.load("data/" + wav)
+                features = spectral_features(y, sr)
+                features = torch.tensor(features).unsqueeze(0).cuda().float()
+                torch.save(features, "models/features_interp" + str(wav) + ".th")
+        feats = []
+        for wav in wav_list:
+            ft = torch.load("models/features_interp" + str(wav) + ".th")
+            feats.append(ft)
+        # Create sounds list
+        snd_list = [] * 4
+        min_size = np.inf
+        for i in range(3):
+            snd_list.append(feats[i])
+            if feats[i].shape[1] < min_size:
+                min_size = feats[i].shape[1]
+                # Crop to the min size
+        for i in range(len(snd_list)):
+            snd_list[i] = snd_list[i[:, :min_size, :]]
+        self._features_list = snd_list
+
+    def interp_duo(self, cv_list):
+        # Simulate CVs
+        # cv_list = [random.sample(range(-4, 4), 1)[0]] * 4
+        cv_list = [(x + 4) / 8 for x in cv_list]
+        snd_1 = self._features_list[0]
+        snd_2 = self._features_list[1]
+        # Run through CV values
+        # TODO: cv1 = rms [0], cv2 = flatness [3], cv3 = centroid [5], cv4 = pitch [6]
+        feats_list = [0, 3, 5, 6]
+        x_interp = snd_1.clone()
+        for i, alpha in zip(feats_list, cv_list):
+            x_interp[:, :, i] = (1 - alpha) * snd_2[:, :, i] + alpha * snd_1[:, :, i]
+        self._features = x_interp
+
+    def interp_trio(self, cv_list):
+        # Simulate CVs
+        # cv_list = [random.sample(range(-4, 4), 1)[0]] * 4
+        cv_list = [(x + 4) / 8 for x in cv_list]
+        # Run through CV values
+        interp = torch.zeros_like(self._features_list[0])
+        for i, snd in enumerate(self._features_list):
+            interp += snd * cv_list[i]
+        self._features = interp
+
 
 if __name__ == '__main__':
     root_dir = "/home/hime/Work/dataset/toydataset"
