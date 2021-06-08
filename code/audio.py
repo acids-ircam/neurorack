@@ -158,8 +158,8 @@ class Audio(ProcessInput):
                             Length of signal to generate (in seconds)
         '''
         def callback_block(outdata, frames, time, status):
-            print('Start of call block')
-            print(outdata.shape)
+            # print('Start of call block')
+            # print(outdata.shape)
             #cur_data = self._model.request_block(self.cur_idx)[:, np.newaxis]
             cur_data = self._model.request_block_threaded(self.cur_idx)
             if (cur_data is None):
