@@ -155,11 +155,12 @@ class NSF:
             # We have generated the full queue
             if (self._last_gen_block + self._n_blocks + 1) > self._features.shape[1]:
                 self._generate_end = True
-                self._last_gen_block = 0
-            #    self._generate_signal.wait()
+                print('Generate thread going to sleep')
+                self._generate_signal.wait()
             # Waking up to generate
-            # if (self._generate_signal.is_set()):
-            #     self._generate_signal.clear()
+            if (self._generate_signal.is_set()):
+                self._generate_signal.clear()
+                self._last_gen_block = 0
             # Infer which block to generate
             # gen_block = (self.last_request_block // self._n_blocks) * self.n_blocks
             # gen_block += (self.block_lookahead * self._n_blocks)
@@ -244,6 +245,7 @@ class NSF:
         self._features = x_interp
         print(torch.mean(self._features, dim=(0, 1)))
         print('End of interpolate')
+        self._generate_signal.set()
 
     def interp_trio(self, cv_list):
         # Simulate CVs
@@ -258,6 +260,8 @@ class NSF:
         for i, snd in enumerate(self._features_list):
             interp += snd * cv_list[i] / cv_sum
         self._features = interp
+        print('End of interpolate')
+        self._generate_signal.set()
 
 
 if __name__ == '__main__':
