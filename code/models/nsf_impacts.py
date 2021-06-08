@@ -34,7 +34,7 @@ class NSF:
     m_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
     # m_path = "/home/hime/Work/Neurorack/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
     trt_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_trt_5.0.th"
-    f_pass = 6
+    f_pass = 1
 
     def __init__(self):
         # Testing NSF
@@ -84,9 +84,9 @@ class NSF:
             with torch.no_grad():
                 cur_blocks = self._model(tmp_features).squeeze().cpu()#.numpy()
             print('Time : ' + str(time.monotonic() - cur_time))
-        for b in range(self._n_blocks):
-            self._generated_queue.append(cur_blocks[(b * 512):((b+1)*512)])
-            self._last_gen_block = self._n_blocks
+        # for b in range(self._n_blocks):
+        #    self._generated_queue.append(cur_blocks[(b * 512):((b+1)*512)])
+        #    self._last_gen_block = self._n_blocks
         #if (not os.path.exists(self.trt_path)):
         #    print("Switching model to TRT")
         #    self._model = torch2trt(self._model, [tmp_features])
@@ -146,7 +146,7 @@ class NSF:
                 self._generated_queue.append(cur_audio[b])
             self._last_gen_block += self._n_blocks
         # Then switch to block-wise mode
-        # self.generate_thread_block(args)
+        self.generate_thread_block(args)
     
     def generate_thread_block(self, args):
         while True:

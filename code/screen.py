@@ -36,7 +36,7 @@ class Screen(ProcessInput):
     def __init__(self, 
                  callback: callable,
                  height: int = 240,
-                 rotation: int = 180,
+                 rotation: int = 0,
                  x_offset: int = 0,
                  y_offset: int = 80,
                  background:bool = False):
