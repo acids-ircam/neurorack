@@ -236,7 +236,7 @@ class NSF:
         snd_1 = self._features_list[0]
         snd_2 = self._features_list[1]
         # Run through CV values
-        # TODO: cv1 = rms [0], cv2 = flatness [3], cv3 = centroid [5], cv4 = pitch [6]
+        # TODO: cv1 = rms [0], cv2 = flatness [3], cv3 = centroid [5], ccv4 = pitch [6]
         feats_list = [0, 3, 5, 6]
         x_interp = snd_1.clone()
         for i, alpha in zip(feats_list, cv_list):
