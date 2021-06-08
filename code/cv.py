@@ -87,14 +87,15 @@ class CVChannels(ProcessInput):
     def handle_cv(self, cv_id, value, buffer, state):
         # Right now just append value to buffer
         # plot[cv_id % 3].append(value)
-        buffer.append(value)
+        # buffer.append(value)
         #if len(buffer) == self._buffer:
         #    state['buffer'] = buffer
         #    buffer.clear()
         #if len(plot[cv_id % 3]) == self._plot:
         #    np.save("plot_" + str(cv_id) + ".npy", plot[cv_id % 3])
         #    print('plot on ' + str(cv_id))
-        self._callback("cv", cv_id, value)
+        if (abs(state['cv'][cv_id] - value) > 0.1):
+            self._callback("cv", cv_id, value)
 
     def update_line(self, hl, new_data):
         hl.set_xdata(np.append(hl.get_xdata(), new_data))
