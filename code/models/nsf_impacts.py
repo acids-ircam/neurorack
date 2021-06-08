@@ -41,7 +41,7 @@ class NSF:
         print('Creating empty NSF')
         self._model = None
         self._wav_file = 'reference_impact.wav'
-        self._n_blocks = 15
+        self._n_blocks = 3
         self._n_batch = 1
         self._thread = None
         self._last_gen_block = 0
