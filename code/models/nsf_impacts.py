@@ -225,7 +225,7 @@ class NSF:
                 min_size = feats[i].shape[1]
                 # Crop to the min size
         for i in range(len(snd_list)):
-            snd_list[i] = snd_list[i[:, :min_size, :]]
+            snd_list[i] = snd_list[i][:, :min_size, :]
         self._features_list = snd_list
 
     def interp_duo(self, cv_list):
