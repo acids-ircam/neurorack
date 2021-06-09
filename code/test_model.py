@@ -28,7 +28,7 @@ def spectral_features(y, sr):
 
 class NSF:
     # m_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
-    m_path = "models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
+    m_path = "models/model_nsf_sinc_impacts_waveform_5.0.th"
     f_pass = 3
 
     def __init__(self):
