@@ -128,7 +128,7 @@ class CVChannels(ProcessInput):
                     buffer[cv_id % 3].append(value)
                     if (len(buffer[cv_id % 3]) > self._buffer):
                         buffer[cv_id % 3].pop(0)
-                    if (np.abs(value - state['cv'][cv_id]) < 0.02):
+                    if (np.abs(value - state['cv'][cv_id]) < 0.05):
                         n_inactive[cv_id % 3] += 1
                         if (n_inactive[cv_id % 3] > self._n_active):
                             state['cv_active'][cv_id] = 0
