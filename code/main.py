@@ -76,6 +76,7 @@ class Neurorack():
         self._state = self._manager.dict()
         self._state['global'] = self._manager.dict()
         self._state['cv'] = self._manager.list([0.0] * self._N_CVs)
+        self._state['cv_active'] = self._manager.list([0] * self._N_CVs)
         self._state['buffer'] = self._manager.list([self._manager.list([1.0] * 301) for _ in range(self._N_CVs)])
         self._state['rotary'] = self._manager.Value(int, 0)
         self._state['rotary_delta'] = self._manager.Value(int, 0)

@@ -90,17 +90,17 @@ class Audio(ProcessInput):
         if cur_event in [config.events.gate0]:
             self.play_model_block(state)
         if cur_event in [config.events.gate1]:
-            cv2 = state['cv'][2]
-            cv3 = state['buffer'][3]
-            cv4 = state['buffer'][4]
-            cv5 = state['buffer'][5]
+            cv2 = state['cv'][2] if state['cv_active'][2] else 0.0
+            cv3 = state['buffer'][3] if state['cv_active'][3] else 1.0
+            cv4 = state['buffer'][4] if state['cv_active'][4] else 1.0
+            cv5 = state['buffer'][5] if state['cv_active'][5] else 1.0
             print('Interpolate gate')
             self._model.interp_final(cv2, cv3, cv4, cv5)
         if cur_event in [config.events.cv2, config.events.cv3, config.events.cv4, config.events.cv5]:
-            cv2 = state['cv'][2]
-            cv3 = state['cv'][3]
-            cv4 = state['cv'][4]
-            cv5 = state['cv'][5]
+            cv2 = state['cv'][2] if state['cv_active'][2] else 0.0
+            cv3 = state['cv'][3] if state['cv_active'][3] else 1.0
+            cv4 = state['cv'][4] if state['cv_active'][4] else 1.0
+            cv5 = state['cv'][5] if state['cv_active'][5] else 1.0
             print('CV LIST DETECTED - Interpolate')
             self._model.interp_trio([cv2, cv3, cv4, cv5])
 

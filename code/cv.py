@@ -68,6 +68,7 @@ class CVChannels(ProcessInput):
         self._rate = 3300
         self._samples = 301
         self._plot = 1000
+        self._n_active = 10
 
     # def irq_detect(self, channel):  # TODO: does not work.
     #     print('aaaaahaaahahahahahahah')
@@ -101,8 +102,10 @@ class CVChannels(ProcessInput):
 
     def thread_read(self, cv, cv_full_id, state):
         buffer = []
+        n_inactive = []
         for i in range(3):
             buffer.append([])
+            n_inactive.append(0)
         # plot_points = []
         # for i in range(3):
         #     plot_points.append([])
@@ -125,6 +128,15 @@ class CVChannels(ProcessInput):
                     buffer[cv_id % 3].append(value)
                     if (len(buffer[cv_id % 3]) > self._buffer):
                         buffer[cv_id % 3].pop(0)
+                    if (np.abs(value - state['cv'][cv_id]) < 0.02):
+                        n_inactive[cv_id % 3] += 1
+                        if (n_inactive[cv_id % 3] > self._n_active):
+                            state['cv_active'][cv_id] = 0
+                            print('CV ' + str(cv_id) + ' going inactive')
+                    else:
+                        state['cv_active'][cv_id] = 1
+                        n_inactive[cv_id % 3] = 0
+                        print('CV ' + str(cv_id) + ' going active')
                     self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
                     state['cv'][cv_id] = value
                 c += 1

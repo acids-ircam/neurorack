@@ -39,7 +39,7 @@ class Screen(ProcessInput):
                  rotation: int = 0,
                  x_offset: int = 0,
                  y_offset: int = 80,
-                 background:bool = False):
+                 background:bool = True):
         '''
             Constructor - Initialize the screen object
             Parameters:
@@ -135,10 +135,10 @@ class Screen(ProcessInput):
             x = config.screen.main_x,
             y = config.screen.padding,
             absolute = True,
-            elements = [DynamicTextGraphic(state['stats']['ip'], color=config.colors.white),
-                        DynamicTextGraphic(state['stats']['cpu'], color=config.colors.white),
-                        DynamicTextGraphic(state['stats']['memory'], color=config.colors.white),
-                        DynamicTextGraphic(state['stats']['disk'], color=config.colors.white),
+            elements = [#DynamicTextGraphic(state['stats']['ip'], color=config.colors.white),
+                        #DynamicTextGraphic(state['stats']['cpu'], color=config.colors.white),
+                        #DynamicTextGraphic(state['stats']['memory'], color=config.colors.white),
+                        #DynamicTextGraphic(state['stats']['disk'], color=config.colors.white),
                         DynamicTextGraphic(state['stats']['temperature'], color=config.colors.white),
                         DynamicTextGraphic(state['rotary'], font=self._font_large, color=config.text.color_main)]
             )
