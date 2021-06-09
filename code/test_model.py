@@ -43,8 +43,8 @@ class NSF:
         return features
 
     def preload(self):
-        self._model = torch.load(self.m_path, map_location="cpu")
-        self._model = self._model#.cuda()
+        self._model = torch.load(self.m_path, map_location="cuda")
+        self._model = self._model.cuda()
         print("loaded")
         # features = self.dummy_features(self._wav_file)
         # features = torch.tensor(features[:10, :]).unsqueeze(0).cuda().float()
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     for wav in wav_list:
         y, sr = librosa.load('data/' + wav)
         features = spectral_features(y, sr)
-        features = torch.tensor(features).unsqueeze(0).float()#.cuda()#.cuda().float()
+        features = torch.tensor(features).unsqueeze(0).float().cuda()#.cuda().float()
         torch.save(features, "models/features_interp" + str(wav) + ".th")
         print('Generate ' + wav)
         audio = model.generate(features)
@@ -124,16 +124,29 @@ if __name__ == '__main__':
     fast_square = fast_sin.copy()
     fast_square[fast_square < 0] = -1
     fast_square[fast_square > 0] = 1
+    slow_sin = torch.tensor(slow_sin).cuda()
+    fast_sin = torch.tensor(fast_sin).cuda()
+    slow_square = torch.tensor(slow_square).cuda()
+    fast_square = torch.tensor(fast_square).cuda()
     for f in range(len(feats)):
         s_path = "generation_testing/" + str(f)
-        for k, v in {6:'f0', 0:'rms', 5:'centroid'}.items():
+        for k, v in {6:'f0', 0:'rms', 2:'rolloff', 3:'flatness', 4:'bandwidth', 5:'centroid'}.items():
             cur_path = s_path + '_' + v
-            for f_name, func in {'slow_sin':slow_sin, 'slow_sin':slow_sin, 'slow_sin':slow_sin, 'slow_sin':slow_sin}.items():
+            for f_name, func in {'slow_sin':slow_sin, 'fast_sin':fast_sin, 'slow_square':slow_square, 'fast_square':fast_square}.items():
                 fin_path = cur_path + '_' + f_name
                 rep_feat = feats[f].clone()
-                rep_feat[:, :, k] = func
+                rep_feat[:, :, k] = (((func + torch.min(func)) / torch.std(func)) * 0.5) + 0.25
                 audio = model.generate(rep_feat)
-                sf.write(fin_path, audio, sr)
+                sf.write(fin_path + '.wav', audio, sr)
+                rep_feat = feats[f].clone()
+                rep_feat[:, :, k] *= func
+                audio = model.generate(rep_feat)
+                sf.write(fin_path + '_modulate.wav', audio, sr)
+                rep_feat = feats[f].clone()
+                rep_feat[:, :, k] *= (((func + torch.min(func)) / torch.std(func)) * 0.5) + 0.25
+                audio = model.generate(rep_feat)
+                sf.write(fin_path + '_modulate_normed.wav', audio, sr)
+
     #%% Now interpolate
     for s in possible_sets:
         s_path = "generation_testing/"
