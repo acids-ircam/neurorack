@@ -130,15 +130,15 @@ class CVChannels(ProcessInput):
                         buffer[cv_id % 3].pop(0)
                     if (np.abs(value - state['cv'][cv_id]) < 0.05):
                         n_inactive[cv_id % 3] += 1
-                        if (n_inactive[cv_id % 3] > self._n_active):
+                        if (n_inactive[cv_id % 3] > self._n_active and state['cv_active'][cv_id]):
                             state['cv_active'][cv_id] = 0
                             print('CV ' + str(cv_id) + ' going inactive')
                     else:
                         state['cv_active'][cv_id] = 1
                         n_inactive[cv_id % 3] = 0
                         print('CV ' + str(cv_id) + ' going active')
-                    self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
-                    state['cv'][cv_id] = value
+                        self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
+                        state['cv'][cv_id] = value
                 c += 1
 
     def read_loop(self, state):
