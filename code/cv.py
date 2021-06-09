@@ -134,9 +134,10 @@ class CVChannels(ProcessInput):
                             state['cv_active'][cv_id] = 0
                             print('CV ' + str(cv_id) + ' going inactive')
                     else:
+                        if (not state['cv_active'][cv_id]):
+                            print('CV ' + str(cv_id) + ' going active')
                         state['cv_active'][cv_id] = 1
                         n_inactive[cv_id % 3] = 0
-                        print('CV ' + str(cv_id) + ' going active')
                         self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
                         state['cv'][cv_id] = value
                 c += 1
