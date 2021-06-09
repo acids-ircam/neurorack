@@ -117,7 +117,7 @@ class NSF:
         # Update requested block
         self._last_request_block = 0
         # Signal the generation thread
-        self._generate_signal.set()
+        # self._generate_signal.set()
         
     def generate_block(self, block_id):
         cur_feats = self._features[:, block_id:(block_id + self._n_blocks + 1), :]
@@ -151,6 +151,7 @@ class NSF:
         self.generate_thread_block(args)
     
     def generate_thread_block(self, args):
+        self._generate_signal.clear()
         while True:
             # We have generated the full queue
             if (self._last_gen_block + self._n_blocks + 1) > self._features.shape[1]:
@@ -271,9 +272,9 @@ class NSF:
         alpha = (cv_control + 4) / 8
         # Run through CV values
         interp = (1 - alpha) * self._features_list[0] + (alpha * self._features_list[1])
-        interp[:, :, 2] *= cv3
-        interp[:, :, 3] *= cv4
-        interp[:, :, 4] *= cv5
+        interp[:, :, 2] = interp[:, :, 2] * torch.tensor(cv3).unsqueeze(0).cuda()
+        interp[:, :, 3] = interp[:, :, 3] * torch.tensor(cv4).unsqueeze(0).cuda()
+        interp[:, :, 4] = interp[:, :, 4] * torch.tensor(cv5).unsqueeze(0).cuda()
         self._features = interp
         print('End of interpolate')
         self._generate_signal.set()
