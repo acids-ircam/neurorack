@@ -28,7 +28,7 @@ def spectral_features(y, sr):
 
 class NSF:
     # m_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
-    m_path = "models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
+    m_path = "models/model_nsf_sinc_impacts_waveform_5.0.th"
     f_pass = 3
 
     def __init__(self):
@@ -43,8 +43,8 @@ class NSF:
         return features
 
     def preload(self):
-        self._model = torch.load(self.m_path, map_location="cuda")
-        self._model = self._model.cuda()
+        self._model = torch.load(self.m_path, map_location="cpu")
+        self._model = self._model#.cuda()
         print("loaded")
         # features = self.dummy_features(self._wav_file)
         # features = torch.tensor(features[:10, :]).unsqueeze(0).cuda().float()
@@ -67,17 +67,17 @@ class NSF:
             audio = self._model(features)
         return audio.squeeze().detach().cpu().numpy()
 
-    def interp_trio(self, cv_list):
+    def interp_trio(self, cv_list, features_list):
         # Simulate CVs
         # cv_list = [random.sample(range(-4, 4), 1)[0]] * 4
-        cv_list = [(x + 4) / 8 for x in cv_list]
+        # cv_list = [(x + 4) / 8 for x in cv_list]
         cv_sum = sum(cv_list)
-        if (abs(2 - cv_sum) < 0.1):
-            cv_list = [1, 0, 0, 0]
+        #if (abs(2 - cv_sum) < 0.1):
+        #    cv_list = [1, 0, 0, 0]
         print(cv_list)
         # Run through CV values
-        interp = torch.zeros_like(self._features_list[0])
-        for i, snd in enumerate(self._features_list):
+        interp = torch.zeros_like(features_list[0])
+        for i, snd in enumerate(features_list):
             interp += snd * cv_list[i] / cv_sum
         self._features = interp
         print('End of interpolate')
@@ -89,61 +89,67 @@ if __name__ == '__main__':
     model.preload()
     # for wav in wav_adresses:
     wav_list = ['160_Bpm_Cinematic_Impact_6.wav',
-                'ABSB_Impact__Deep_Impact.wav',
-                'ACEAURA_FX_impact_star_03_stripped.wav', 
-                'Afro_FX_Oneshot_Impact_3.wav',
+                'ACEAURA_FX_impact_star_03_stripped.wav',
                 'ANIMAL_HOUSE_fx_impacter_G.wav',
-                'ASD_Transition_Loop_95_Buzz_Impact.wav',
-                'AW2_Churning_Storm_Impact.wav',
-                'dce_synth_one_shot_bumper_G#min.wav', 
-                'ESM_Braaam_Strike_2_Hit_One_Shot_Dark_Dealthy_Horror_Laugh_Impact_Stinger_Movie_Trailer.wav',
-                'FL_AFX_123BPM_IMPACT_02_C#.wav',
+                'dce_synth_one_shot_bumper_G#min.wav',
                 'JORDY_DAZZ_fx_impact_sword.wav',
-                'MODE_BE2_fx_impact_hard_07.wav',
-                'MRTNWVE_fx_impact_mclaren.wav',
-                'SH_FFX_123BPM_IMPACT_01.wav',
-                'FF_ET_whoosh_hit_little.wav']
+                'reference_impact.wav',
+                'SH_FFX_123BPM_IMPACT_01.wav']
     feats = []
     cur_imp = 0
     for wav in wav_list:
         y, sr = librosa.load('data/' + wav)
         features = spectral_features(y, sr)
-        features = torch.tensor(features).unsqueeze(0).float().cuda()#.cuda().float()
+        features = torch.tensor(features).unsqueeze(0).float()#.cuda()#.cuda().float()
         torch.save(features, "models/features_interp" + str(wav) + ".th")
         print('Generate ' + wav)
         audio = model.generate(features)
         sf.write("generation_testing/" + str(cur_imp) + ".wav", audio, sr)
         feats.append(features)
         cur_imp += 1
-    exit()
-    #%%
-    import random
+    t_len = [t.shape[1] for t in feats]
+    min_size = min(t_len)
+    for f in range(len(feats)):
+        feats[f] = feats[f][:, :min_size, :]
     from itertools import combinations
-    possible_sets = list(combinations(range(len(wav_list)), 4))
-    vals = random.sample(possible_sets, min(20, len(wav_list) // 4))
-    print(vals)
-    print('Possible : ' + len(possible_sets))
-    base_comb = [[0.25, 0.25, 0.25, 0.25],
-                 [0.5, 0.5, 0, 0],
-                 [0.5, 0, 0.5, 0],
-                 [0.5, 0, 0.0, 0.5],
-                 [0, 0.5, 0.5, 0],
-                 [0, 0.5, 0, 0.5],
-                 [0, 0, 0.5, 0.5]]
-    for r 
-    # Run through alpha values
-    interp = []
-    n_steps = 11
-    size = min(x_a.shape[1], x_b.shape[1])
-    x_a = x_a[:, :size, :]
-    x_b = x_b[:, :size, :]
-    alpha_values = np.linspace(0, 1, n_steps)
-    for i, alpha in enumerate(alpha_values):
-        x_interp = (1 - alpha) * x_b + alpha * x_a
-        x_interp = model.generate(x_interp)
-        interp.append(x_interp)
-        sf.write("generation_testing/interp_" + str(i) + ".wav", x_interp, sr)
-
-
-
-
+    possible_sets = list(combinations(range(len(wav_list)),2))
+    print('Possible : ' + str(len(possible_sets)))
+    base_comb = [[0, 1.0], [0.25, 0.75], [0.5, 0.5], [0.75, 0.25], [1.0, 0]]
+    t = np.linspace(0, 2 * np.pi, min_size)
+    slow_sin = np.sin(t * 2)
+    fast_sin = np.sin(t * 10)
+    slow_square = slow_sin.copy()
+    slow_square[slow_square < 0] = -1
+    slow_square[slow_square > 0] = 1
+    fast_square = fast_sin.copy()
+    fast_square[fast_square < 0] = -1
+    fast_square[fast_square > 0] = 1
+    for f in range(len(feats)):
+        s_path = "generation_testing/" + str(f)
+        for k, v in {6:'f0', 0:'rms', 5:'centroid'}.items():
+            cur_path = s_path + '_' + v
+            for f_name, func in {'slow_sin':slow_sin, 'slow_sin':slow_sin, 'slow_sin':slow_sin, 'slow_sin':slow_sin}.items():
+                fin_path = cur_path + '_' + f_name
+                rep_feat = feats[f].clone()
+                rep_feat[:, :, k] = func
+                audio = model.generate(rep_feat)
+                sf.write(fin_path, audio, sr)
+    #%% Now interpolate
+    for s in possible_sets:
+        s_path = "generation_testing/"
+        f_feats = []
+        print(s)
+        for n in s:
+            s_path += str(n) + '_'
+            f_feats.append(feats[n])
+        print(s_path)
+        for c in base_comb:
+            cur_path = s_path
+            print(c)
+            for v in c :
+                cur_path += str(v) + '_'
+            cur_path = cur_path[:-1] + '.wav'
+            feats_interp = model.interp_trio(c, f_feats)
+            audio = model.generate(feats_interp)
+            print(cur_path)
+            sf.write(cur_path, audio, sr)
