@@ -90,7 +90,6 @@ class CVChannels(ProcessInput):
             print('Buffer send from ' + str(cv_id))
             print(buffer)
             state['buffer'][cv_id] = buffer.copy()
-            buffer.clear()
         #if len(plot[cv_id % 3]) == self._plot:
         #    np.save("plot_" + str(cv_id) + ".npy", plot[cv_id % 3])
         #    print('plot on ' + str(cv_id))
@@ -126,6 +125,8 @@ class CVChannels(ProcessInput):
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                     # Right now just append value to buffer
                     buffer[cv_id % 3].append(value)
+                    if (len(buffer) > self._buffer):
+                        buffer[cv_id % 3].pop(0)
                     self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
                     state['cv'][cv_id] = value
                 c += 1
