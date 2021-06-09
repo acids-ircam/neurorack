@@ -66,7 +66,7 @@ class CVChannels(ProcessInput):
         self._eps = 1
         self._gate_time = 0.1
         self._rate = 3300
-        self._samples = 1000
+        self._samples = 301
         self._plot = 1000
 
     # def irq_detect(self, channel):  # TODO: does not work.
@@ -86,11 +86,11 @@ class CVChannels(ProcessInput):
 
     def handle_cv(self, cv_id, value, buffer, state):
         # Right now just append value to buffer
-        # plot[cv_id % 3].append(value)
+        buffer[cv_id % 3].append(value)
         # buffer.append(value)
-        #if len(buffer) == self._buffer:
-        #    state['buffer'] = buffer
-        #    buffer.clear()
+        if len(buffer) == self._buffer:
+            state['buffer'][cv_id] = buffer
+            buffer.clear()
         #if len(plot[cv_id % 3]) == self._plot:
         #    np.save("plot_" + str(cv_id) + ".npy", plot[cv_id % 3])
         #    print('plot on ' + str(cv_id))
@@ -105,12 +105,14 @@ class CVChannels(ProcessInput):
 
     def thread_read(self, cv, cv_full_id, state):
         buffer = [] 
+        for i in range(3):
+            buffer.append([])
         # plot_points = []
         # for i in range(3):
         #     plot_points.append([])
         sample_interval = 1.0 / self._rate
         start = time.monotonic()
-        time_next_sample = start + sample_interval
+        # time_next_sample = start + sample_interval
         while True:
             c = 0
             for chan in self._channels:
