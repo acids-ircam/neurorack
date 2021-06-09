@@ -62,7 +62,7 @@ class CVChannels(ProcessInput):
         self._ref = self._cvs[0].get_reference_voltage()
         print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
         self._cv_type = ["gate", "gate", "cv", "cv", "cv", "cv"]
-        self._buffer = 10
+        self._buffer = 301
         self._eps = 1
         self._gate_time = 0.1
         self._rate = 3300
@@ -126,8 +126,6 @@ class CVChannels(ProcessInput):
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                     # Right now just append value to buffer
                     buffer[cv_id % 3].append(value)
-                    print(cv_id)
-                    print(buffer[cv_id % 3])
                     self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
                     state['cv'][cv_id] = value
                 c += 1
