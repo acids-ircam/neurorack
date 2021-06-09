@@ -103,7 +103,7 @@ class CVChannels(ProcessInput):
         plt.draw()
 
     def thread_read(self, cv, cv_full_id, state):
-        buffer = [] 
+        buffer = []
         for i in range(3):
             buffer.append([])
         # plot_points = []
@@ -126,7 +126,7 @@ class CVChannels(ProcessInput):
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                     # Right now just append value to buffer
                     buffer[cv_id % 3].append(value)
-                    self.handle_cv(cv_id, value, buffer, state)
+                    self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
                     state['cv'][cv_id] = value
                 c += 1
 
