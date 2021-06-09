@@ -85,10 +85,10 @@ class CVChannels(ProcessInput):
                 state['cv'][cv_id] = 0
 
     def handle_cv(self, cv_id, value, buffer, state):
-        # Right now just append value to buffer
-        buffer[cv_id % 3].append(value)
         # buffer.append(value)
         if len(buffer) == self._buffer:
+            print('Buffer send from ' + str(cv_id))
+            print(buffer)
             state['buffer'][cv_id] = buffer.copy()
             buffer.clear()
         #if len(plot[cv_id % 3]) == self._plot:
@@ -124,6 +124,8 @@ class CVChannels(ProcessInput):
                     #    pass
                     #time_next_sample = time.monotonic() + sample_interval
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
+                    # Right now just append value to buffer
+                    buffer[cv_id % 3].append(value)
                     self.handle_cv(cv_id, value, buffer, state)
                     state['cv'][cv_id] = value
                 c += 1
