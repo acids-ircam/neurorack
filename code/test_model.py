@@ -28,7 +28,7 @@ def spectral_features(y, sr):
 
 class NSF:
     # m_path = "/home/martin/Desktop/Impact-Synth-Hardware/code/models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
-    m_path = "models/model_nsf_sinc_impacts_waveform_5.0.th"
+    m_path = "models/model_nsf_sinc_ema_impacts_waveform_5.0.th"
     f_pass = 3
 
     def __init__(self):
@@ -72,13 +72,15 @@ class NSF:
         # cv_list = [random.sample(range(-4, 4), 1)[0]] * 4
         # cv_list = [(x + 4) / 8 for x in cv_list]
         cv_sum = sum(cv_list)
+        cv_list = [x / cv_sum for x in cv_list]
         #if (abs(2 - cv_sum) < 0.1):
         #    cv_list = [1, 0, 0, 0]
         print(cv_list)
         # Run through CV values
-        interp = torch.zeros_like(features_list[0])
-        for i, snd in enumerate(features_list):
-            interp += snd * cv_list[i] / cv_sum
+        #interp = torch.zeros_like(features_list[0])
+        #for i, snd in enumerate(features_list):
+        #    interp += (snd * cv_list[i]) #/ cv_sum
+        interp = cv_list[0] * features_list[0] + cv_list[1] * features_list[1]
         self._features = interp
         print('End of interpolate')
         return interp
@@ -115,6 +117,7 @@ if __name__ == '__main__':
     possible_sets = list(combinations(range(len(wav_list)),2))
     print('Possible : ' + str(len(possible_sets)))
     base_comb = [[0, 1.0], [0.25, 0.75], [0.5, 0.5], [0.75, 0.25], [1.0, 0]]
+    """
     t = np.linspace(0, 2 * np.pi, min_size)
     slow_sin = np.sin(t * 2)
     fast_sin = np.sin(t * 10)
@@ -146,7 +149,7 @@ if __name__ == '__main__':
                 rep_feat[:, :, k] *= (((func + torch.min(func)) / torch.std(func)) * 0.5) + 0.25
                 audio = model.generate(rep_feat)
                 sf.write(fin_path + '_modulate_normed.wav', audio, sr)
-
+    """
     #%% Now interpolate
     for s in possible_sets:
         s_path = "generation_testing/"
