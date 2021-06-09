@@ -127,6 +127,7 @@ class CVChannels(ProcessInput):
                     buffer[cv_id % 3].append(value)
                     if (len(buffer) > self._buffer):
                         buffer[cv_id % 3].pop(0)
+                        print('Poppin')
                     self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
                     state['cv'][cv_id] = value
                 c += 1
