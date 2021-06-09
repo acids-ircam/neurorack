@@ -266,6 +266,7 @@ class NSF:
         
     def interp_final(self, cv_control, cv3, cv4, cv5):
         print('Interpolating sounds')
+        print(cv_control)
         print(cv3)
         print(cv4)
         print(cv5)
