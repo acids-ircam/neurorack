@@ -262,6 +262,22 @@ class NSF:
         self._features = interp
         print('End of interpolate')
         self._generate_signal.set()
+        
+    def interp_final(self, cv_control, cv3, cv4, cv5):
+        print('Interpolating sounds')
+        print(cv3)
+        print(cv4)
+        print(cv5)
+        alpha = (cv_control + 4) / 8
+        # Run through CV values
+        interp = (1 - alpha) * self._features_list[0] + (alpha * self._features_list[1])
+        interp[:, :, 2] *= cv3
+        interp[:, :, 3] *= cv4
+        interp[:, :, 4] *= cv5
+        self._features = interp
+        print('End of interpolate')
+        self._generate_signal.set()
+        
 
 
 if __name__ == '__main__':
