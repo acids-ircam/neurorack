@@ -121,14 +121,14 @@ class NSF:
         
     def generate_block(self, block_id):
         cur_feats = self._features[:, block_id:(block_id + self._n_blocks + 1), :]
-        print(cur_feats.shape)
+        # print(cur_feats.shape)
         with torch.no_grad():
             cur_audio = self._model(cur_feats).squeeze().detach().cpu().numpy()
         if self._last_val is not None:
             cur_audio[:512] = (self._last_val * np.linspace(1, 0, 512)) + (cur_audio[:512] * np.linspace(0, 1, 512))
         self._last_val = cur_audio[-512:]
         cur_audio = cur_audio[:-512]
-        block_audio = []
+        block_audio = []print('CV ' + str(cv_id) + ' going active')
         for b in range(self._n_blocks):
             block_audio.append(cur_audio[(b * 512):((b+1)*512)])
         return block_audio
@@ -139,7 +139,7 @@ class NSF:
             # We have generated the full queue
             if (self._last_gen_block + self._n_blocks + 1) > self._features.shape[1]:
                 self.generate_end = True
-                print('Generated full')
+                # print('Generated full')
                 break
             # Generate a new block
             cur_audio = self.generate_block(self._last_gen_block)
@@ -156,27 +156,27 @@ class NSF:
             # We have generated the full queue
             if (self._last_gen_block + self._n_blocks + 1) > self._features.shape[1]:
                 self._generate_end = True
-                print('Generate thread going to sleep')
+                # print('Generate thread going to sleep')
                 self._generate_signal.wait()
             # Waking up to generate
-            if (self._generate_signal.is_set()):
+            if self._generate_signal.is_set():
                 self._generate_signal.clear()
                 self._last_gen_block = 0
             # Infer which block to generate
             # gen_block = (self.last_request_block // self._n_blocks) * self.n_blocks
             # gen_block += (self.block_lookahead * self._n_blocks)
             gen_block = self._last_gen_block
-            if (gen_block == 0):
+            if gen_block == 0:
                 self._last_val = None
             else:
                 self._last_val = self._generated_queue[gen_block]
-            if (gen_block + self._n_blocks > len(self._generated_queue)):
+            if gen_block + self._n_blocks > len(self._generated_queue):
                 continue
             cur_audio = self.generate_block(self._last_gen_block)
             # Change blocks to queue
             for b in range(self._n_blocks):
                 self._generated_queue[gen_block+b] = cur_audio[b]
-            if (gen_block + self._n_blocks < len(self._generated_queue)):
+            if gen_block + self._n_blocks < len(self._generated_queue):
                 n_block = self._generated_queue[gen_block + self._n_blocks]
                 self._generated_queue[gen_block + self._n_blocks] = (self._last_val * np.linspace(1, 0, 512)) + (n_block * np.linspace(0, 1, 512))
             #print('Finished update from ' + str(gen_block) + ' to ' + str(gen_block + self._n_blocks))
@@ -186,9 +186,9 @@ class NSF:
         print('Request block : ' + str(block_idx))
         print(len(self._features))
         self._last_request_block = block_idx
-        if (block_idx + self._n_blocks > self._features.shape[1]):
+        if block_idx + self._n_blocks > self._features.shape[1]:
             return None
-        if (block_idx % self._n_blocks == 0):
+        if block_idx % self._n_blocks == 0:
             print('Need next block')
             self._current_chunk = self.generate_block(block_idx)
             print('Block generated')
@@ -220,6 +220,7 @@ class NSF:
             feats.append(ft)
         # Create sounds list
         snd_list = [] * 4
+        # print('CV ' + str(cv_id) + ' going active')
         min_size = np.inf
         for i in range(3):
             snd_list.append(feats[i])
@@ -253,7 +254,7 @@ class NSF:
         # cv_list = [random.sample(range(-4, 4), 1)[0]] * 4
         cv_list = [(x + 4) / 8 for x in cv_list]
         cv_sum = sum(cv_list)
-        if (abs(2 - cv_sum) < 0.1):
+        if abs(2 - cv_sum) < 0.1:
             cv_list = [1, 0, 0, 0]
         print(cv_list)
         # Run through CV values

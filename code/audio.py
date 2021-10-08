@@ -182,9 +182,9 @@ class Audio(ProcessInput):
         if self._cur_stream == None:
             self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr)
             self._cur_stream.start()
-            print('Stream launched')
+            # print('Stream launched')
         elif not self._cur_stream.active:
-            print('Restart stream')
+            # print('Restart stream')
             self._cur_stream.close()
             self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr)
             self._cur_stream.start()
@@ -201,7 +201,8 @@ class Audio(ProcessInput):
 
         def callback(outdata, frames, time, status):
             if status:
-                print(status)
+                # print(status)
+                print('')
             global start_idx
             t = (start_idx + np.arange(frames)) / self._sr
             t = t.reshape(-1, 1)
