@@ -172,7 +172,7 @@ class Audio(ProcessInput):
             # cur_data = self._model.request_block(self.cur_idx)[:, np.newaxis]
             cur_data = self._model.request_block_threaded(self.cur_idx)
             if cur_data is None:
-                print('Stream stopping (end of features)')
+                # print('Stream stopping (end of features)')
                 raise sd.CallbackStop()
             outdata[:] = cur_data[:, np.newaxis]
             self.cur_idx += 1
