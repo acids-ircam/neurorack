@@ -55,7 +55,7 @@ class NSF:
         #        self._model(features)
 
     def generate_random(self, length=200):
-        print('Generating random length ' + str(length))
+        # print('Generating random length ' + str(length))
         features = [torch.randn(1, length, 1).cuda()] * 7
         with torch.no_grad():
             audio = self._model(features)

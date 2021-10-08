@@ -60,7 +60,7 @@ class CVChannels(ProcessInput):
             c.set_sample_rate(16000)
             self._cvs.append(c)
         self._ref = self._cvs[0].get_reference_voltage()
-        print("Initialized CVs with reference voltage: {:6.3f}v \n".format(self._ref))
+        print("Initialized CVs with reference voltage: {:6.3f}v ".format(self._ref))
         self._cv_type = ["gate", "gate", "cv", "cv", "cv", "cv"]
         self._buffer = 301
         self._eps = 1
@@ -132,11 +132,11 @@ class CVChannels(ProcessInput):
                         n_inactive[cv_id % 3] += 1
                         if n_inactive[cv_id % 3] > self._n_active and state['cv_active'][cv_id]:
                             state['cv_active'][cv_id] = 0
-                            print('CV ' + str(cv_id) + ' going inactive')
+                            # print('CV ' + str(cv_id) + ' going inactive')
                     else:
                         if not state['cv_active'][cv_id]:
-                            print('CV ' + str(cv_id) + ' going active')
-                        state['cv_active'][cv_id] = 1
+                            # print('CV ' + str(cv_id) + ' going active')
+                            state['cv_active'][cv_id] = 1
                         n_inactive[cv_id % 3] = 0
                         self.handle_cv(cv_id, value, buffer[cv_id % 3], state)
                         state['cv'][cv_id] = value
@@ -167,6 +167,7 @@ class CVChannels(ProcessInput):
         """
         # vals = self.read(state)
         c_time = time.time()
+        # print('CV ' + str(cv_id) + ' going active')
         try:
             self.read_loop(state)
             # self.read0(state)
@@ -210,7 +211,7 @@ class CVChannels(ProcessInput):
     #         data[i] = chan0.value
     #         # Loop timing
     #         time_last_sample = time.monotonic()
-    #         time_next_sample = time_next_sample + sample_interval
+    #         time_next_sample = time_neprint('CV ' + str(cv_id) + ' going active')xt_sample + sample_interval
     #         if time_last_sample > (time_next_sample + sample_interval):
     #             skips += 1
     #             time_next_sample = time.monotonic() + sample_interval
