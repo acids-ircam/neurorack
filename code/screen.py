@@ -13,33 +13,34 @@
 """
 
 import time
-import board
-import digitalio
-import multiprocessing
-from PIL import Image, ImageDraw, ImageFont
-import adafruit_rgb_display.st7789 as st7789
-from parallel import ProcessInput
-from graphics.utils import get_resized_image
-from graphics.graphics import GraphicScene, TextGraphic, DynamicTextGraphic
-from graphics.menu import Menu
-from stats import Stats
 from multiprocessing import Event
+
+import adafruit_rgb_display.st7789 as st7789
+import digitalio
+from PIL import Image, ImageDraw, ImageFont
+
+import board
 from config import config
-from ctypes import c_char_p
+from graphics.graphics import GraphicScene, DynamicTextGraphic
+from graphics.menu import Menu
+from graphics.utils import get_resized_image
+from parallel import ProcessInput
+from stats import Stats
+
 
 class Screen(ProcessInput):
     '''
         The screen class allows to handle an LCD SPI Display
         It is based on the ProcessInput system for multiprocessing
     '''
-    
-    def __init__(self, 
+
+    def __init__(self,
                  callback: callable,
                  height: int = 240,
                  rotation: int = 0,
                  x_offset: int = 0,
                  y_offset: int = 80,
-                 background:bool = True):
+                 background: bool = True):
         '''
             Constructor - Initialize the screen object
             Parameters:
@@ -72,10 +73,10 @@ class Screen(ProcessInput):
         # Setup SPI bus using hardware SPI:
         self._spi = board.SPI()
         # Create the 1.3", 1.54" ST7789 display object
-        self._disp = st7789.ST7789(self._spi, height = self._height, 
-                                  rotation = self._rotation, baudrate = self._baudrate,
-                                  x_offset = self._x_offset, y_offset = self._y_offset, 
-                                  cs = self._cs_pin, dc = self._dc_pin, rst = self._reset_pin)
+        self._disp = st7789.ST7789(self._spi, height=self._height,
+                                   rotation=self._rotation, baudrate=self._baudrate,
+                                   x_offset=self._x_offset, y_offset=self._y_offset,
+                                   cs=self._cs_pin, dc=self._dc_pin, rst=self._reset_pin)
         # Handle landscape mode.
         if self._disp.rotation % 180 == 90:
             self._height = self._disp.width
@@ -100,7 +101,7 @@ class Screen(ProcessInput):
         self._image = Image.new('RGB', (self._width, self._width))
         # Get drawing object to draw on image.
         self._draw = ImageDraw.Draw(self._image)
-        if (self._background):
+        if self._background:
             self._bg_image = get_resized_image(config.screen.bg_image, self._width, self._height)
             self._image.paste(self._bg_image)
         else:
@@ -129,28 +130,27 @@ class Screen(ProcessInput):
         self._font = ImageFont.truetype(config.text.font_main, config.text.size_main)
         self._font_big = ImageFont.truetype(config.text.font_main, config.text.size_big)
         self._font_large = ImageFont.truetype(config.text.font_main, config.text.size_large)
-        
+
     def init_graphic_scenes(self, state):
         self._main_scene = GraphicScene(
-            x = config.screen.main_x,
-            y = config.screen.padding,
-            absolute = True,
-            elements = [#DynamicTextGraphic(state['stats']['ip'], color=config.colors.white),
-                        #DynamicTextGraphic(state['stats']['cpu'], color=config.colors.white),
-                        #DynamicTextGraphic(state['stats']['memory'], color=config.colors.white),
-                        #DynamicTextGraphic(state['stats']['disk'], color=config.colors.white),
-                        DynamicTextGraphic(state['stats']['temperature'], color=config.colors.white),
-                        DynamicTextGraphic(state['rotary'], font=self._font_large, color=config.text.color_main)]
-            )
+            x=config.screen.main_x,
+            y=config.screen.padding,
+            absolute=True,
+            elements=[  # DynamicTextGraphic(state['stats']['ip'], color=config.colors.white),
+                # DynamicTextGraphic(state['stats']['cpu'], color=config.colors.white),
+                # DynamicTextGraphic(state['stats']['memory'], color=config.colors.white),
+                # DynamicTextGraphic(state['stats']['disk'], color=config.colors.white),
+                DynamicTextGraphic(state['stats']['temperature'], color=config.colors.white),
+                DynamicTextGraphic(state['rotary'], font=self._font_large, color=config.text.color_main)]
+        )
         self._menu_scene = Menu(
-            config_file = "./menu.yaml",
-            x = 20,
-            y = 20,
-            height = self._height,
-            width = self._width,
-            absolute = True,
-            signals = self._signals)
-        
+            config_file="./menu.yaml",
+            x=20,
+            y=20,
+            height=self._height,
+            width=self._width,
+            absolute=True,
+            signals=self._signals)
 
     def startup_animation(self):
         header = 'Neurorack'
@@ -160,8 +160,8 @@ class Screen(ProcessInput):
         for i in range(20):
             self.clean_screen()
             c = int((255.0 * i) / 20)
-            self._draw.text((55, int(self._height / 4)), header, align='center', font = head_f, fill=(c,c,c))
-            self._draw.text((95, int(self._height / 4) + 28), 'v.' + version, align='center', font = v_f, fill=(c,c,c))
+            self._draw.text((55, int(self._height / 4)), header, align='center', font=head_f, fill=(c, c, c))
+            self._draw.text((95, int(self._height / 4) + 28), 'v.' + version, align='center', font=v_f, fill=(c, c, c))
             # Display image.
             self._disp.image(self._image)
             time.sleep(.025)
@@ -169,26 +169,26 @@ class Screen(ProcessInput):
 
     def draw_cvs(self, state, y):
         cv_vals = state['cv']
-        
+
     def perform_update(self, state):
         self._cur_stats = self._stats.retrieve_stats()
         state['stats']['ip'].value = self._cur_stats[0]
         state['stats']['cpu'].value = self._cur_stats[1]
-        state['stats']['memory'].value =  self._cur_stats[2]
+        state['stats']['memory'].value = self._cur_stats[2]
         state['stats']['disk'].value = self._cur_stats[3]
         state['stats']['temperature'].value = self._cur_stats[4]
-    
+
     def handle_signal_event(self, state):
         mode = state["screen"]["mode"].value
-        if (state["screen"]["event"].value == config.events.button):
-            if (mode == config.screen.mode_main):
+        if state["screen"]["event"].value == config.events.button:
+            if mode == config.screen.mode_main:
                 state["screen"]["mode"].value = config.screen.mode_menu
-            if (mode == config.screen.mode_menu):
+            if mode == config.screen.mode_menu:
                 self._menu_scene.navigation_callback(state, 'button')
-        if (state["screen"]["event"].value == config.events.rotary and mode == config.screen.mode_menu):
+        if state["screen"]["event"].value == config.events.rotary and mode == config.screen.mode_menu:
             self._menu_scene.navigation_callback(state, 'rotary')
         state["screen"]["event"].value = config.events.none
-    
+
     def callback(self, state, queue):
         # Perform a first heavy update
         self.perform_update(state)
@@ -217,6 +217,7 @@ class Screen(ProcessInput):
             # Display image.
             self._disp.image(self._image)
 
+
 if __name__ == '__main__':
     screen = Screen(None)
-    screen.callback({'rotary':0, 'cv':0}, None)
+    screen.callback({'rotary': 0, 'cv': 0}, None)

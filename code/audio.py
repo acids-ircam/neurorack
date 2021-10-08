@@ -152,7 +152,7 @@ class Audio(ProcessInput):
         print('generate ended')
         sd.play(audio, self._sr)
         print('play launched')
-        if (wait):
+        if wait:
             self.wait_playback()
         state["audio"]["mode"].value = config.audio.mode_idle
             
@@ -170,18 +170,18 @@ class Audio(ProcessInput):
             # print(outdata.shape)
             #cur_data = self._model.request_block(self.cur_idx)[:, np.newaxis]
             cur_data = self._model.request_block_threaded(self.cur_idx)
-            if (cur_data is None):
+            if cur_data is None:
                 print('Stream stopping (end of features)')
                 raise sd.CallbackStop()
             outdata[:] = cur_data[:, np.newaxis]
             self.cur_idx += 1
         self.cur_idx = 0
         self._model.signal_start_stream()
-        if (self._cur_stream == None):
+        if self._cur_stream == None:
             self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
             self._cur_stream.start()
             print('Stream launched')
-        elif (not self._cur_stream.active):
+        elif not self._cur_stream.active:
             print('Restart stream')
             self._cur_stream.close()
             self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 

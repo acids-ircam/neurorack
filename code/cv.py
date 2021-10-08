@@ -89,10 +89,10 @@ class CVChannels(ProcessInput):
         # buffer.append(value)
         if len(buffer) == self._buffer:
             state['buffer'][cv_id] = buffer.copy()
-        #if len(plot[cv_id % 3]) == self._plot:
+        # if len(plot[cv_id % 3]) == self._plot:
         #    np.save("plot_" + str(cv_id) + ".npy", plot[cv_id % 3])
         #    print('plot on ' + str(cv_id))
-        #if (abs(state['cv'][cv_id] - value) > 0.1):
+        # if (abs(state['cv'][cv_id] - value) > 0.1):
         #    self._callback("cv", cv_id, value)
 
     def update_line(self, hl, new_data):
@@ -120,21 +120,21 @@ class CVChannels(ProcessInput):
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                     self.handle_gate(cv_id, value, state)
                 if self._cv_type[cv_id] == "cv":
-                    #while time.monotonic() < time_next_sample:
+                    # while time.monotonic() < time_next_sample:
                     #    pass
-                    #time_next_sample = time.monotonic() + sample_interval
+                    # time_next_sample = time.monotonic() + sample_interval
                     value = cv.get_compensated_voltage(channel=chan, reference_voltage=self._ref)
                     # Right now just append value to buffer
                     buffer[cv_id % 3].append(value)
-                    if (len(buffer[cv_id % 3]) > self._buffer):
+                    if len(buffer[cv_id % 3]) > self._buffer:
                         buffer[cv_id % 3].pop(0)
-                    if (np.abs(value - state['cv'][cv_id]) < 0.05):
+                    if np.abs(value - state['cv'][cv_id]) < 0.05:
                         n_inactive[cv_id % 3] += 1
-                        if (n_inactive[cv_id % 3] > self._n_active and state['cv_active'][cv_id]):
+                        if n_inactive[cv_id % 3] > self._n_active and state['cv_active'][cv_id]:
                             state['cv_active'][cv_id] = 0
                             print('CV ' + str(cv_id) + ' going inactive')
                     else:
-                        if (not state['cv_active'][cv_id]):
+                        if not state['cv_active'][cv_id]:
                             print('CV ' + str(cv_id) + ' going active')
                         state['cv_active'][cv_id] = 1
                         n_inactive[cv_id % 3] = 0
@@ -144,14 +144,14 @@ class CVChannels(ProcessInput):
 
     def read_loop(self, state):
         with concurrent.futures.ThreadPoolExecutor(max_workers=(len(self._cvs) * len(self._channels))) as executor:
-                cur_v = 0
-                futures_cv = []
-                for cv in self._cvs:
-                    futures_cv.append(executor.submit(self.thread_read, cv=cv, cv_full_id=cur_v, state=state))
-                    cur_v += 1
+            cur_v = 0
+            futures_cv = []
+            for cv in self._cvs:
+                futures_cv.append(executor.submit(self.thread_read, cv=cv, cv_full_id=cur_v, state=state))
+                cur_v += 1
 
-                for futures_cv in concurrent.futures.as_completed(futures_cv):
-                    futures_cv.result()
+            for futures_cv in concurrent.futures.as_completed(futures_cv):
+                futures_cv.result()
 
     def callback(self, state, queue, delay=0.001):
         """
@@ -165,12 +165,12 @@ class CVChannels(ProcessInput):
                 delay:      [int], optional
                             Specifies the wait delay between read operations [default: 0.001s]
         """
-        #vals = self.read(state)
+        # vals = self.read(state)
         c_time = time.time()
         try:
             self.read_loop(state)
-            #self.read0(state)
-            #while True:
+            # self.read0(state)
+            # while True:
             #    vals = self.read(state)
             #    c_time = time.time()
             #    time.sleep(delay)
@@ -239,5 +239,5 @@ class CVChannels(ProcessInput):
 
 if __name__ == "__main__":
     cv = CVChannels(None)
-    cv.callback({'cv':[0, 0, 0, 0, 0, 0]}, None)
-    #cv.read()
+    cv.callback({'cv': [0, 0, 0, 0, 0, 0]}, None)
+    # cv.read()

@@ -63,11 +63,11 @@ class MenuItem(Graphic):
         self._running: bool = False
         self._active: bool = False
         self._graphic: Graphic = None
-        if (self._type == 'menu' or self._type == 'shell' or self._type == 'function'):
+        if self._type == 'menu' or self._type == 'shell' or self._type == 'function':
             self._graphic = TextGraphic(title)
-        elif (self._type == 'slider'):
+        elif self._type == 'slider':
             self._graphic = SliderGraphic(title, None)
-        elif (self._type == 'list'):
+        elif self._type == 'list':
             self._graphic = TextGraphic(title)
             
     def render(self, ctx):

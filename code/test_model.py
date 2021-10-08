@@ -8,6 +8,7 @@ import tqdm
 import soundfile as sf
 import matplotlib.pyplot as plt
 
+
 def spectral_features(y, sr):
     features = [None] * 7
     features[0] = librosa.feature.rms(y)
@@ -48,7 +49,7 @@ class NSF:
         print("loaded")
         # features = self.dummy_features(self._wav_file)
         # features = torch.tensor(features[:10, :]).unsqueeze(0).cuda().float()
-        #for p in range(self.f_pass):
+        # for p in range(self.f_pass):
         #    print("pass")
         #    with torch.no_grad():
         #        self._model(features)
@@ -73,16 +74,16 @@ class NSF:
         # cv_list = [(x + 4) / 8 for x in cv_list]
         cv_sum = sum(cv_list)
         cv_list = [x / cv_sum for x in cv_list]
-        #if (abs(2 - cv_sum) < 0.1):
+        # if (abs(2 - cv_sum) < 0.1):
         #    cv_list = [1, 0, 0, 0]
-        print(cv_list)
+        # print(cv_list)
         # Run through CV values
-        #interp = torch.zeros_like(features_list[0])
-        #for i, snd in enumerate(features_list):
+        # interp = torch.zeros_like(features_list[0])
+        # for i, snd in enumerate(features_list):
         #    interp += (snd * cv_list[i]) #/ cv_sum
         interp = cv_list[0] * features_list[0] + cv_list[1] * features_list[1]
         self._features = interp
-        print('End of interpolate')
+        # print('End of interpolate')
         return interp
 
 
@@ -102,7 +103,7 @@ if __name__ == '__main__':
     for wav in wav_list:
         y, sr = librosa.load('data/' + wav)
         features = spectral_features(y, sr)
-        features = torch.tensor(features).unsqueeze(0).float().cuda()#.cuda().float()
+        features = torch.tensor(features).unsqueeze(0).float().cuda()  # .cuda().float()
         torch.save(features, "models/features_interp" + str(wav) + ".th")
         print('Generate ' + wav)
         audio = model.generate(features)
@@ -114,7 +115,8 @@ if __name__ == '__main__':
     for f in range(len(feats)):
         feats[f] = feats[f][:, :min_size, :]
     from itertools import combinations
-    possible_sets = list(combinations(range(len(wav_list)),2))
+
+    possible_sets = list(combinations(range(len(wav_list)), 2))
     print('Possible : ' + str(len(possible_sets)))
     base_comb = [[0, 1.0], [0.25, 0.75], [0.5, 0.5], [0.75, 0.25], [1.0, 0]]
     """
@@ -150,7 +152,7 @@ if __name__ == '__main__':
                 audio = model.generate(rep_feat)
                 sf.write(fin_path + '_modulate_normed.wav', audio, sr)
     """
-    #%% Now interpolate
+    # %% Now interpolate
     for s in possible_sets:
         s_path = "generation_testing/"
         f_feats = []
@@ -162,7 +164,7 @@ if __name__ == '__main__':
         for c in base_comb:
             cur_path = s_path
             print(c)
-            for v in c :
+            for v in c:
                 cur_path += str(v) + '_'
             cur_path = cur_path[:-1] + '.wav'
             feats_interp = model.interp_trio(c, f_feats)
