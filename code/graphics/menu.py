@@ -178,14 +178,14 @@ class Menu(ScrollableGraphicScene):
                 if (direction > 0):
                     if self._selected_index == self._max_index - 1 and self._scroll_down is False:
                         return
-                    if (self._selected_index >= 0):
+                    if self._selected_index >= 0:
                         self._elements[self._selected_index]._graphic._selected = False
                     if self._selected_index == self._max_index - 1:
                         self._scroll_start += 1
                     self._selected_index += 1
                     self._elements[self._selected_index]._graphic._selected = True
                     return
-                if (direction < 0):
+                if direction < 0:
                     if self._selected_index == 0 and self._scroll_up is False:
                         return
                     if self._selected_index == -1:
@@ -198,7 +198,7 @@ class Menu(ScrollableGraphicScene):
                         self._selected_index -= 1
                         self._elements[self._selected_index]._graphic._selected = True
                     return
-            elif (event_type == 'button'):
+            elif event_type == 'button':
                 if self._elements[self._selected_index]._title == config.menu.back_element:
                     self.process_history(state)
                     self.reset_menu()
@@ -210,20 +210,20 @@ class Menu(ScrollableGraphicScene):
                 elif self._selected_index > -1:
                     self.process_select(self._selected_index, self._elements[self._selected_index], state)
                 return
-        elif (self._mode == config.menu.mode_dialog):
+        elif self._mode == config.menu.mode_dialog:
             self.process_dialog_select(event_type, direction)
-        elif (self._mode == config.menu.mode_parameter):
-            if (event_type == 'button'):
+        elif self._mode == config.menu.mode_parameter:
+            if event_type == 'button':
                 self.process_select(self._selected_index, self._elements[self._selected_index], state)
-            elif (event_type == 'rotary'):
+            elif event_type == 'rotary':
                 var_range = self._elements[self._selected_index]._graphic._range_v / 50.0
                 param_name = self._elements[self._selected_index]._command
                 state["audio"][param_name].value += var_range * direction
 
     def render(self, ctx=None):
-        if (self._mode == config.menu.mode_dialog):
+        if self._mode == config.menu.mode_dialog:
             return self._current_dialog.render(ctx)
-        elif (self._mode == config.menu.mode_wait):
+        elif self._mode == config.menu.mode_wait:
             return self._current_wait.render(ctx)
         return super().render(ctx)
 

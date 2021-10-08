@@ -140,8 +140,8 @@ class Screen(ProcessInput):
                 # DynamicTextGraphic(state['stats']['cpu'], color=config.colors.white),
                 # DynamicTextGraphic(state['stats']['memory'], color=config.colors.white),
                 # DynamicTextGraphic(state['stats']['disk'], color=config.colors.white),
-                DynamicTextGraphic(state['stats']['temperature'], color=config.colors.white),
-                DynamicTextGraphic(state['rotary'], font=self._font_large, color=config.text.color_main)]
+                # DynamicTextGraphic(state['stats']['temperature'], color=config.colors.white),
+                # DynamicTextGraphic(state['rotary'], font=self._font_large, color=config.text.color_main)]
         )
         self._menu_scene = Menu(
             config_file="./menu.yaml",

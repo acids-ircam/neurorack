@@ -54,9 +54,9 @@ class Button(InterruptInput):
             GPIO.add_event_detect(tegra_soc_name, GPIO.FALLING, callback=self.callback_event, bouncetime=self._debounce)
     
     def callback_event(self, channel: int):
-        print("Button event - pushed")
+        # print("Button event - pushed")
         value = GPIO.input(channel)
-        if (self._callback is not None):
+        if self._callback is not None:
             self._callback(channel, value)
             
     def callback(self, state, queue, delay=0.001):

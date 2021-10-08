@@ -15,18 +15,19 @@
 
 """
 import subprocess
-from .graphics import Graphic, TextGraphic, SliderGraphic
+
 from .config import config
 from .dialogs import ConfirmDialog
-from .menu_functions import model_play, model_select, model_reload, model_benchmark
+from .graphics import Graphic, TextGraphic, SliderGraphic
 from .menu_functions import assign_cv, assign_button, assign_rotary
+from .menu_functions import model_play, model_select, model_reload, model_benchmark
 
 
-class MenuItem(Graphic):    
+class MenuItem(Graphic):
     '''
     Represents a menu item
     '''
-    
+
     function_dispatcher = {
         'model_play': model_play,
         'model_select': model_select,
@@ -37,12 +38,12 @@ class MenuItem(Graphic):
         'assign_rotary': assign_rotary
     }
 
-    #region constructor
-    def __init__(self, 
+    # region constructor
+    def __init__(self,
                  title: str,
                  signals: dict,
-                 type: int, 
-                 command: str, 
+                 type: int,
+                 command: str,
                  confirm: bool = False):
         """
             Initializes a new instance of the Command class
@@ -69,16 +70,16 @@ class MenuItem(Graphic):
             self._graphic = SliderGraphic(title, None)
         elif self._type == 'list':
             self._graphic = TextGraphic(title)
-            
+
     def render(self, ctx):
         return self._graphic.render(ctx)
-    
+
     def get_height(self):
         return self._graphic.get_height()
-    
+
     def get_width(self):
         return self._graphic.get_width()
-    
+
     @staticmethod
     def create_item(title, data, signals):
         """
@@ -98,12 +99,12 @@ class MenuItem(Graphic):
         command = MenuItem(
             title,
             signals,
-            type = data["type"],
-            command = data["command"],
-            confirm = data["confirm"] if "confirm" in data.keys() else False
-          )
+            type=data["type"],
+            command=data["command"],
+            confirm=data["confirm"] if "confirm" in data.keys() else False
+        )
         return command
-    
+
     def run(self, state, menu, params=None, confirmed=config.menu.confirm_cancel):
         """
             Runs the command.
@@ -126,9 +127,8 @@ class MenuItem(Graphic):
                 self._output = subprocess.check_output(self._command, shell=True).decode()
                 self.__returnCode = 0
                 self.__running = False
-    
+
 
 class MenuBar():
     def __init__(self):
         pass
-    
