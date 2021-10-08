@@ -94,7 +94,7 @@ class NSF:
         #    self._model = torch2trt(self._model, [tmp_features])
         #    print("Saving TRT model")
         #    torch.save(self._model.state_dict(), self.trt_path)
-        print(len(self._features))
+        # print(len(self._features))
         self.start_generation_thread_full()
 
     def generate_random(self, length=200):
@@ -124,7 +124,7 @@ class NSF:
         print(cur_feats.shape)
         with torch.no_grad():
             cur_audio = self._model(cur_feats).squeeze().detach().cpu().numpy()
-        if (self._last_val is not None):
+        if self._last_val is not None:
             cur_audio[:512] = (self._last_val * np.linspace(1, 0, 512)) + (cur_audio[:512] * np.linspace(0, 1, 512))
         self._last_val = cur_audio[-512:]
         cur_audio = cur_audio[:-512]
