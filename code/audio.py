@@ -60,7 +60,7 @@ class Audio(ProcessInput):
         self._cur_stream = None
         # Set model
         self.load_model()
-    
+
     def load_model(self):
         if self._model_name == 'ddsp':
             self._model = DDSP()
@@ -68,7 +68,7 @@ class Audio(ProcessInput):
             self._model = NSF()
         else:
             raise NotImplementedError
-    
+
     def callback(self, state, queue):
         # First perform a model burn-in
         print('Performing model burn-in')
@@ -84,7 +84,7 @@ class Audio(ProcessInput):
                 # The refresh comes from an external signal
                 self._signal.clear()
                 self.handle_signal_event(state)
-                
+
     def handle_signal_event(self, state):
         cur_event = state["audio"]["event"]
         if cur_event in [config.events.gate0]:
@@ -117,7 +117,7 @@ class Audio(ProcessInput):
         sd.default.clip_off = False
         sd.default.dither_off = False
         sd.default.never_drop_input = False
-        
+
     def model_burn_in(self):
         '''
             The model burn-in allows to warmup the GPU.
@@ -155,7 +155,7 @@ class Audio(ProcessInput):
         if wait:
             self.wait_playback()
         state["audio"]["mode"].value = config.audio.mode_idle
-            
+
     def play_model_block(self, state, wait: bool = True):
         '''
             Play a sinus signal 
@@ -165,28 +165,30 @@ class Audio(ProcessInput):
                 length:     [int], optional
                             Length of signal to generate (in seconds)
         '''
+
         def callback_block(outdata, frames, time, status):
             # print('Start of call block')
             # print(outdata.shape)
-            #cur_data = self._model.request_block(self.cur_idx)[:, np.newaxis]
+            # cur_data = self._model.request_block(self.cur_idx)[:, np.newaxis]
             cur_data = self._model.request_block_threaded(self.cur_idx)
             if cur_data is None:
                 print('Stream stopping (end of features)')
                 raise sd.CallbackStop()
             outdata[:] = cur_data[:, np.newaxis]
             self.cur_idx += 1
+
         self.cur_idx = 0
         self._model.signal_start_stream()
         if self._cur_stream == None:
-            self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
+            self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr)
             self._cur_stream.start()
             print('Stream launched')
         elif not self._cur_stream.active:
             print('Restart stream')
             self._cur_stream.close()
-            self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr) 
+            self._cur_stream = sd.OutputStream(callback=callback_block, blocksize=512, channels=1, samplerate=self._sr)
             self._cur_stream.start()
-            
+
     def play_sine_block(self, amplitude=1.0, frequency=440.0):
         '''
             Play a sinus signal 
@@ -196,6 +198,7 @@ class Audio(ProcessInput):
                 length:     [int], optional
                             Length of signal to generate (in seconds)
         '''
+
         def callback(outdata, frames, time, status):
             if status:
                 print(status)
@@ -204,11 +207,11 @@ class Audio(ProcessInput):
             t = t.reshape(-1, 1)
             outdata[:] = amplitude * np.sin(2 * np.pi * frequency * t)
             start_idx += frames
-    
+
         with sd.OutputStream(device=sd.default.device, channels=1, callback=callback,
                              samplerate=self._sr):
             input()
-            
+
     def input_through(self, length: float = 4.0):
         '''
             Play some random noise of a given length for checkup.
@@ -218,13 +221,15 @@ class Audio(ProcessInput):
                 length:     [int], optional
                             Length of signal to generate (in seconds)
         '''
+
         def callback(indata, outdata, frames, time, status):
             if status:
                 print(status)
             outdata[:] = indata
+
         with sd.Stream(channels=2, callback=callback):
             sd.sleep(int(length * 1000))
-            
+
     def play_sine_block(self, amplitude=1.0, frequency=440.0):
         '''
             Play a sinus signal 
@@ -234,6 +239,7 @@ class Audio(ProcessInput):
                 length:     [int], optional
                             Length of signal to generate (in seconds)
         '''
+
         def callback(outdata, frames, time, status):
             if status:
                 print(status)
@@ -242,16 +248,17 @@ class Audio(ProcessInput):
             t = t.reshape(-1, 1)
             outdata[:] = amplitude * np.sin(2 * np.pi * frequency * t)
             start_idx += frames
-    
+
         with sd.OutputStream(device=sd.default.device, channels=1, callback=callback,
                              samplerate=self._sr):
             input()
-            
+
     def plot_text_spectrogram(self, columns=6, block_duration=50, f_range=[100, 2000]):
         high, low = f_range
         delta_f = (high - low) / (columns - 1)
         fftsize = np.ceil(self._sr / delta_f)
         low_bin = np.floor(low / delta_f)
+
         def callback(indata, frames, time, status):
             if status:
                 text = ' ' + str(status) + ' '
@@ -272,27 +279,27 @@ class Audio(ProcessInput):
             while True:
                 response = input()
                 print(response)
-        
+
     def stop_playback(self):
         ''' Stop any ongoing playback '''
         sd.stop()
-        
+
     def wait_playback(self):
         ''' Wait on eventual playback '''
         sd.wait()
-    
+
     def get_status(self):
         ''' Get info about over/underflows (play() or rec()) '''
         return sd.get_status()
-    
+
     def get_stream(self):
         ''' Get a reference to the current stream (play() or rec()) '''
         return sd.get_stream()
-    
+
     def query_devices(self):
         ''' Return information about available devices '''
         return sd.query_devices()
-    
+
     def query_hostapis(self):
         ''' Return information about host APIs '''
         return sd.query_hostapis()

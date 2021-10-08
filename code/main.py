@@ -145,7 +145,7 @@ class Neurorack():
         '''
             Callback for handling events from the CV
         '''
-        print('CV callback')
+        # print('CV callback')
         if type_cv == "gate":
             if cv_id == 0:
                 self._state['audio']['event'] = config.events.gate0
@@ -172,7 +172,7 @@ class Neurorack():
         '''
             Callback for handling events from the rotary
         '''
-        print('Rotary callback')
+        # print('Rotary callback')
         self._state["screen"]["event"].value = config.events.rotary
         self._signal_screen.set()
         
