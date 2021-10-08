@@ -128,7 +128,8 @@ class NSF:
             cur_audio[:512] = (self._last_val * np.linspace(1, 0, 512)) + (cur_audio[:512] * np.linspace(0, 1, 512))
         self._last_val = cur_audio[-512:]
         cur_audio = cur_audio[:-512]
-        block_audio = []print('CV ' + str(cv_id) + ' going active')
+        block_audio = []
+        # print('CV ' + str(cv_id) + ' going active')
         for b in range(self._n_blocks):
             block_audio.append(cur_audio[(b * 512):((b+1)*512)])
         return block_audio
