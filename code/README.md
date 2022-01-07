@@ -25,4 +25,6 @@ https://github.com/pypa/pip/issues/9617
 ## Useful commands
 
 Launching python with debugging info on ARM64
+```shell
 python -q -X faulthandler
+```
