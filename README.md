@@ -1,6 +1,6 @@
 # Neurorack
 
-This project documents the Neurorack, which is a deep AI-based synthesizer based on the Jetson Nano development kit in a EuroRack format. 
+This project documents the Neurorack, which is a deep AI-based synthesizer based on the Jetson Nano development kit in a EuroRack format. The following diagram briefly explains the overall structure of the module and the relations between the hardware and software (green) components.
 
 <p align="center">
   <img src="neurorack_hardware.png">
