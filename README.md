@@ -6,6 +6,8 @@ This project documents the Neurorack, which is a deep AI-based synthesizer based
   <img src="neurorack_hardware.png">
 </p>
 
+The hardware part features 4 CV and 2 Gates (along with a screen, rotary and button for handling the menus), which all communicate with specific Python libraries. Note that the behavior of these controls (and the module itself) is highly dependent on the type of deep model embedded. For this first version of the Neurorack, we implemented a descriptor-based impact sounds generator, described in the software section.
+
 Everything in this project is under the [CC NC-BY-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) licence, which means you can adapt, share, tweak, dance with, destroy anything here as long as there is no commercial use involved.
 
 ## Hardware
@@ -27,4 +29,4 @@ You can find in the [`board/`](https://github.com/ninon-io/Impact-Synth-Hardware
 
 ## Software
 
-You can find in the [`code/`](https://github.com/ninon-io/Impact-Synth-Hardware/tree/main/code) folder all the necessary Python code for running the Neurorack, along with the deep model based on a modified Neural Source-Filter (NSF) architecture.
+You can find in the [`code/`](https://github.com/ninon-io/Impact-Synth-Hardware/tree/main/code) folder all the necessary Python code for running the Neurorack, along with the deep model based on a modified Neural Source-Filter (NSF) architecture. At this time, the first CV controls interpolation between different points of the latent descriptor space, and the three remaining CVs directly control high-level descriptors (loudness, centroid, inharmonicity). The first gate is used to output the corresponding current impact.
