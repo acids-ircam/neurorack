@@ -33,10 +33,13 @@ You can find in the [`code/`](https://github.com/ninon-io/Impact-Synth-Hardware/
 
 ## Demonstration video
 
-You can find our cryptic demonstration video on YouTube :
+You can find our cryptic demonstration video on YouTube
 
-<p align="center">
 [![](https://img.youtube.com/vi/64VpQenCHVs/0.jpg)](https://www.youtube.com/watch?v=64VpQenCHVs)
 
 [https://www.youtube.com/watch?v=64VpQenCHVs](https://www.youtube.com/watch?v=64VpQenCHVs)
-</p>
+
+## Bibliography
+
+Esling, P., & Devis, N. (2020). [Creativity in the era of artificial intelligence.](https://arxiv.org/pdf/2008.05959). Keynote paper at the JIM Conference 2020 arXiv preprint arXiv:2008.05959.
+Esling, P., Devis, N., Bitton, A., Caillon, A., & Douwes, C. (2020). [Diet deep generative audio models with structured lottery.](https://arxiv.org/pdf/2007.16170) International Digital Audio Effects (DaFX 2020) Conference. arXiv preprint arXiv:2007.16170.
