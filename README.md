@@ -2,7 +2,9 @@
 
 This project documents the Neurorack, which is a deep AI-based synthesizer based on the Jetson Nano development kit in a EuroRack format. 
 
-![Neurorack hardware and software schematics](neurorack_hardware.png)
+<p align="center">
+  <img src="neurorack_hardware.png">
+</p>
 
 Everything in this project is under the [CC NC-BY-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) licence, which means you can adapt, share, tweak, dance with, destroy anything here as long as there is no commercial use involved.
 
