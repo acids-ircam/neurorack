@@ -1,6 +1,6 @@
 # Neurorack
 
-The full scientific paper associate to this project is available [here](https://infoscience.epfl.ch/record/291222)
+The full scientific paper associate to this project is available [here](https://infoscience.epfl.ch/record/291222).
 
 This project documents the Neurorack, which is a deep AI-based synthesizer based on the Jetson Nano development kit in a EuroRack format. The following diagram briefly explains the overall structure of the module and the relations between the hardware and software (green) components.
 
